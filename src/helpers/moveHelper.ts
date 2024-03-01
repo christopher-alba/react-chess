@@ -35,66 +35,67 @@ export const calculateValidMoves = (
       return [];
   }
 };
-
 const calculateKingMoves = (
   selectedPiece: StatesOfPiece,
   currentGame: AllGameStates
 ) => {
   let kingMoves: Position[] = [];
-  calculateDiagonalBottomLeftMoves(
-    selectedPiece,
-    currentGame,
-    kingMoves,
-    selectedPiece.position.y + 1
-  );
-  calculateDiagonalBottomRightMoves(
-    selectedPiece,
-    currentGame,
-    kingMoves,
-    selectedPiece.position.y + 1
-  );
-  calculateDiagonalUpperLeftMoves(
-    selectedPiece,
-    currentGame,
-    kingMoves,
-    selectedPiece.position.y - 1
-  );
-  calculateDiagonalUpperRightMoves(
-    selectedPiece,
-    currentGame,
-    kingMoves,
-    selectedPiece.position.y - 1
-  );
-  calculateUpwardMoves(
-    selectedPiece,
-    currentGame,
-    kingMoves,
-    selectedPiece.position.y - 1
-  );
-  calculateDownwardMoves(
-    selectedPiece,
-    currentGame,
-    kingMoves,
-    selectedPiece.position.y + 1
-  );
+  let availableTiles = currentGame.availableTiles;
+  let pieces = currentGame.statesOfPieces;
 
-  calculateLeftMoves(
-    selectedPiece,
-    currentGame,
-    kingMoves,
-    selectedPiece.position.x - 1
-  );
-
-  calculateRightMoves(
-    selectedPiece,
-    currentGame,
-    kingMoves,
-    selectedPiece.position.x + 1
-  );
-
+  for (let i = 0; i < availableTiles.length; i++) {
+    let tile = availableTiles[i];
+    if (tile.position.x === selectedPiece.position.x) {
+      //up
+      if (tile.position.y === selectedPiece.position.y - 1) {
+        validateTileStatic(tile.position, pieces, selectedPiece, kingMoves);
+      }
+      //down
+      if (tile.position.y === selectedPiece.position.y + 1) {
+        validateTileStatic(tile.position, pieces, selectedPiece, kingMoves);
+      }
+    }
+    if (tile.position.y === selectedPiece.position.y) {
+      //left
+      if (tile.position.x === selectedPiece.position.x - 1) {
+        validateTileStatic(tile.position, pieces, selectedPiece, kingMoves);
+      }
+      //right
+      if (tile.position.x === selectedPiece.position.x + 1) {
+        validateTileStatic(tile.position, pieces, selectedPiece, kingMoves);
+      }
+    }
+    //bottom right
+    if (
+      tile.position.y === selectedPiece.position.y + 1 &&
+      tile.position.x === selectedPiece.position.x + 1
+    ) {
+      validateTileStatic(tile.position, pieces, selectedPiece, kingMoves);
+    }
+    //bottom left
+    if (
+      tile.position.y === selectedPiece.position.y + 1 &&
+      tile.position.x === selectedPiece.position.x - 1
+    ) {
+      validateTileStatic(tile.position, pieces, selectedPiece, kingMoves);
+    }
+    //upper left
+    if (
+      tile.position.y === selectedPiece.position.y - 1 &&
+      tile.position.x === selectedPiece.position.x - 1
+    ) {
+      validateTileStatic(tile.position, pieces, selectedPiece, kingMoves);
+    }
+    //upper right
+    if (
+      tile.position.y === selectedPiece.position.y - 1 &&
+      tile.position.x === selectedPiece.position.x + 1
+    ) {
+      validateTileStatic(tile.position, pieces, selectedPiece, kingMoves);
+    }
+  }
   return kingMoves;
 };
-
 const calculatePawnMoves = (
   selectedPiece: StatesOfPiece,
   currentGame: AllGameStates
@@ -215,127 +216,18 @@ const calculatePawnMoves = (
   }
   return pawnMoves;
 };
-//up
-const calculateUpwardMoves = (
-  selectedPiece: StatesOfPiece,
-  currentGame: AllGameStates,
-  movesArray: Position[],
-  lowerYLimit: number
-) => {
-  let availableTiles = currentGame.availableTiles;
-  let pieces = currentGame.statesOfPieces;
-  let x = selectedPiece.position.x;
-  let y = selectedPiece.position.y - 1;
-  while (y >= lowerYLimit) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        movesArray,
-        x,
-        y
-      );
-      if (!continueLooping) y = lowerYLimit - 1;
-    }
-    y--;
-  }
-};
 
-//down
-const calculateDownwardMoves = (
+const calculateBishopMoves = (
   selectedPiece: StatesOfPiece,
-  currentGame: AllGameStates,
-  movesArray: Position[],
-  upperYLimit: number
+  currentGame: AllGameStates
 ) => {
+  let bishopMoves: Position[] = [];
   let availableTiles = currentGame.availableTiles;
   let pieces = currentGame.statesOfPieces;
+  let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
+  //upper-right
   let x = selectedPiece.position.x;
-  let y = selectedPiece.position.y + 1;
-  while (y < upperYLimit + 1) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        movesArray,
-        x,
-        y
-      );
-      if (!continueLooping) y = upperYLimit;
-    }
-    y++;
-  }
-};
-//left
-const calculateLeftMoves = (
-  selectedPiece: StatesOfPiece,
-  currentGame: AllGameStates,
-  movesArray: Position[],
-  lowerXLimit: number
-) => {
-  let availableTiles = currentGame.availableTiles;
-  let pieces = currentGame.statesOfPieces;
-  let x = selectedPiece.position.x - 1;
-  let y = selectedPiece.position.y;
-  while (x > lowerXLimit - 1) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        movesArray,
-        x,
-        y
-      );
-      if (!continueLooping) x = lowerXLimit;
-    }
-    x--;
-  }
-};
-//right
-const calculateRightMoves = (
-  selectedPiece: StatesOfPiece,
-  currentGame: AllGameStates,
-  movesArray: Position[],
-  upperXLimit: number
-) => {
-  let availableTiles = currentGame.availableTiles;
-  let pieces = currentGame.statesOfPieces;
-  let x = selectedPiece.position.x + 1;
-  let y = selectedPiece.position.y;
-  while (x < upperXLimit + 1) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        movesArray,
-        x,
-        y
-      );
-      if (!continueLooping) x = upperXLimit;
-    }
-    x++;
-  }
-};
-
-//upper-right
-const calculateDiagonalUpperRightMoves = (
-  selectedPiece: StatesOfPiece,
-  currentGame: AllGameStates,
-  movesArray: Position[],
-  lowerYLimit: number
-) => {
-  let x = selectedPiece.position.x;
-  let availableTiles = currentGame.availableTiles;
-  let pieces = currentGame.statesOfPieces;
-  for (let y = selectedPiece.position.y - 1; y >= lowerYLimit; y--) {
+  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
     x++;
     for (let i = 0; i < availableTiles.length; i++) {
       let tile = availableTiles[i];
@@ -344,25 +236,17 @@ const calculateDiagonalUpperRightMoves = (
         tile.position,
         pieces,
         selectedPiece,
-        movesArray,
+        bishopMoves,
         x,
         y
       );
       if (!continueLooping) y = 0;
     }
   }
-};
-//upper-left
-const calculateDiagonalUpperLeftMoves = (
-  selectedPiece: StatesOfPiece,
-  currentGame: AllGameStates,
-  movesArray: Position[],
-  lowerYLimit: number
-) => {
-  let availableTiles = currentGame.availableTiles;
-  let pieces = currentGame.statesOfPieces;
-  let x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y >= lowerYLimit; y--) {
+
+  //upper-left
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
     x--;
     for (let i = 0; i < availableTiles.length; i++) {
       let tile = availableTiles[i];
@@ -371,91 +255,52 @@ const calculateDiagonalUpperLeftMoves = (
         tile.position,
         pieces,
         selectedPiece,
-        movesArray,
+        bishopMoves,
         x,
         y
       );
-      if (!continueLooping) y = lowerYLimit - 1;
+      if (!continueLooping) y = 0;
     }
   }
-};
 
-//bottom-left
-const calculateDiagonalBottomLeftMoves = (
-  selectedPiece: StatesOfPiece,
-  currentGame: AllGameStates,
-  movesArray: Position[],
-  upperYLimit: number
-) => {
-  let availableTiles = currentGame.availableTiles;
-  let pieces = currentGame.statesOfPieces;
-  let x = selectedPiece.position.x - 1;
-  let y = selectedPiece.position.y + 1;
-  while (y < upperYLimit + 1) {
+  //bottom-left
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
+    x--;
     for (let i = 0; i < availableTiles.length; i++) {
       let tile = availableTiles[i];
+      //if position is a valid tile tile
       let continueLooping = validateTileWithLooping(
         tile.position,
         pieces,
         selectedPiece,
-        movesArray,
+        bishopMoves,
         x,
         y
       );
-      if (!continueLooping) y = upperYLimit;
+      if (!continueLooping) y = maxLength;
     }
-    x--;
-    y++;
   }
-};
-//bottom-right
-const calculateDiagonalBottomRightMoves = (
-  selectedPiece: StatesOfPiece,
-  currentGame: AllGameStates,
-  movesArray: Position[],
-  upperYLimit: number
-) => {
-  let availableTiles = currentGame.availableTiles;
-  let pieces = currentGame.statesOfPieces;
-  let x = selectedPiece.position.x + 1;
-  let y = selectedPiece.position.y + 1;
-  while (y < upperYLimit + 1) {
+
+  //bottom-right
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
+    x++;
     for (let i = 0; i < availableTiles.length; i++) {
       let tile = availableTiles[i];
+      //if position is a valid tile
       let continueLooping = validateTileWithLooping(
         tile.position,
         pieces,
         selectedPiece,
-        movesArray,
+        bishopMoves,
         x,
         y
       );
-      if (!continueLooping) y = upperYLimit;
+      if (!continueLooping) y = maxLength;
     }
-    x--;
-    y++;
   }
-};
-const calculateBishopMoves = (
-  selectedPiece: StatesOfPiece,
-  currentGame: AllGameStates
-) => {
-  let bishopMoves: Position[] = [];
-  let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
-  calculateDiagonalUpperLeftMoves(selectedPiece, currentGame, bishopMoves, 0);
-  calculateDiagonalUpperRightMoves(selectedPiece, currentGame, bishopMoves, 0);
-  calculateDiagonalBottomLeftMoves(
-    selectedPiece,
-    currentGame,
-    bishopMoves,
-    maxLength
-  );
-  calculateDiagonalBottomRightMoves(
-    selectedPiece,
-    currentGame,
-    bishopMoves,
-    maxLength
-  );
+
   return bishopMoves;
 };
 
