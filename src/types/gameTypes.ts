@@ -42,6 +42,6 @@ export type AllGamesStates = {
 export type CurrentMoveState = {
   selectedPieceId?: string;
   gameId?: string;
-  validMoves: Tiles | [];
+  validMoves: Position[] | [];
   selectedMoveLocation?: Position;
 };

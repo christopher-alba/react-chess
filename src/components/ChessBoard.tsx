@@ -21,12 +21,12 @@ const ChessBoard: FC = () => {
 
   const handleTileClick = (
     tile: Position,
-    validMoves?: Tiles,
+    validMoves?: Position[],
     selectedPieceId?: string
   ) => {
     if (
       validMoves?.find(
-        (move) => move.position.x === tile.x && move.position.y === tile.y
+        (move) => move.x === tile.x && move.y === tile.y
       )
     ) {
       //move selected piece
@@ -185,20 +185,6 @@ const ChessBoard: FC = () => {
       id: uuidv4(),
       type: Type.Rook,
     });
-    pieces.push({
-      position: { x: 3, y: 2 },
-      alive: true,
-      team: Team.White,
-      id: uuidv4(),
-      type: Type.Bishop,
-    });
-    pieces.push({
-      position: { x: 2, y: 2 },
-      alive: true,
-      team: Team.Black,
-      id: uuidv4(),
-      type: Type.Bishop,
-    });
     for (let x = 0; x < 8; x++) {
       pieces.push({
         position: { x: x, y: 6 },
@@ -248,9 +234,6 @@ const ChessBoard: FC = () => {
       })
     );
   }, []);
-  useEffect(() => {
-    console.log("testing A");
-  }, [reduxState]);
   return (
     <TilesWrapper>
       {allTiles?.map((tile) => {
@@ -286,7 +269,7 @@ const ChessBoard: FC = () => {
               }}
               style={{
                 boxShadow: validMoves?.find(
-                  (x) => x.position.x === tile.x && x.position.y === tile.y
+                  (x) => x.x === tile.x && x.y === tile.y
                 )
                   ? "inset 0 0 30px #00f"
                   : tile.x === selectedX && tile.y === selectedY
