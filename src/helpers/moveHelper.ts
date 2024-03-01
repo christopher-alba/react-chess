@@ -79,6 +79,43 @@ export const calculateValidMoves = (
       return [];
   }
 };
+
+export const calculateValidMovesCheckDetector = (
+  selectedPiece: StatesOfPiece,
+  currentGame: AllGameStates,
+  allEnemyMoves: MoveDetails[]
+) => {
+  //Check what type of piece it is
+  switch (selectedPiece.type) {
+    case Type.Bishop:
+      return calculateBishopMovesCheckDetector(
+        selectedPiece,
+        currentGame,
+        allEnemyMoves
+      );
+    case Type.King:
+      return calculateKingMoves(selectedPiece, currentGame, allEnemyMoves);
+    case Type.Knight:
+      return calculateKnightMoves(selectedPiece, currentGame, allEnemyMoves);
+    case Type.Pawn:
+      return calculatePawnMoves(selectedPiece, currentGame, allEnemyMoves);
+    case Type.Queen:
+      return calculateQueenMovesCheckDetector(
+        selectedPiece,
+        currentGame,
+        allEnemyMoves
+      );
+    case Type.Rook:
+      return calculateRookMovesCheckDetector(
+        selectedPiece,
+        currentGame,
+        allEnemyMoves
+      );
+    default:
+      return [];
+  }
+};
+
 const calculateKnightMoves = (
   selectedPiece: StatesOfPiece,
   currentGame: AllGameStates,
@@ -158,6 +195,7 @@ const calculateEnemyKnightMoves = (
         y: tile.position.y,
         moveType: MoveType.AttackPath,
         moveDirection: MoveDirection.OneOff,
+        originPiece: selectedPiece,
       });
     }
     if (
@@ -169,6 +207,7 @@ const calculateEnemyKnightMoves = (
         y: tile.position.y,
         moveType: MoveType.AttackPath,
         moveDirection: MoveDirection.OneOff,
+        originPiece: selectedPiece,
       });
     }
     if (
@@ -180,6 +219,7 @@ const calculateEnemyKnightMoves = (
         y: tile.position.y,
         moveType: MoveType.AttackPath,
         moveDirection: MoveDirection.OneOff,
+        originPiece: selectedPiece,
       });
     }
     if (
@@ -191,6 +231,7 @@ const calculateEnemyKnightMoves = (
         y: tile.position.y,
         moveType: MoveType.AttackPath,
         moveDirection: MoveDirection.OneOff,
+        originPiece: selectedPiece,
       });
     }
     if (
@@ -202,6 +243,7 @@ const calculateEnemyKnightMoves = (
         y: tile.position.y,
         moveType: MoveType.AttackPath,
         moveDirection: MoveDirection.OneOff,
+        originPiece: selectedPiece,
       });
     }
     if (
@@ -213,6 +255,7 @@ const calculateEnemyKnightMoves = (
         y: tile.position.y,
         moveType: MoveType.AttackPath,
         moveDirection: MoveDirection.OneOff,
+        originPiece: selectedPiece,
       });
     }
     if (
@@ -224,6 +267,7 @@ const calculateEnemyKnightMoves = (
         y: tile.position.y,
         moveType: MoveType.AttackPath,
         moveDirection: MoveDirection.OneOff,
+        originPiece: selectedPiece,
       });
     }
     if (
@@ -235,6 +279,7 @@ const calculateEnemyKnightMoves = (
         y: tile.position.y,
         moveType: MoveType.AttackPath,
         moveDirection: MoveDirection.OneOff,
+        originPiece: selectedPiece,
       });
     }
   }
@@ -313,6 +358,93 @@ const calculateRookMoves = (
       let tile = availableTiles[i];
       //if position is a valid tile
       let continueLooping = validateTileWithLooping(
+        tile.position,
+        pieces,
+        selectedPiece,
+        MoveDirection.Left,
+        rookMoves,
+        x,
+        y
+      );
+      if (!continueLooping) x = -1;
+    }
+  }
+
+  return rookMoves;
+};
+
+const calculateRookMovesCheckDetector = (
+  selectedPiece: StatesOfPiece,
+  currentGame: AllGameStates,
+  allEnemyMoves: MoveDetails[]
+) => {
+  let rookMoves: MoveDetails[] = [];
+  let availableTiles = currentGame.availableTiles;
+  let pieces = currentGame.statesOfPieces;
+  let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
+
+  //up
+  let x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLoopingCheckDetector(
+        tile.position,
+        pieces,
+        selectedPiece,
+        MoveDirection.Up,
+        rookMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = maxLength;
+    }
+  }
+  //down
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y - 1; y > 0; y--) {
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLoopingCheckDetector(
+        tile.position,
+        pieces,
+        selectedPiece,
+        MoveDirection.Down,
+        rookMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = 0;
+    }
+  }
+
+  //right
+  let y = selectedPiece.position.y;
+  for (let x = selectedPiece.position.x + 1; x < maxLength; x++) {
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLoopingCheckDetector(
+        tile.position,
+        pieces,
+        selectedPiece,
+        MoveDirection.Right,
+        rookMoves,
+        x,
+        y
+      );
+      if (!continueLooping) x = maxLength;
+    }
+  }
+  //left
+  y = selectedPiece.position.y;
+  for (let x = selectedPiece.position.x - 1; x >= 0; x--) {
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLoopingCheckDetector(
         tile.position,
         pieces,
         selectedPiece,
@@ -579,6 +711,171 @@ const calculateQueenMoves = (
   return queenMoves;
 };
 
+const calculateQueenMovesCheckDetector = (
+  selectedPiece: StatesOfPiece,
+  currentGame: AllGameStates,
+  allEnemyMoves: MoveDetails[]
+) => {
+  let queenMoves: MoveDetails[] = [];
+  let availableTiles = currentGame.availableTiles;
+  let pieces = currentGame.statesOfPieces;
+  let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
+  //upper-right
+  let x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
+    x++;
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile tile
+      let continueLooping = validateTileWithLoopingCheckDetector(
+        tile.position,
+        pieces,
+        selectedPiece,
+        MoveDirection.UpperRight,
+        queenMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = 0;
+    }
+  }
+
+  //upper-left
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
+    x--;
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile tile
+      let continueLooping = validateTileWithLoopingCheckDetector(
+        tile.position,
+        pieces,
+        selectedPiece,
+        MoveDirection.UpperLeft,
+        queenMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = 0;
+    }
+  }
+
+  //bottom-left
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
+    x--;
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile tile
+      let continueLooping = validateTileWithLoopingCheckDetector(
+        tile.position,
+        pieces,
+        selectedPiece,
+        MoveDirection.BottomLeft,
+        queenMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = maxLength;
+    }
+  }
+
+  //bottom-right
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
+    x++;
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLoopingCheckDetector(
+        tile.position,
+        pieces,
+        selectedPiece,
+        MoveDirection.BottomRight,
+        queenMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = maxLength;
+    }
+  }
+
+  //up
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLoopingCheckDetector(
+        tile.position,
+        pieces,
+        selectedPiece,
+        MoveDirection.Up,
+        queenMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = maxLength;
+    }
+  }
+  //down
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y - 1; y > 0; y--) {
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLoopingCheckDetector(
+        tile.position,
+        pieces,
+        selectedPiece,
+        MoveDirection.Down,
+        queenMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = 0;
+    }
+  }
+
+  //right
+  let y = selectedPiece.position.y;
+  for (let x = selectedPiece.position.x + 1; x < maxLength; x++) {
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLoopingCheckDetector(
+        tile.position,
+        pieces,
+        selectedPiece,
+        MoveDirection.Right,
+        queenMoves,
+        x,
+        y
+      );
+      if (!continueLooping) x = maxLength;
+    }
+  }
+  //left
+  y = selectedPiece.position.y;
+  for (let x = selectedPiece.position.x - 1; x >= 0; x--) {
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLoopingCheckDetector(
+        tile.position,
+        pieces,
+        selectedPiece,
+        MoveDirection.Left,
+        queenMoves,
+        x,
+        y
+      );
+      if (!continueLooping) x = -1;
+    }
+  }
+  return queenMoves;
+};
+
 const calculateEnemyQueenMoves = (
   selectedPiece: StatesOfPiece,
   currentGame: AllGameStates
@@ -751,6 +1048,8 @@ export const calculateKingMoves = (
   let kingMoves: MoveDetails[] = [];
   let availableTiles = currentGame.availableTiles;
   let pieces = currentGame.statesOfPieces;
+  let checkPath = currentGame.checkStatus.attackPath;
+  let checkingPiece = currentGame.checkStatus.checkingPiece;
 
   for (let i = 0; i < availableTiles.length; i++) {
     let tile = availableTiles[i];
@@ -762,7 +1061,9 @@ export const calculateKingMoves = (
           pieces,
           selectedPiece,
           kingMoves,
-          allEnemyMoves
+          allEnemyMoves,
+          checkPath,
+          checkingPiece
         );
       }
       //down
@@ -772,7 +1073,9 @@ export const calculateKingMoves = (
           pieces,
           selectedPiece,
           kingMoves,
-          allEnemyMoves
+          allEnemyMoves,
+          checkPath,
+          checkingPiece
         );
       }
     }
@@ -784,7 +1087,9 @@ export const calculateKingMoves = (
           pieces,
           selectedPiece,
           kingMoves,
-          allEnemyMoves
+          allEnemyMoves,
+          checkPath,
+          checkingPiece
         );
       }
       //right
@@ -794,7 +1099,9 @@ export const calculateKingMoves = (
           pieces,
           selectedPiece,
           kingMoves,
-          allEnemyMoves
+          allEnemyMoves,
+          checkPath,
+          checkingPiece
         );
       }
     }
@@ -808,7 +1115,9 @@ export const calculateKingMoves = (
         pieces,
         selectedPiece,
         kingMoves,
-        allEnemyMoves
+        allEnemyMoves,
+        checkPath,
+        checkingPiece
       );
     }
     //bottom left
@@ -821,7 +1130,9 @@ export const calculateKingMoves = (
         pieces,
         selectedPiece,
         kingMoves,
-        allEnemyMoves
+        allEnemyMoves,
+        checkPath,
+        checkingPiece
       );
     }
     //upper left
@@ -834,7 +1145,9 @@ export const calculateKingMoves = (
         pieces,
         selectedPiece,
         kingMoves,
-        allEnemyMoves
+        allEnemyMoves,
+        checkPath,
+        checkingPiece
       );
     }
     //upper right
@@ -847,7 +1160,9 @@ export const calculateKingMoves = (
         pieces,
         selectedPiece,
         kingMoves,
-        allEnemyMoves
+        allEnemyMoves,
+        checkPath,
+        checkingPiece
       );
     }
   }
@@ -871,6 +1186,7 @@ const calculateEnemyKingMoves = (
           y: tile.position.y,
           moveType: MoveType.AttackPath,
           moveDirection: MoveDirection.OneOff,
+          originPiece: selectedPiece,
         });
       }
       //down
@@ -880,6 +1196,7 @@ const calculateEnemyKingMoves = (
           y: tile.position.y,
           moveType: MoveType.AttackPath,
           moveDirection: MoveDirection.OneOff,
+          originPiece: selectedPiece,
         });
       }
     }
@@ -891,6 +1208,7 @@ const calculateEnemyKingMoves = (
           y: tile.position.y,
           moveType: MoveType.AttackPath,
           moveDirection: MoveDirection.OneOff,
+          originPiece: selectedPiece,
         });
       }
       //right
@@ -900,6 +1218,7 @@ const calculateEnemyKingMoves = (
           y: tile.position.y,
           moveType: MoveType.AttackPath,
           moveDirection: MoveDirection.OneOff,
+          originPiece: selectedPiece,
         });
       }
     }
@@ -913,6 +1232,7 @@ const calculateEnemyKingMoves = (
         y: tile.position.y,
         moveType: MoveType.AttackPath,
         moveDirection: MoveDirection.OneOff,
+        originPiece: selectedPiece,
       });
     }
     //bottom left
@@ -925,6 +1245,7 @@ const calculateEnemyKingMoves = (
         y: tile.position.y,
         moveType: MoveType.AttackPath,
         moveDirection: MoveDirection.OneOff,
+        originPiece: selectedPiece,
       });
     }
     //upper left
@@ -937,6 +1258,7 @@ const calculateEnemyKingMoves = (
         y: tile.position.y,
         moveType: MoveType.AttackPath,
         moveDirection: MoveDirection.OneOff,
+        originPiece: selectedPiece,
       });
     }
     //upper right
@@ -949,6 +1271,7 @@ const calculateEnemyKingMoves = (
         y: tile.position.y,
         moveType: MoveType.AttackPath,
         moveDirection: MoveDirection.OneOff,
+        originPiece: selectedPiece,
       });
     }
   }
@@ -1097,6 +1420,7 @@ const calculateEnemyPawnMoves = (
           y: tile.position.y,
           moveType: MoveType.AttackPath,
           moveDirection: MoveDirection.OneOff,
+          originPiece: selectedPiece,
         });
       }
       if (
@@ -1108,6 +1432,7 @@ const calculateEnemyPawnMoves = (
           y: tile.position.y,
           moveType: MoveType.AttackPath,
           moveDirection: MoveDirection.OneOff,
+          originPiece: selectedPiece,
         });
       }
     } else if (selectedPiece.team === Team.Black) {
@@ -1121,6 +1446,7 @@ const calculateEnemyPawnMoves = (
           y: tile.position.y,
           moveType: MoveType.AttackPath,
           moveDirection: MoveDirection.OneOff,
+          originPiece: selectedPiece,
         });
       }
       if (
@@ -1132,11 +1458,109 @@ const calculateEnemyPawnMoves = (
           y: tile.position.y,
           moveType: MoveType.AttackPath,
           moveDirection: MoveDirection.OneOff,
+          originPiece: selectedPiece,
         });
       }
     }
   }
   return pawnMoves;
+};
+
+const calculateBishopMovesCheckDetector = (
+  selectedPiece: StatesOfPiece,
+  currentGame: AllGameStates,
+  allEnemyMoves: MoveDetails[]
+) => {
+  let bishopMoves: MoveDetails[] = [];
+  let availableTiles = currentGame.availableTiles;
+  let pieces = currentGame.statesOfPieces;
+  let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
+
+  //upper-right
+  let x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
+    x++;
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+
+      if (currentGame.checkStatus.type === CheckType.Check) {
+        //check for intersects with checking piece's attack path
+      } else {
+        let continueLooping = validateTileWithLoopingCheckDetector(
+          tile.position,
+          pieces,
+          selectedPiece,
+          MoveDirection.UpperRight,
+          bishopMoves,
+          x,
+          y
+        );
+        if (!continueLooping) y = 0;
+      }
+    }
+  }
+
+  //upper-left
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
+    x--;
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile tile
+      let continueLooping = validateTileWithLoopingCheckDetector(
+        tile.position,
+        pieces,
+        selectedPiece,
+        MoveDirection.UpperLeft,
+        bishopMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = 0;
+    }
+  }
+
+  //bottom-left
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
+    x--;
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile tile
+      let continueLooping = validateTileWithLoopingCheckDetector(
+        tile.position,
+        pieces,
+        selectedPiece,
+        MoveDirection.BottomLeft,
+        bishopMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = maxLength;
+    }
+  }
+
+  //bottom-right
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
+    x++;
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLoopingCheckDetector(
+        tile.position,
+        pieces,
+        selectedPiece,
+        MoveDirection.BottomRight,
+        bishopMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = maxLength;
+    }
+  }
+
+  return bishopMoves;
 };
 
 const calculateBishopMoves = (
@@ -1163,7 +1587,7 @@ const calculateBishopMoves = (
           tile.position,
           pieces,
           selectedPiece,
-          MoveDirection.BottomRight,
+          MoveDirection.UpperRight,
           bishopMoves,
           x,
           y
@@ -1184,7 +1608,7 @@ const calculateBishopMoves = (
         tile.position,
         pieces,
         selectedPiece,
-        MoveDirection.BottomRight,
+        MoveDirection.UpperLeft,
         bishopMoves,
         x,
         y
@@ -1204,7 +1628,7 @@ const calculateBishopMoves = (
         tile.position,
         pieces,
         selectedPiece,
-        MoveDirection.BottomRight,
+        MoveDirection.BottomLeft,
         bishopMoves,
         x,
         y
@@ -1348,6 +1772,7 @@ const validateTileStatic = (
       y: tile.y,
       moveType: MoveType.DefaultMove,
       moveDirection: MoveDirection.OneOff,
+      originPiece: selectedPiece,
     });
   }
 };
@@ -1357,7 +1782,9 @@ const validateKingTileStatic = (
   pieces: StatesOfPieces,
   selectedPiece: StatesOfPiece,
   movesArray: MoveDetails[],
-  allEnemyMoves: MoveDetails[]
+  allEnemyMoves: MoveDetails[],
+  checkPath?: MoveDetails[],
+  checkingPiece?: StatesOfPiece
 ) => {
   //if no friendly pieces are on the tile
   if (
@@ -1378,12 +1805,17 @@ const validateKingTileStatic = (
       console.log("move intersects", intersects?.x, intersects?.y);
       if (intersects) return;
     }
+    //if the tile is in the attack path of a checking piece
+    if (checkPath?.find((path) => path.x === tile.x && path.y === tile.y)) {
+      return;
+    }
 
     movesArray.push({
       x: tile.x,
       y: tile.y,
       moveType: MoveType.DefaultMove,
       moveDirection: MoveDirection.OneOff,
+      originPiece: selectedPiece,
     });
   }
 };
@@ -1416,6 +1848,7 @@ const validateTileForwardPawn = (
       y: tile.y,
       moveType: MoveType.DefaultMove,
       moveDirection: MoveDirection.OneOff,
+      originPiece: selectedPiece,
     });
     return false;
   }
@@ -1457,6 +1890,7 @@ const validateTileWithLoopingEnemy = (
           y: tile.y,
           moveType: MoveType.AttackPath,
           moveDirection: direction,
+          originPiece: selectedPiece,
         });
         return true;
       } else {
@@ -1466,6 +1900,7 @@ const validateTileWithLoopingEnemy = (
           y: tile.y,
           moveType: MoveType.AttackPath,
           moveDirection: direction,
+          originPiece: selectedPiece,
         });
         return false;
       }
@@ -1475,6 +1910,7 @@ const validateTileWithLoopingEnemy = (
         y: tile.y,
         moveType: MoveType.AttackPath,
         moveDirection: direction,
+        originPiece: selectedPiece,
       });
       return false;
     }
@@ -1517,6 +1953,7 @@ const validateTileWithLooping = (
           y: tile.y,
           moveType: MoveType.DefaultMove,
           moveDirection: direction,
+          originPiece: selectedPiece,
         });
         return true;
       } else {
@@ -1526,7 +1963,65 @@ const validateTileWithLooping = (
           y: tile.y,
           moveType: MoveType.DefaultMove,
           moveDirection: direction,
+          originPiece: selectedPiece,
         });
+        return false;
+      }
+    }
+    return false;
+  }
+  return true;
+};
+
+const validateTileWithLoopingCheckDetector = (
+  tile: Position,
+  pieces: StatesOfPieces,
+  selectedPiece: StatesOfPiece,
+  direction: MoveDirection,
+  movesArray: MoveDetails[],
+  x: number,
+  y: number
+) => {
+  if (tile.x === x && tile.y === y) {
+    //if no friendly pieces are on the tile
+    if (
+      !pieces.find(
+        (piece) =>
+          piece.team === selectedPiece.team &&
+          piece.position.x === tile.x &&
+          piece.position.y === tile.y &&
+          piece.alive === true
+      )
+    ) {
+      //if no enemy pieces are on the tile
+      let enemyPiece = pieces.find(
+        (piece) =>
+          piece.team !== selectedPiece.team &&
+          tile.x === piece.position.x &&
+          tile.y === piece.position.y &&
+          piece.alive === true
+      );
+      if (!enemyPiece) {
+        movesArray.push({
+          x: tile.x,
+          y: tile.y,
+          moveType: MoveType.DefaultMove,
+          moveDirection: direction,
+          originPiece: selectedPiece,
+        });
+        return true;
+      } else {
+        //if enemy piece is on the tile
+        movesArray.push({
+          x: tile.x,
+          y: tile.y,
+          moveType: MoveType.DefaultMove,
+          moveDirection: direction,
+          originPiece: selectedPiece,
+        });
+        if (enemyPiece.type === Type.King) {
+          return true;
+        }
         return false;
       }
     }

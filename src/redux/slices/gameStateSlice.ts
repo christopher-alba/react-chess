@@ -3,6 +3,7 @@ import {
   AllGameStates,
   AllGamesStates,
   CurrentMoveState,
+  MoveDetails,
   Position,
   StatesOfPiece,
   Tile,
@@ -18,6 +19,7 @@ import {
   calculateEnemyMoves,
   calculateKingMoves,
   calculateValidMoves,
+  calculateValidMovesCheckDetector,
   isValidMove,
 } from "../../helpers/moveHelper";
 
@@ -83,13 +85,24 @@ export const gameStateSlice = createSlice({
           (piece) =>
             piece.type === Type.King && piece.team !== selectedPiece.team
         );
-        //recalculate valid moves based on new position
-        if (currentMoveState && gameToUpdate) {
-          currentMoveState.validMoves = calculateValidMoves(
-            selectedPiece,
-            gameToUpdate,
-            currentMoveState.allEnemyMoves
-          );
+        //recalculate all valid moves based on new move
+        let currentTeamPieces = gameToUpdate?.statesOfPieces.filter(
+          (piece) => piece.team === selectedPiece.team
+        );
+
+        if (currentMoveState && gameToUpdate && currentTeamPieces) {
+          let tempArray: MoveDetails[] = [];
+          for (let i = 0; i < currentTeamPieces?.length; i++) {
+            Array.prototype.push.apply(
+              tempArray,
+              calculateValidMovesCheckDetector(
+                currentTeamPieces[i],
+                gameToUpdate,
+                currentMoveState.allEnemyMoves
+              )
+            );
+          }
+          currentMoveState.validMoves = tempArray;
         }
         let intersectingMove = currentMoveState?.validMoves.find(
           (x) => x.x === enemyKing?.position.x && x.y === enemyKing.position.y
@@ -98,13 +111,20 @@ export const gameStateSlice = createSlice({
           if (gameToUpdate) {
             gameToUpdate.checkStatus.type = CheckType.Check;
             gameToUpdate.checkStatus.teamInCheck = enemyKing.team;
-            gameToUpdate.checkStatus.checkingPiece = selectedPiece;
+            gameToUpdate.checkStatus.checkingPiece = intersectingMove.originPiece;
             gameToUpdate.checkStatus.attackPath =
               currentMoveState?.validMoves.filter(
                 (move) =>
                   move.moveDirection === intersectingMove.moveDirection &&
                   intersectingMove.moveDirection !== MoveDirection.OneOff
               );
+          }
+        } else {
+          if (gameToUpdate) {
+            gameToUpdate.checkStatus.type = CheckType.None;
+            gameToUpdate.checkStatus.teamInCheck = Team.None;
+            gameToUpdate.checkStatus.checkingPiece = undefined;
+            gameToUpdate.checkStatus.attackPath = [];
           }
         }
 

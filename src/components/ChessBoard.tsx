@@ -11,7 +11,6 @@ import {
   Type,
 } from "../types/enums";
 import {
-  AllGameStates,
   Position,
   StatesOfPieces,
   Tiles,
@@ -241,6 +240,7 @@ const ChessBoard: FC = () => {
         statesOfPieces: initialize2PlayerBoardPieces(),
       })
     );
+    console.log("testing A");
   }, []);
   return (
     <TilesWrapper>
@@ -267,8 +267,7 @@ const ChessBoard: FC = () => {
           ?.checkStatus.attackPath;
         let checkingPiece = reduxState.gamesStates.find(
           (x) => x.gameId === gameId
-        )?.checkStatus.checkingPiece;
-        console.log(attackPath);
+        )?.checkStatus.checkingPiece;        
         let selectedPieceId = currentMoves?.selectedPieceId;
         let selectedPiecePos = pieces?.find(
           (x) => x.id === selectedPieceId

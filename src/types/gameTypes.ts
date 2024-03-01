@@ -19,6 +19,7 @@ export type MoveDetails = {
   y: number;
   moveType: MoveType;
   moveDirection: MoveDirection;
+  originPiece: StatesOfPiece;
 };
 
 export type Tile = {
