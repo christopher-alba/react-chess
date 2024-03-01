@@ -7,8 +7,19 @@ import {
   StatesOfPiece,
   Tile,
 } from "../../types/gameTypes";
-import { Team } from "../../types/enums";
-import { calculateValidMoves, isValidMove } from "../../helpers/moveHelper";
+import {
+  CheckType,
+  GameState,
+  MoveDirection,
+  Team,
+  Type,
+} from "../../types/enums";
+import {
+  calculateEnemyMoves,
+  calculateKingMoves,
+  calculateValidMoves,
+  isValidMove,
+} from "../../helpers/moveHelper";
 
 export const gameStateSlice = createSlice({
   name: "gameState",
@@ -50,8 +61,7 @@ export const gameStateSlice = createSlice({
       let selectedPiece = gameToUpdate?.statesOfPieces.find(
         (x) => x.id === action.payload.selectedPiece.id
       );
-      console.log(JSON.stringify(selectedPiece));
-      
+
       let enemyPiece = gameToUpdate?.statesOfPieces.find(
         (x) =>
           x.team !== selectedPiece?.team &&
@@ -59,28 +69,75 @@ export const gameStateSlice = createSlice({
           x.position.y === action.payload.tile.y
       );
       if (selectedPiece) {
-        
         if (enemyPiece) {
-          enemyPiece.alive = false; 
-          console.log(JSON.stringify(enemyPiece));
+          enemyPiece.alive = false;
         }
 
         selectedPiece.position.x = action.payload.tile.x;
         selectedPiece.position.y = action.payload.tile.y;
-        console.log(JSON.stringify(selectedPiece));
+
+        let currentMoveState = state.currentMovesState.find(
+          (x) => x.gameId === action.payload.currentGameId
+        );
+        let enemyKing = gameToUpdate?.statesOfPieces.find(
+          (piece) =>
+            piece.type === Type.King && piece.team !== selectedPiece.team
+        );
+        //recalculate valid moves based on new position
+        if (currentMoveState && gameToUpdate) {
+          currentMoveState.validMoves = calculateValidMoves(
+            selectedPiece,
+            gameToUpdate,
+            currentMoveState.allEnemyMoves
+          );
+        }
+        let intersectingMove = currentMoveState?.validMoves.find(
+          (x) => x.x === enemyKing?.position.x && x.y === enemyKing.position.y
+        );
+        if (enemyKing && intersectingMove) {
+          if (gameToUpdate) {
+            gameToUpdate.checkStatus.type = CheckType.Check;
+            gameToUpdate.checkStatus.teamInCheck = enemyKing.team;
+            gameToUpdate.checkStatus.checkingPiece = selectedPiece;
+            gameToUpdate.checkStatus.attackPath =
+              currentMoveState?.validMoves.filter(
+                (move) =>
+                  move.moveDirection === intersectingMove.moveDirection &&
+                  intersectingMove.moveDirection !== MoveDirection.OneOff
+              );
+          }
+        }
 
         if (gameToUpdate?.currentTeam) {
           gameToUpdate.currentTeam =
             gameToUpdate.currentTeam === Team.Black ? Team.White : Team.Black;
         }
-        let currentMoveState = state.currentMovesState.find(
-          (x) => x.gameId === action.payload.currentGameId
-        );
         if (currentMoveState?.validMoves) currentMoveState.validMoves = [];
-        if (currentMoveState?.selectedPieceId)
+        if (currentMoveState?.selectedPieceId) {
           currentMoveState.selectedPieceId = undefined;
+        }
+        if (currentMoveState?.allEnemyMoves && gameToUpdate) {
+          currentMoveState.allEnemyMoves = calculateEnemyMoves(gameToUpdate);
+        }
+        if (
+          enemyKing &&
+          gameToUpdate &&
+          currentMoveState &&
+          gameToUpdate.checkStatus.type === CheckType.Check
+        ) {
+          if (
+            !calculateKingMoves(
+              enemyKing,
+              gameToUpdate,
+              currentMoveState.allEnemyMoves
+            )
+          ) {
+            gameToUpdate.checkStatus.type = CheckType.Checkmate;
+            gameToUpdate.checkStatus.teamInCheck = enemyKing.team;
+            gameToUpdate.gameState = GameState.WinnerDecided;
+          }
+        }
       }
-      console.log(JSON.stringify(state));
     },
     selectPiece: (
       state,
@@ -95,20 +152,24 @@ export const gameStateSlice = createSlice({
       let currentMoveState = state.currentMovesState.find(
         (x) => x.gameId === action.payload.gameId
       );
+
       if (matchingPiece && matchingPiece?.team === currentGame?.currentTeam) {
         if (!currentMoveState) {
           state.currentMovesState.push({
             gameId: action.payload.gameId,
             selectedPieceId: action.payload.id,
-            validMoves: calculateValidMoves(matchingPiece, currentGame),
+            validMoves: calculateValidMoves(matchingPiece, currentGame, []),
             selectedMoveLocation: undefined,
+            allEnemyMoves: calculateEnemyMoves(currentGame),
           });
         } else {
           currentMoveState.gameId = currentGame?.gameId;
           currentMoveState.selectedPieceId = action.payload.id;
+          currentMoveState.allEnemyMoves = calculateEnemyMoves(currentGame);
           currentMoveState.validMoves = calculateValidMoves(
             matchingPiece,
-            currentGame
+            currentGame,
+            currentMoveState.allEnemyMoves
           );
         }
       }

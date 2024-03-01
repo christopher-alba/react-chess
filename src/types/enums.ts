@@ -12,6 +12,7 @@ export enum Team {
   White = "WHITE",
   Left = "LEFT",
   Right = "RIGHT",
+  None = "NONE",
 }
 
 export enum Mode {
@@ -26,8 +27,31 @@ export enum GameState {
   Stopped,
 }
 
-
 export enum TileColor {
   Light,
   Dark,
+}
+
+export enum CheckType {
+  None,
+  Check,
+  Checkmate,
+}
+
+export enum MoveType {
+  AttackPath,
+  CheckPath,
+  DefaultMove,
+}
+
+export enum MoveDirection {
+  Up,
+  Down,
+  Left,
+  Right,
+  UpperLeft,
+  UpperRight,
+  BottomLeft,
+  BottomRight,
+  OneOff,
 }

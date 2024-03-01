@@ -2,7 +2,14 @@ import { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createGameInstance, makeMove } from "../redux/slices/gameStateSlice";
 import { v4 as uuidv4 } from "uuid";
-import { GameState, Mode, Team, TileColor, Type } from "../types/enums";
+import {
+  CheckType,
+  GameState,
+  Mode,
+  Team,
+  TileColor,
+  Type,
+} from "../types/enums";
 import {
   AllGameStates,
   Position,
@@ -24,11 +31,7 @@ const ChessBoard: FC = () => {
     validMoves?: Position[],
     selectedPieceId?: string
   ) => {
-    if (
-      validMoves?.find(
-        (move) => move.x === tile.x && move.y === tile.y
-      )
-    ) {
+    if (validMoves?.find((move) => move.x === tile.x && move.y === tile.y)) {
       //move selected piece
       let currentGame = reduxState.gamesStates.find((x) => x.gameId === gameId);
       const currentGameId = currentGame?.gameId;
@@ -229,6 +232,11 @@ const ChessBoard: FC = () => {
           },
         ],
         gameState: GameState.Stopped,
+        checkStatus: {
+          type: CheckType.None,
+          teamInCheck: Team.None,
+          checkingPiece: undefined,
+        },
         availableTiles: initialize2PlayerBoardTiles(),
         statesOfPieces: initialize2PlayerBoardPieces(),
       })
@@ -255,6 +263,12 @@ const ChessBoard: FC = () => {
           (x) => x.gameId === gameId
         );
         let validMoves = currentMoves?.validMoves;
+        let attackPath = reduxState.gamesStates.find((x) => x.gameId === gameId)
+          ?.checkStatus.attackPath;
+        let checkingPiece = reduxState.gamesStates.find(
+          (x) => x.gameId === gameId
+        )?.checkStatus.checkingPiece;
+        console.log(attackPath);
         let selectedPieceId = currentMoves?.selectedPieceId;
         let selectedPiecePos = pieces?.find(
           (x) => x.id === selectedPieceId
@@ -274,6 +288,13 @@ const ChessBoard: FC = () => {
                   ? "inset 0 0 30px #00f"
                   : tile.x === selectedX && tile.y === selectedY
                   ? "inset 0 0 30px #33ff00"
+                  : attackPath?.find(
+                      (path) => path.x === tile.x && path.y === tile.y
+                    )
+                  ? "inset 0 0 30px #ffffff"
+                  : checkingPiece?.position.x === tile.x &&
+                    checkingPiece.position.y === tile.y
+                  ? "inset 0 0 30px #ffd900"
                   : "",
                 background:
                   matching.color === TileColor.Dark ? "brown" : "gray",

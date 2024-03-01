@@ -1,9 +1,26 @@
-import { GameState, Mode, Team, TileColor, Type } from "./enums";
+import {
+  CheckType,
+  GameState,
+  Mode,
+  MoveDirection,
+  MoveType,
+  Team,
+  TileColor,
+  Type,
+} from "./enums";
 
 export type Position = {
   x: number;
   y: number;
 };
+
+export type MoveDetails = {
+  x: number;
+  y: number;
+  moveType: MoveType;
+  moveDirection: MoveDirection;
+};
+
 export type Tile = {
   position: Position;
   isWall: boolean;
@@ -33,6 +50,12 @@ export type AllGameStates = {
   gameState: GameState;
   availableTiles: Tiles;
   statesOfPieces: StatesOfPieces;
+  checkStatus: {
+    type: CheckType;
+    teamInCheck: Team;
+    checkingPiece?: StatesOfPiece;
+    attackPath?: MoveDetails[];
+  };
 };
 export type AllGamesStates = {
   gamesStates: AllGameStates[];
@@ -42,6 +65,7 @@ export type AllGamesStates = {
 export type CurrentMoveState = {
   selectedPieceId?: string;
   gameId?: string;
-  validMoves: Position[] | [];
+  validMoves: MoveDetails[] | [];
+  allEnemyMoves: MoveDetails[] | [];
   selectedMoveLocation?: Position;
 };
