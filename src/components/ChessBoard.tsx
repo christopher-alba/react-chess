@@ -14,7 +14,6 @@ import ChessPiece from "./ChessPiece";
 import { RootState } from "../redux/store";
 
 const ChessBoard: FC = () => {
-  const [tiles, setTiles] = useState<Tiles>();
   const [allTiles, setAllTiles] = useState<Position[]>();
   const [gameId, setGameId] = useState<string>();
   const dispatch = useDispatch();
@@ -58,7 +57,6 @@ const ChessBoard: FC = () => {
         color = color === TileColor.Light ? TileColor.Dark : TileColor.Light;
       }
     }
-    setTiles(tilesArray);
     return tilesArray;
   };
   const initialize2PlayerBoardPieces = (): StatesOfPieces => {
@@ -250,18 +248,25 @@ const ChessBoard: FC = () => {
       })
     );
   }, []);
-
+  useEffect(() => {
+    console.log("testing A");
+  }, [reduxState]);
   return (
     <TilesWrapper>
       {allTiles?.map((tile) => {
         let pieces = reduxState.gamesStates.find(
           (x) => x.gameId === gameId
         )?.statesOfPieces;
+        let tiles = reduxState.gamesStates.find(
+          (x) => x.gameId === gameId
+        )?.availableTiles;
         let matching = tiles?.find(
           (x) => JSON.stringify(x.position) === JSON.stringify(tile)
         );
         let piece = pieces?.find(
-          (x) => JSON.stringify(x.position) === JSON.stringify(tile)
+          (x) =>
+            JSON.stringify(x.position) === JSON.stringify(tile) &&
+            x.alive === true
         );
         let currentMoves = reduxState.currentMovesState.find(
           (x) => x.gameId === gameId

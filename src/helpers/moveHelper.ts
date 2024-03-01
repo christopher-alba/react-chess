@@ -40,18 +40,13 @@ const calculateBishopMoves = (
   selectedPiece: StatesOfPiece,
   currentGame: AllGameStates
 ) => {
-
   let bishopMoves: Tiles = [];
   let availableTiles = currentGame.availableTiles;
   let pieces = currentGame.statesOfPieces;
   let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
   //upper-right
   let x = selectedPiece.position.x;
-  for (
-    let y = selectedPiece.position.y - 1;
-    y >= 0;
-    y--
-  ) {
+  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
     x++;
     for (let i = 0; i < availableTiles.length; i++) {
       let tile = availableTiles[i];
@@ -70,11 +65,7 @@ const calculateBishopMoves = (
 
   //upper-left
   x = selectedPiece.position.x;
-  for (
-    let y = selectedPiece.position.y - 1;
-    y >= 0;
-    y--
-  ) {
+  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
     x--;
     for (let i = 0; i < availableTiles.length; i++) {
       let tile = availableTiles[i];
@@ -91,52 +82,43 @@ const calculateBishopMoves = (
     }
   }
 
-   //bottom-left
-   x = selectedPiece.position.x;
-   for (
-     let y = selectedPiece.position.y + 1;
-     y < maxLength;
-     y++
-   ) {
-     x--;
-     for (let i = 0; i < availableTiles.length; i++) {
-       let tile = availableTiles[i];
-       //if position is a valid tile tile
-       let continueLooping = validateTile(
-         tile,
-         pieces,
-         selectedPiece,
-         bishopMoves,
-         x,
-         y
-       );
-       if (!continueLooping) y = maxLength;
-     }
-   }
+  //bottom-left
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
+    x--;
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile tile
+      let continueLooping = validateTile(
+        tile,
+        pieces,
+        selectedPiece,
+        bishopMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = maxLength;
+    }
+  }
 
-   //bottom-right
-   x = selectedPiece.position.x;
-   for (
-     let y = selectedPiece.position.y + 1;
-     y < maxLength;
-     y++
-   ) {
-     x++;
-     for (let i = 0; i < availableTiles.length; i++) {
-       let tile = availableTiles[i];
-       //if position is a valid tile tile
-       let continueLooping = validateTile(
-         tile,
-         pieces,
-         selectedPiece,
-         bishopMoves,
-         x,
-         y
-       );
-       if (!continueLooping) y = maxLength;
-     }
-   }
- 
+  //bottom-right
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
+    x++;
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTile(
+        tile,
+        pieces,
+        selectedPiece,
+        bishopMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = maxLength;
+    }
+  }
 
   return bishopMoves;
 };
@@ -156,7 +138,8 @@ const validateTile = (
         (piece) =>
           piece.team === selectedPiece.team &&
           piece.position.x === tile.position.x &&
-          piece.position.y === tile.position.y
+          piece.position.y === tile.position.y &&
+          piece.alive === true
       )
     ) {
       //if no enemy pieces are on the tile
@@ -165,7 +148,8 @@ const validateTile = (
           (piece) =>
             piece.team !== selectedPiece.team &&
             tile.position.x === piece.position.x &&
-            tile.position.y === piece.position.y
+            tile.position.y === piece.position.y &&
+            piece.alive === true
         )
       ) {
         movesArray.push(tile);

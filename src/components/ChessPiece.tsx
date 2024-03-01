@@ -130,25 +130,20 @@ const ChessPiece: FC<{
   id: string;
   gameId?: string;
 }> = ({ position, type, team, id, gameId }) => {
-  const [positionState, setPosition] = useState<Position>(position);
-  const [typeState, setType] = useState<Type>(type);
-  const [teamState, setTeam] = useState<Team>(team);
-  const [idState, setId] = useState<string>(id);
-  useEffect(() => {}, [positionState]);
   const dispatch = useDispatch();
   const handleMouseDown = () => {
     if (gameId) {
       dispatch(selectPiece({ gameId: gameId, id: id }));
     }
   };
-  switch (typeState) {
+  switch (type) {
     case Type.King:
       return (
         <IconWrapper
           onMouseDown={handleMouseDown}
           className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
         >
-          <KingIcon team={teamState} />
+          <KingIcon team={team} />
         </IconWrapper>
       );
     case Type.Queen:
@@ -157,7 +152,7 @@ const ChessPiece: FC<{
           onMouseDown={handleMouseDown}
           className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
         >
-          <QueenIcon team={teamState} />
+          <QueenIcon team={team} />
         </IconWrapper>
       );
     case Type.Pawn:
@@ -166,7 +161,7 @@ const ChessPiece: FC<{
           onMouseDown={handleMouseDown}
           className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
         >
-          <PawnIcon team={teamState} />
+          <PawnIcon team={team} />
         </IconWrapper>
       );
     case Type.Rook:
@@ -175,7 +170,7 @@ const ChessPiece: FC<{
           onMouseDown={handleMouseDown}
           className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
         >
-          <RookIcon team={teamState} />
+          <RookIcon team={team} />
         </IconWrapper>
       );
     case Type.Bishop:
@@ -184,7 +179,7 @@ const ChessPiece: FC<{
           onMouseDown={handleMouseDown}
           className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
         >
-          <BishopIcon team={teamState} />
+          <BishopIcon team={team} />
         </IconWrapper>
       );
     case Type.Knight:
@@ -193,7 +188,7 @@ const ChessPiece: FC<{
           onMouseDown={handleMouseDown}
           className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
         >
-          <KnightIcon team={teamState} />
+          <KnightIcon team={team} />
         </IconWrapper>
       );
   }

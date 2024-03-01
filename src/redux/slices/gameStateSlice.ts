@@ -50,9 +50,25 @@ export const gameStateSlice = createSlice({
       let selectedPiece = gameToUpdate?.statesOfPieces.find(
         (x) => x.id === action.payload.selectedPiece.id
       );
+      console.log(JSON.stringify(selectedPiece));
+      
+      let enemyPiece = gameToUpdate?.statesOfPieces.find(
+        (x) =>
+          x.team !== selectedPiece?.team &&
+          x.position.x === action.payload.tile.x &&
+          x.position.y === action.payload.tile.y
+      );
       if (selectedPiece) {
+        
+        if (enemyPiece) {
+          enemyPiece.alive = false; 
+          console.log(JSON.stringify(enemyPiece));
+        }
+
         selectedPiece.position.x = action.payload.tile.x;
         selectedPiece.position.y = action.payload.tile.y;
+        console.log(JSON.stringify(selectedPiece));
+
         if (gameToUpdate?.currentTeam) {
           gameToUpdate.currentTeam =
             gameToUpdate.currentTeam === Team.Black ? Team.White : Team.Black;
@@ -64,7 +80,7 @@ export const gameStateSlice = createSlice({
         if (currentMoveState?.selectedPieceId)
           currentMoveState.selectedPieceId = undefined;
       }
-      console.log(state);
+      console.log(JSON.stringify(state));
     },
     selectPiece: (
       state,
