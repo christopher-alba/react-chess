@@ -24,17 +24,314 @@ export const calculateValidMoves = (
     case Type.King:
       return calculateKingMoves(selectedPiece, currentGame);
     case Type.Knight:
-      return [];
+      return calculateKnightMoves(selectedPiece, currentGame);
     case Type.Pawn:
       return calculatePawnMoves(selectedPiece, currentGame);
     case Type.Queen:
-      return [];
+      return calculateQueenMoves(selectedPiece, currentGame);
     case Type.Rook:
-      return [];
+      return calculateRookMoves(selectedPiece, currentGame);
     default:
       return [];
   }
 };
+const calculateKnightMoves = (
+  selectedPiece: StatesOfPiece,
+  currentGame: AllGameStates
+) => {
+  let knightMoves: Position[] = [];
+  let availableTiles = currentGame.availableTiles;
+  let pieces = currentGame.statesOfPieces;
+  for (let i = 0; i < availableTiles.length; i++) {
+    let tile = availableTiles[i];
+    if (
+      tile.position.y === selectedPiece.position.y - 2 &&
+      tile.position.x === selectedPiece.position.x - 1
+    ) {
+      validateTileStatic(tile.position, pieces, selectedPiece, knightMoves);
+    }
+    if (
+      tile.position.y === selectedPiece.position.y - 2 &&
+      tile.position.x === selectedPiece.position.x + 1
+    ) {
+      validateTileStatic(tile.position, pieces, selectedPiece, knightMoves);
+    }
+    if (
+      tile.position.y === selectedPiece.position.y - 1 &&
+      tile.position.x === selectedPiece.position.x - 2
+    ) {
+      validateTileStatic(tile.position, pieces, selectedPiece, knightMoves);
+    }
+    if (
+      tile.position.y === selectedPiece.position.y - 1 &&
+      tile.position.x === selectedPiece.position.x + 2
+    ) {
+      validateTileStatic(tile.position, pieces, selectedPiece, knightMoves);
+    }
+    if (
+      tile.position.y === selectedPiece.position.y + 2 &&
+      tile.position.x === selectedPiece.position.x - 1
+    ) {
+      validateTileStatic(tile.position, pieces, selectedPiece, knightMoves);
+    }
+    if (
+      tile.position.y === selectedPiece.position.y + 2 &&
+      tile.position.x === selectedPiece.position.x + 1
+    ) {
+      validateTileStatic(tile.position, pieces, selectedPiece, knightMoves);
+    }
+    if (
+      tile.position.y === selectedPiece.position.y + 1 &&
+      tile.position.x === selectedPiece.position.x - 2
+    ) {
+      validateTileStatic(tile.position, pieces, selectedPiece, knightMoves);
+    }
+    if (
+      tile.position.y === selectedPiece.position.y + 1 &&
+      tile.position.x === selectedPiece.position.x + 2
+    ) {
+      validateTileStatic(tile.position, pieces, selectedPiece, knightMoves);
+    }
+  }
+  return knightMoves;
+};
+const calculateRookMoves = (
+  selectedPiece: StatesOfPiece,
+  currentGame: AllGameStates
+) => {
+  let rookMoves: Position[] = [];
+  let availableTiles = currentGame.availableTiles;
+  let pieces = currentGame.statesOfPieces;
+  let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
+
+  //up
+  let x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLooping(
+        tile.position,
+        pieces,
+        selectedPiece,
+        rookMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = maxLength;
+    }
+  }
+  //down
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y - 1; y > 0; y--) {
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLooping(
+        tile.position,
+        pieces,
+        selectedPiece,
+        rookMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = 0;
+    }
+  }
+
+  //right
+  let y = selectedPiece.position.y;
+  for (let x = selectedPiece.position.x + 1; x < maxLength; x++) {
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLooping(
+        tile.position,
+        pieces,
+        selectedPiece,
+        rookMoves,
+        x,
+        y
+      );
+      if (!continueLooping) x = maxLength;
+    }
+  }
+  //left
+  y = selectedPiece.position.y;
+  for (let x = selectedPiece.position.x - 1; x >= 0; x--) {
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLooping(
+        tile.position,
+        pieces,
+        selectedPiece,
+        rookMoves,
+        x,
+        y
+      );
+      if (!continueLooping) x = -1;
+    }
+  }
+
+  return rookMoves;
+};
+const calculateQueenMoves = (
+  selectedPiece: StatesOfPiece,
+  currentGame: AllGameStates
+) => {
+  let queenMoves: Position[] = [];
+  let availableTiles = currentGame.availableTiles;
+  let pieces = currentGame.statesOfPieces;
+  let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
+  //upper-right
+  let x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
+    x++;
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile tile
+      let continueLooping = validateTileWithLooping(
+        tile.position,
+        pieces,
+        selectedPiece,
+        queenMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = 0;
+    }
+  }
+
+  //upper-left
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
+    x--;
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile tile
+      let continueLooping = validateTileWithLooping(
+        tile.position,
+        pieces,
+        selectedPiece,
+        queenMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = 0;
+    }
+  }
+
+  //bottom-left
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
+    x--;
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile tile
+      let continueLooping = validateTileWithLooping(
+        tile.position,
+        pieces,
+        selectedPiece,
+        queenMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = maxLength;
+    }
+  }
+
+  //bottom-right
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
+    x++;
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLooping(
+        tile.position,
+        pieces,
+        selectedPiece,
+        queenMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = maxLength;
+    }
+  }
+
+  //up
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLooping(
+        tile.position,
+        pieces,
+        selectedPiece,
+        queenMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = maxLength;
+    }
+  }
+  //down
+  x = selectedPiece.position.x;
+  for (let y = selectedPiece.position.y - 1; y > 0; y--) {
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLooping(
+        tile.position,
+        pieces,
+        selectedPiece,
+        queenMoves,
+        x,
+        y
+      );
+      if (!continueLooping) y = 0;
+    }
+  }
+
+  //right
+  let y = selectedPiece.position.y;
+  for (let x = selectedPiece.position.x + 1; x < maxLength; x++) {
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLooping(
+        tile.position,
+        pieces,
+        selectedPiece,
+        queenMoves,
+        x,
+        y
+      );
+      if (!continueLooping) x = maxLength;
+    }
+  }
+  //left
+  y = selectedPiece.position.y;
+  for (let x = selectedPiece.position.x - 1; x >= 0; x--) {
+    for (let i = 0; i < availableTiles.length; i++) {
+      let tile = availableTiles[i];
+      //if position is a valid tile
+      let continueLooping = validateTileWithLooping(
+        tile.position,
+        pieces,
+        selectedPiece,
+        queenMoves,
+        x,
+        y
+      );
+      if (!continueLooping) x = -1;
+    }
+  }
+  return queenMoves;
+};
+
 const calculateKingMoves = (
   selectedPiece: StatesOfPiece,
   currentGame: AllGameStates
