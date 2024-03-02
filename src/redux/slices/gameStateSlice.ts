@@ -70,17 +70,63 @@ export const gameStateSlice = createSlice({
           x.position.x === action.payload.tile.x &&
           x.position.y === action.payload.tile.y
       );
-      if (selectedPiece) {
+      let currentMoveState = state.currentMovesState.find(
+        (x) => x.gameId === action.payload.currentGameId
+      );
+      let copyOfGameState = JSON.parse(
+        JSON.stringify(gameToUpdate)
+      ) as AllGameStates;
+      let copyOfCurrentmove = JSON.parse(
+        JSON.stringify(currentMoveState)
+      ) as CurrentMoveState;
+      let copySelectedPiece = copyOfGameState.statesOfPieces?.find(
+        (x) => x.id === action.payload.selectedPiece.id
+      );
+
+      if (selectedPiece && copySelectedPiece) {
+        copySelectedPiece.position.x = action.payload.tile.x;
+        copySelectedPiece.position.y = action.payload.tile.y;
+
+        //check for discovered checks
+        let originalPositionX = selectedPiece.position.x;
+        let originalPositionY = selectedPiece.position.y;
+
+        let enemyTeamPieces = copyOfGameState?.statesOfPieces?.filter(
+          (piece) => piece.team !== selectedPiece.team
+        );
+        let tempArray: MoveDetails[] = [];
+        let allyKing = copyOfGameState?.statesOfPieces?.find(
+          (piece) =>
+            piece.type === Type.King && piece.team === selectedPiece.team
+        );
+        if (copyOfCurrentmove && copyOfGameState && enemyTeamPieces) {
+          for (let i = 0; i < enemyTeamPieces?.length; i++) {
+            let moves = calculateValidMovesCheckDetector(
+              enemyTeamPieces[i],
+              copyOfGameState,
+              copyOfCurrentmove.allEnemyMoves
+            );
+            Array.prototype.push.apply(tempArray, moves);
+          }
+        }
+        let intersectingMove = tempArray.find(
+          (x) => x.x === allyKing?.position.x && x.y === allyKing.position.y
+        );
+        //if found, undo the move
+        if (intersectingMove) {
+          selectedPiece.position.x = originalPositionX;
+          selectedPiece.position.y = originalPositionY;
+          if (currentMoveState?.validMoves) currentMoveState.validMoves = [];
+          return;
+        } else {
+          selectedPiece.position.x = action.payload.tile.x;
+          selectedPiece.position.y = action.payload.tile.y;
+        }
+
         if (enemyPiece) {
           enemyPiece.alive = false;
         }
 
-        selectedPiece.position.x = action.payload.tile.x;
-        selectedPiece.position.y = action.payload.tile.y;
-
-        let currentMoveState = state.currentMovesState.find(
-          (x) => x.gameId === action.payload.currentGameId
-        );
         let enemyKing = gameToUpdate?.statesOfPieces.find(
           (piece) =>
             piece.type === Type.King && piece.team !== selectedPiece.team
@@ -103,7 +149,7 @@ export const gameStateSlice = createSlice({
           currentMoveState.validMoves = tempArray;
         }
         //find the intersecting move
-        let intersectingMove = currentMoveState?.validMoves.find(
+        intersectingMove = currentMoveState?.validMoves.find(
           (x) => x.x === enemyKing?.position.x && x.y === enemyKing.position.y
         );
         if (enemyKing && intersectingMove) {
