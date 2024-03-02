@@ -93,17 +93,19 @@ export const gameStateSlice = createSlice({
         if (currentMoveState && gameToUpdate && currentTeamPieces) {
           let tempArray: MoveDetails[] = [];
           for (let i = 0; i < currentTeamPieces?.length; i++) {
+            let moves = calculateValidMovesCheckDetector(
+              currentTeamPieces[i],
+              gameToUpdate,
+              currentMoveState.allEnemyMoves
+            )
             Array.prototype.push.apply(
               tempArray,
-              calculateValidMovesCheckDetector(
-                currentTeamPieces[i],
-                gameToUpdate,
-                currentMoveState.allEnemyMoves
-              )
+              moves
             );
           }
           currentMoveState.validMoves = tempArray;
         }
+        //find the intersecting move
         let intersectingMove = currentMoveState?.validMoves.find(
           (x) => x.x === enemyKing?.position.x && x.y === enemyKing.position.y
         );
@@ -116,7 +118,8 @@ export const gameStateSlice = createSlice({
               currentMoveState?.validMoves.filter(
                 (move) =>
                   move.moveDirection === intersectingMove.moveDirection &&
-                  intersectingMove.moveDirection !== MoveDirection.OneOff
+                  intersectingMove.moveDirection !== MoveDirection.OneOff &&
+                  move.originPiece === intersectingMove.originPiece
               );
           }
         } else {
@@ -141,24 +144,7 @@ export const gameStateSlice = createSlice({
           currentMoveState.allEnemyMoves = [];
           currentMoveState.allEnemyMoves = calculateEnemyMoves(gameToUpdate);
         }
-        if (
-          enemyKing &&
-          gameToUpdate &&
-          currentMoveState &&
-          gameToUpdate.checkStatus.type === CheckType.Check
-        ) {
-          if (
-            !calculateKingMoves(
-              enemyKing,
-              gameToUpdate,
-              currentMoveState.allEnemyMoves
-            )
-          ) {
-            gameToUpdate.checkStatus.type = CheckType.Checkmate;
-            gameToUpdate.checkStatus.teamInCheck = enemyKing.team;
-            gameToUpdate.gameState = GameState.WinnerDecided;
-          }
-        }
+        //IMPLEMENT CHECKMATE CHECK
       }
     },
     selectPiece: (

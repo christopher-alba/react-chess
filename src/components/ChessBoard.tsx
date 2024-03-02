@@ -240,7 +240,7 @@ const ChessBoard: FC = () => {
   }, []);
   return (
     <TilesWrapper>
-      {allTiles?.map((tile) => {
+      {allTiles?.map((tile, index) => {
         let pieces = reduxState.gamesStates.find(
           (x) => x.gameId === gameId
         )?.statesOfPieces;
@@ -281,6 +281,7 @@ const ChessBoard: FC = () => {
         if (matching) {
           return (
             <Tile
+              key={index}
               onMouseDown={() => {
                 handleTileClick(tile, validMoves, selectedPieceId);
               }}
@@ -306,6 +307,7 @@ const ChessBoard: FC = () => {
             >
               {piece && piece.alive && (
                 <ChessPiece
+                  key={index}
                   position={piece.position}
                   id={piece.id}
                   team={piece.team}
@@ -316,7 +318,7 @@ const ChessBoard: FC = () => {
             </Tile>
           );
         } else {
-          return <Tile></Tile>;
+          return <Tile key={index}></Tile>;
         }
       })}
     </TilesWrapper>

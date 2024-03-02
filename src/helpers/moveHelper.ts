@@ -101,17 +101,31 @@ const filterMovesForCheckState = (
   movesToFilter: MoveDetails[],
   checkStatus: CheckStatus
 ) => {
-  if (checkStatus.attackPath && checkStatus.type === CheckType.Check) {
+  if (
+    checkStatus.attackPath &&
+    checkStatus.checkingPiece &&
+    checkStatus.type === CheckType.Check
+  ) {
     return movesToFilter.filter((obj) =>
-      isMatch(checkStatus.attackPath as MoveDetails[], obj)
+      isMatch(
+        checkStatus.attackPath as MoveDetails[],
+        checkStatus.checkingPiece as StatesOfPiece,
+        obj
+      )
     );
   }
 
   return movesToFilter;
 };
 
-const isMatch = (attackPath: MoveDetails[], obj: MoveDetails) =>
-  attackPath.some((item) => item.x === obj.x && item.y === obj.y);
+const isMatch = (
+  attackPath: MoveDetails[],
+  checkingPiece: StatesOfPiece,
+  obj: MoveDetails
+) => {
+  return attackPath.some((item) => item.x === obj.x && item.y === obj.y) ||
+    (obj.x === checkingPiece.position.x && obj.y === checkingPiece.position.y);
+};
 
 export const calculateValidMovesCheckDetector = (
   selectedPiece: StatesOfPiece,
