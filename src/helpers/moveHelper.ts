@@ -71,10 +71,8 @@ export const calculateValidMoves = (
       );
 
     case Type.King:
-      return filterMovesForCheckState(
-        calculateKingMoves(selectedPiece, currentGame, allEnemyMoves),
-        currentGame.checkStatus
-      );
+      return calculateKingMoves(selectedPiece, currentGame, allEnemyMoves);
+
     case Type.Knight:
       return filterMovesForCheckState(
         calculateKnightMoves(selectedPiece, currentGame, allEnemyMoves),
@@ -1001,7 +999,7 @@ const calculateEnemyQueenMoves = (
 
   //up
   x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
+  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
     for (let i = 0; i < availableTiles.length; i++) {
       let tile = availableTiles[i];
       //if position is a valid tile
@@ -1014,7 +1012,7 @@ const calculateEnemyQueenMoves = (
         x,
         y
       );
-      if (!continueLooping) y = maxLength;
+      if (!continueLooping) y = 0;
     }
   }
   //down

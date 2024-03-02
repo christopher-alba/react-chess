@@ -10,11 +10,7 @@ import {
   TileColor,
   Type,
 } from "../types/enums";
-import {
-  Position,
-  StatesOfPieces,
-  Tiles,
-} from "../types/gameTypes";
+import { Position, StatesOfPieces, Tiles } from "../types/gameTypes";
 import styled from "styled-components";
 import ChessPiece from "./ChessPiece";
 import { RootState } from "../redux/store";
@@ -267,13 +263,21 @@ const ChessBoard: FC = () => {
           ?.checkStatus.attackPath;
         let checkingPiece = reduxState.gamesStates.find(
           (x) => x.gameId === gameId
-        )?.checkStatus.checkingPiece;        
+        )?.checkStatus.checkingPiece;
         let selectedPieceId = currentMoves?.selectedPieceId;
         let selectedPiecePos = pieces?.find(
           (x) => x.id === selectedPieceId
         )?.position;
         let selectedX = selectedPiecePos?.x;
         let selectedY = selectedPiecePos?.y;
+        let enemyPiece = reduxState.gamesStates
+          .find((x) => x.gameId === gameId)
+          ?.statesOfPieces.find(
+            (x) =>
+              x.team !== pieces?.find((x) => x.id === selectedPieceId)?.team &&
+              x.position.x === tile.x &&
+              x.position.y === tile.y
+          );
         if (matching) {
           return (
             <Tile

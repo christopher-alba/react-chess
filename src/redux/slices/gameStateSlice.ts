@@ -89,7 +89,7 @@ export const gameStateSlice = createSlice({
         let currentTeamPieces = gameToUpdate?.statesOfPieces.filter(
           (piece) => piece.team === selectedPiece.team
         );
-
+        if (currentMoveState?.validMoves) currentMoveState.validMoves = [];
         if (currentMoveState && gameToUpdate && currentTeamPieces) {
           let tempArray: MoveDetails[] = [];
           for (let i = 0; i < currentTeamPieces?.length; i++) {
@@ -136,7 +136,9 @@ export const gameStateSlice = createSlice({
         if (currentMoveState?.selectedPieceId) {
           currentMoveState.selectedPieceId = undefined;
         }
+        
         if (currentMoveState?.allEnemyMoves && gameToUpdate) {
+          currentMoveState.allEnemyMoves = [];
           currentMoveState.allEnemyMoves = calculateEnemyMoves(gameToUpdate);
         }
         if (
