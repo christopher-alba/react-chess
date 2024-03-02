@@ -51,12 +51,14 @@ export type AllGameStates = {
   gameState: GameState;
   availableTiles: Tiles;
   statesOfPieces: StatesOfPieces;
-  checkStatus: {
-    type: CheckType;
-    teamInCheck: Team;
-    checkingPiece?: StatesOfPiece;
-    attackPath?: MoveDetails[];
-  };
+  checkStatus: CheckStatus;
+};
+
+export type CheckStatus = {
+  type: CheckType;
+  teamInCheck: Team;
+  checkingPiece?: StatesOfPiece;
+  attackPath?: MoveDetails[];
 };
 export type AllGamesStates = {
   gamesStates: AllGameStates[];

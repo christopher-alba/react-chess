@@ -9,6 +9,7 @@ import {
 import {
   AllGameStates,
   AllGamesStates,
+  CheckStatus,
   MoveDetails,
   Position,
   StatesOfPiece,
@@ -64,21 +65,55 @@ export const calculateValidMoves = (
   //Check what type of piece it is
   switch (selectedPiece.type) {
     case Type.Bishop:
-      return calculateBishopMoves(selectedPiece, currentGame, allEnemyMoves);
+      return filterMovesForCheckState(
+        calculateBishopMoves(selectedPiece, currentGame, allEnemyMoves),
+        currentGame.checkStatus
+      );
+
     case Type.King:
-      return calculateKingMoves(selectedPiece, currentGame, allEnemyMoves);
+      return filterMovesForCheckState(
+        calculateKingMoves(selectedPiece, currentGame, allEnemyMoves),
+        currentGame.checkStatus
+      );
     case Type.Knight:
-      return calculateKnightMoves(selectedPiece, currentGame, allEnemyMoves);
+      return filterMovesForCheckState(
+        calculateKnightMoves(selectedPiece, currentGame, allEnemyMoves),
+        currentGame.checkStatus
+      );
     case Type.Pawn:
-      return calculatePawnMoves(selectedPiece, currentGame, allEnemyMoves);
+      return filterMovesForCheckState(
+        calculatePawnMoves(selectedPiece, currentGame, allEnemyMoves),
+        currentGame.checkStatus
+      );
     case Type.Queen:
-      return calculateQueenMoves(selectedPiece, currentGame, allEnemyMoves);
+      return filterMovesForCheckState(
+        calculateQueenMoves(selectedPiece, currentGame, allEnemyMoves),
+        currentGame.checkStatus
+      );
     case Type.Rook:
-      return calculateRookMoves(selectedPiece, currentGame, allEnemyMoves);
+      return filterMovesForCheckState(
+        calculateRookMoves(selectedPiece, currentGame, allEnemyMoves),
+        currentGame.checkStatus
+      );
     default:
       return [];
   }
 };
+const filterMovesForCheckState = (
+  movesToFilter: MoveDetails[],
+  checkStatus: CheckStatus
+) => {
+  if (checkStatus.attackPath && checkStatus.type === CheckType.Check) {
+    return movesToFilter.filter((obj) =>
+      isMatch(checkStatus.attackPath as MoveDetails[], obj)
+    );
+  }
+
+  return movesToFilter;
+};
+
+const isMatch = (attackPath: MoveDetails[], obj: MoveDetails) =>
+  attackPath.some((item) => item.x === obj.x && item.y === obj.y);
 
 export const calculateValidMovesCheckDetector = (
   selectedPiece: StatesOfPiece,
