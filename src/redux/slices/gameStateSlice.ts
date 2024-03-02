@@ -97,11 +97,8 @@ export const gameStateSlice = createSlice({
               currentTeamPieces[i],
               gameToUpdate,
               currentMoveState.allEnemyMoves
-            )
-            Array.prototype.push.apply(
-              tempArray,
-              moves
             );
+            Array.prototype.push.apply(tempArray, moves);
           }
           currentMoveState.validMoves = tempArray;
         }
@@ -113,7 +110,8 @@ export const gameStateSlice = createSlice({
           if (gameToUpdate) {
             gameToUpdate.checkStatus.type = CheckType.Check;
             gameToUpdate.checkStatus.teamInCheck = enemyKing.team;
-            gameToUpdate.checkStatus.checkingPiece = intersectingMove.originPiece;
+            gameToUpdate.checkStatus.checkingPiece =
+              intersectingMove.originPiece;
             gameToUpdate.checkStatus.attackPath =
               currentMoveState?.validMoves.filter(
                 (move) =>
@@ -139,12 +137,40 @@ export const gameStateSlice = createSlice({
         if (currentMoveState?.selectedPieceId) {
           currentMoveState.selectedPieceId = undefined;
         }
-        
+
         if (currentMoveState?.allEnemyMoves && gameToUpdate) {
           currentMoveState.allEnemyMoves = [];
           currentMoveState.allEnemyMoves = calculateEnemyMoves(gameToUpdate);
         }
         //IMPLEMENT CHECKMATE CHECK
+        //calculate all current team's moves
+        currentTeamPieces = gameToUpdate?.statesOfPieces.filter(
+          (piece) => piece.team === gameToUpdate.currentTeam
+        );
+        if (currentMoveState && gameToUpdate && currentTeamPieces) {
+          let tempArray: MoveDetails[] = [];
+          for (let i = 0; i < currentTeamPieces?.length; i++) {
+            let moves = calculateValidMoves(
+              currentTeamPieces[i],
+              gameToUpdate,
+              currentMoveState.allEnemyMoves
+            );
+            Array.prototype.push.apply(tempArray, moves);
+          }
+          currentMoveState.validMoves = tempArray.filter(
+            (x) => x.originPiece.team === gameToUpdate.currentTeam
+          );
+        }
+        //if there are no moves, its a checkmate
+        if (currentMoveState?.validMoves.length === 0) {
+          if (gameToUpdate) {
+            gameToUpdate.checkStatus.type = CheckType.Checkmate;
+          }
+        } else {
+          console.log(currentMoveState?.validMoves);
+
+          if (currentMoveState?.validMoves) currentMoveState.validMoves = [];
+        }
       }
     },
     selectPiece: (
@@ -154,6 +180,7 @@ export const gameStateSlice = createSlice({
       let currentGame = state.gamesStates.find(
         (x) => x.gameId === action.payload.gameId
       );
+      if (currentGame?.checkStatus.type === CheckType.Checkmate) return;
       let matchingPiece = currentGame?.statesOfPieces.find(
         (x) => x.id === action.payload.id
       );

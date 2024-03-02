@@ -30,7 +30,6 @@ export const calculateEnemyMoves = (currentGame: AllGameStates) => {
       calculateValidEnemyMoves(enemyPieces[i], currentGame)
     );
   }
-  console.log(enemyMoves);
 
   return enemyMoves;
 };
