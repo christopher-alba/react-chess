@@ -82,14 +82,14 @@ const ChessBoard: FC = () => {
       type: Type.Bishop,
     });
     pieces.push({
-      position: { x: 3, y: 0 },
+      position: { x: 4, y: 0 },
       alive: true,
       team: Team.Black,
       id: uuidv4(),
       type: Type.King,
     });
     pieces.push({
-      position: { x: 4, y: 0 },
+      position: { x: 3, y: 0 },
       alive: true,
       team: Team.Black,
       id: uuidv4(),
@@ -149,14 +149,14 @@ const ChessBoard: FC = () => {
       type: Type.Bishop,
     });
     pieces.push({
-      position: { x: 3, y: 7 },
+      position: { x: 4, y: 7 },
       alive: true,
       team: Team.White,
       id: uuidv4(),
       type: Type.King,
     });
     pieces.push({
-      position: { x: 4, y: 7 },
+      position: { x: 3, y: 7 },
       alive: true,
       team: Team.White,
       id: uuidv4(),
