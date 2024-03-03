@@ -78,7 +78,7 @@ export const gameStateSlice = createSlice({
 
         //get all enemy pieces that could check the king
         let enemyTeamPieces = copyOfGameState?.statesOfPieces?.filter(
-          (piece) => piece.team !== selectedPiece.team
+          (piece) => piece.team !== selectedPiece.team && piece.alive
         );
         let tempArray: MoveDetails[] = [];
         //get ally king
@@ -102,7 +102,10 @@ export const gameStateSlice = createSlice({
             move.x === allyKing?.position.x && move.y === allyKing.position.y
         );
         //if found, undo the move
-        if (intersectingMove) {
+        if (
+          intersectingMove &&
+          intersectingMove.originPiece.team === gameToUpdate.currentTeam
+        ) {
           selectedPiece.position.x = originalPositionX;
           selectedPiece.position.y = originalPositionY;
           if (currentMoveState?.validMoves) currentMoveState.validMoves = [];
@@ -122,7 +125,7 @@ export const gameStateSlice = createSlice({
         );
         //recalculate all valid moves based on new move
         let currentTeamPieces = gameToUpdate?.statesOfPieces.filter(
-          (piece) => piece.team === selectedPiece.team
+          (piece) => piece.team === selectedPiece.team && piece.alive
         );
         if (currentMoveState?.validMoves) currentMoveState.validMoves = [];
         if (currentMoveState && gameToUpdate && currentTeamPieces) {
@@ -180,7 +183,7 @@ export const gameStateSlice = createSlice({
         //IMPLEMENT CHECKMATE CHECK
         //calculate all current team's moves
         currentTeamPieces = gameToUpdate?.statesOfPieces.filter(
-          (piece) => piece.team === gameToUpdate.currentTeam
+          (piece) => piece.team === gameToUpdate.currentTeam && piece.alive
         );
         if (currentMoveState && gameToUpdate && currentTeamPieces) {
           let tempArray: MoveDetails[] = [];

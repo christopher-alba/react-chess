@@ -72,3 +72,9 @@ export type CurrentMoveState = {
   allEnemyMoves: MoveDetails[] | [];
   selectedMoveLocation?: Position;
 };
+
+export type DirectionData = {
+  dx: number;
+  dy: number;
+  direction: MoveDirection;
+};

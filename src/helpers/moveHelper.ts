@@ -5,14 +5,17 @@ import {
   MoveType,
   Team,
   Type,
+  ValidationType,
 } from "../types/enums";
 import {
   AllGameStates,
   CheckStatus,
+  DirectionData,
   MoveDetails,
   Position,
   StatesOfPiece,
   StatesOfPieces,
+  Tiles,
 } from "../types/gameTypes";
 
 export const calculateEnemyMoves = (currentGame: AllGameStates) => {
@@ -340,79 +343,19 @@ const calculateRookMoves = (
   let pieces = currentGame.statesOfPieces;
   let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
 
-  //up
-  let x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.Up,
-        rookMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
-  //down
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y > 0; y--) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.Down,
-        rookMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = 0;
-    }
-  }
+  // Define directions for queen movement
+  const directions: DirectionData[] = defineOnlyCross();
 
-  //right
-  let y = selectedPiece.position.y;
-  for (let x = selectedPiece.position.x + 1; x < maxLength; x++) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.Right,
-        rookMoves,
-        x,
-        y
-      );
-      if (!continueLooping) x = maxLength;
-    }
-  }
-  //left
-  y = selectedPiece.position.y;
-  for (let x = selectedPiece.position.x - 1; x >= 0; x--) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.Left,
-        rookMoves,
-        x,
-        y
-      );
-      if (!continueLooping) x = -1;
-    }
-  }
+  // Iterate over directions
+  iterateDirections(
+    directions,
+    selectedPiece,
+    maxLength,
+    availableTiles,
+    pieces,
+    rookMoves,
+    ValidationType.Default
+  );
 
   return rookMoves;
 };
@@ -427,80 +370,19 @@ const calculateRookMovesCheckDetector = (
   let pieces = currentGame.statesOfPieces;
   let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
 
-  //up
-  let x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingCheckDetector(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.Up,
-        rookMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
-  //down
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y > 0; y--) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingCheckDetector(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.Down,
-        rookMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = 0;
-    }
-  }
+  // Define directions for queen movement
+  const directions: DirectionData[] = defineOnlyCross();
 
-  //right
-  let y = selectedPiece.position.y;
-  for (let x = selectedPiece.position.x + 1; x < maxLength; x++) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingCheckDetector(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.Right,
-        rookMoves,
-        x,
-        y
-      );
-      if (!continueLooping) x = maxLength;
-    }
-  }
-  //left
-  y = selectedPiece.position.y;
-  for (let x = selectedPiece.position.x - 1; x >= 0; x--) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingCheckDetector(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.Left,
-        rookMoves,
-        x,
-        y
-      );
-      if (!continueLooping) x = -1;
-    }
-  }
-
+  // Iterate over directions
+  iterateDirections(
+    directions,
+    selectedPiece,
+    maxLength,
+    availableTiles,
+    pieces,
+    rookMoves,
+    ValidationType.CheckDetector
+  );
   return rookMoves;
 };
 
@@ -513,79 +395,19 @@ const calculateEnemyRookMoves = (
   let pieces = currentGame.statesOfPieces;
   let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
 
-  //up
-  let x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingEnemy(
-        tile.position,
-        pieces,
-        selectedPiece,
-        rookMoves,
-        MoveDirection.Up,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
-  //down
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y > 0; y--) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingEnemy(
-        tile.position,
-        pieces,
-        selectedPiece,
-        rookMoves,
-        MoveDirection.Down,
-        x,
-        y
-      );
-      if (!continueLooping) y = 0;
-    }
-  }
+  // Define directions for queen movement
+  const directions: DirectionData[] = defineOnlyCross();
 
-  //right
-  let y = selectedPiece.position.y;
-  for (let x = selectedPiece.position.x + 1; x < maxLength; x++) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingEnemy(
-        tile.position,
-        pieces,
-        selectedPiece,
-        rookMoves,
-        MoveDirection.Right,
-        x,
-        y
-      );
-      if (!continueLooping) x = maxLength;
-    }
-  }
-  //left
-  y = selectedPiece.position.y;
-  for (let x = selectedPiece.position.x - 1; x >= 0; x--) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingEnemy(
-        tile.position,
-        pieces,
-        selectedPiece,
-        rookMoves,
-        MoveDirection.Left,
-        x,
-        y
-      );
-      if (!continueLooping) x = -1;
-    }
-  }
+  // Iterate over directions
+  iterateDirections(
+    directions,
+    selectedPiece,
+    maxLength,
+    availableTiles,
+    pieces,
+    rookMoves,
+    ValidationType.Enemy
+  );
 
   return rookMoves;
 };
@@ -599,160 +421,110 @@ const calculateQueenMoves = (
   let availableTiles = currentGame.availableTiles;
   let pieces = currentGame.statesOfPieces;
   let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
-  //upper-right
-  let x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
-    x++;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile tile
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.UpperRight,
-        queenMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = 0;
-    }
-  }
+  // Define directions for queen movement
+  const directions: DirectionData[] = defineAllDirections();
 
-  //upper-left
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
-    x--;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile tile
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.UpperLeft,
-        queenMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = 0;
-    }
-  }
-
-  //bottom-left
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    x--;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile tile
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.BottomLeft,
-        queenMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
-
-  //bottom-right
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    x++;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.BottomRight,
-        queenMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
-
-  //up
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.Up,
-        queenMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
-  //down
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y > 0; y--) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.Down,
-        queenMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = 0;
-    }
-  }
-
-  //right
-  let y = selectedPiece.position.y;
-  for (let x = selectedPiece.position.x + 1; x < maxLength; x++) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.Right,
-        queenMoves,
-        x,
-        y
-      );
-      if (!continueLooping) x = maxLength;
-    }
-  }
-  //left
-  y = selectedPiece.position.y;
-  for (let x = selectedPiece.position.x - 1; x >= 0; x--) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.Left,
-        queenMoves,
-        x,
-        y
-      );
-      if (!continueLooping) x = -1;
-    }
-  }
+  // Iterate over directions
+  iterateDirections(
+    directions,
+    selectedPiece,
+    maxLength,
+    availableTiles,
+    pieces,
+    queenMoves,
+    ValidationType.Default
+  );
   return queenMoves;
+};
+
+const iterateDirections = (
+  directions: DirectionData[],
+  selectedPiece: StatesOfPiece,
+  maxLength: number,
+  availableTiles: Tiles,
+  pieces: StatesOfPieces,
+  movesArray: MoveDetails[],
+  validationType: ValidationType
+) => {
+  for (const direction of directions) {
+    let { dx, dy } = direction;
+    let x = selectedPiece.position.x + dx;
+    let y = selectedPiece.position.y + dy;
+
+    // Move until the edge of the board or until obstructed by another piece
+    loop1: while (x >= 0 && x < maxLength && y >= 0 && y < maxLength) {
+      loop2: for (let i = 0; i < availableTiles.length; i++) {
+        let tile = availableTiles[i];
+        let continueLooping: boolean;
+        // Check if the position is a valid tile
+        if (validationType === ValidationType.CheckDetector) {
+          continueLooping = validateTileWithLoopingCheckDetector(
+            tile.position,
+            pieces,
+            selectedPiece,
+            direction.direction,
+            movesArray,
+            x,
+            y
+          );
+        } else if (validationType === ValidationType.Enemy) {
+          continueLooping = validateTileWithLoopingEnemy(
+            tile.position,
+            pieces,
+            selectedPiece,
+            movesArray,
+            direction.direction,
+            x,
+            y
+          );
+        } else {
+          continueLooping = validateTileWithLooping(
+            tile.position,
+            pieces,
+            selectedPiece,
+            direction.direction,
+            movesArray,
+            x,
+            y
+          );
+        }
+        if (!continueLooping) break loop1;
+      }
+      x += dx;
+      y += dy;
+    }
+  }
+};
+
+const defineAllDirections = () => {
+  return [
+    { dx: 1, dy: 0, direction: MoveDirection.Right }, // Right
+    { dx: -1, dy: 0, direction: MoveDirection.Left }, // Left
+    { dx: 0, dy: 1, direction: MoveDirection.Down }, // Down
+    { dx: 0, dy: -1, direction: MoveDirection.Up }, // Up
+    { dx: 1, dy: 1, direction: MoveDirection.BottomRight }, // Diagonal: Bottom-right
+    { dx: -1, dy: 1, direction: MoveDirection.BottomLeft }, // Diagonal: Bottom-left
+    { dx: 1, dy: -1, direction: MoveDirection.UpperRight }, // Diagonal: Top-right
+    { dx: -1, dy: -1, direction: MoveDirection.UpperLeft }, // Diagonal: Top-left
+  ] as DirectionData[];
+};
+
+const defineOnlyDiagonals = () => {
+  return [
+    { dx: 1, dy: 1, direction: MoveDirection.BottomRight }, // Diagonal: Bottom-right
+    { dx: -1, dy: 1, direction: MoveDirection.BottomLeft }, // Diagonal: Bottom-left
+    { dx: 1, dy: -1, direction: MoveDirection.UpperRight }, // Diagonal: Top-right
+    { dx: -1, dy: -1, direction: MoveDirection.UpperLeft }, // Diagonal: Top-left
+  ] as DirectionData[];
+};
+
+const defineOnlyCross = () => {
+  return [
+    { dx: 1, dy: 0, direction: MoveDirection.Right }, // Right
+    { dx: -1, dy: 0, direction: MoveDirection.Left }, // Left
+    { dx: 0, dy: 1, direction: MoveDirection.Down }, // Down
+    { dx: 0, dy: -1, direction: MoveDirection.Up }, // Up
+  ] as DirectionData[];
 };
 
 const calculateQueenMovesCheckDetector = (
@@ -764,159 +536,21 @@ const calculateQueenMovesCheckDetector = (
   let availableTiles = currentGame.availableTiles;
   let pieces = currentGame.statesOfPieces;
   let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
-  //upper-right
-  let x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
-    x++;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile tile
-      let continueLooping = validateTileWithLoopingCheckDetector(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.UpperRight,
-        queenMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = 0;
-    }
-  }
 
-  //upper-left
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
-    x--;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile tile
-      let continueLooping = validateTileWithLoopingCheckDetector(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.UpperLeft,
-        queenMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = 0;
-    }
-  }
+  // Define directions for queen movement
+  const directions: DirectionData[] = defineAllDirections();
 
-  //bottom-left
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    x--;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile tile
-      let continueLooping = validateTileWithLoopingCheckDetector(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.BottomLeft,
-        queenMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
+  // Iterate over directions
+  iterateDirections(
+    directions,
+    selectedPiece,
+    maxLength,
+    availableTiles,
+    pieces,
+    queenMoves,
+    ValidationType.CheckDetector
+  );
 
-  //bottom-right
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    x++;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingCheckDetector(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.BottomRight,
-        queenMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
-
-  //up
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingCheckDetector(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.Up,
-        queenMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
-  //down
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y > 0; y--) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingCheckDetector(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.Down,
-        queenMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = 0;
-    }
-  }
-
-  //right
-  let y = selectedPiece.position.y;
-  for (let x = selectedPiece.position.x + 1; x < maxLength; x++) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingCheckDetector(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.Right,
-        queenMoves,
-        x,
-        y
-      );
-      if (!continueLooping) x = maxLength;
-    }
-  }
-  //left
-  y = selectedPiece.position.y;
-  for (let x = selectedPiece.position.x - 1; x >= 0; x--) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingCheckDetector(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.Left,
-        queenMoves,
-        x,
-        y
-      );
-      if (!continueLooping) x = -1;
-    }
-  }
   return queenMoves;
 };
 
@@ -928,159 +562,19 @@ const calculateEnemyQueenMoves = (
   let availableTiles = currentGame.availableTiles;
   let pieces = currentGame.statesOfPieces;
   let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
-  //upper-right
-  let x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
-    x++;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile tile
-      let continueLooping = validateTileWithLoopingEnemy(
-        tile.position,
-        pieces,
-        selectedPiece,
-        queenMoves,
-        MoveDirection.UpperRight,
-        x,
-        y
-      );
-      if (!continueLooping) y = 0;
-    }
-  }
+  // Define directions for queen movement
+  const directions: DirectionData[] = defineAllDirections();
 
-  //upper-left
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
-    x--;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile tile
-      let continueLooping = validateTileWithLoopingEnemy(
-        tile.position,
-        pieces,
-        selectedPiece,
-        queenMoves,
-        MoveDirection.UpperLeft,
-        x,
-        y
-      );
-      if (!continueLooping) y = 0;
-    }
-  }
-
-  //bottom-left
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    x--;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile tile
-      let continueLooping = validateTileWithLoopingEnemy(
-        tile.position,
-        pieces,
-        selectedPiece,
-        queenMoves,
-        MoveDirection.BottomLeft,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
-
-  //bottom-right
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    x++;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingEnemy(
-        tile.position,
-        pieces,
-        selectedPiece,
-        queenMoves,
-        MoveDirection.BottomRight,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
-
-  //up
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingEnemy(
-        tile.position,
-        pieces,
-        selectedPiece,
-        queenMoves,
-        MoveDirection.Up,
-        x,
-        y
-      );
-      if (!continueLooping) y = 0;
-    }
-  }
-  //down
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingEnemy(
-        tile.position,
-        pieces,
-        selectedPiece,
-        queenMoves,
-        MoveDirection.Down,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
-
-  //right
-  let y = selectedPiece.position.y;
-  for (let x = selectedPiece.position.x + 1; x < maxLength; x++) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingEnemy(
-        tile.position,
-        pieces,
-        selectedPiece,
-        queenMoves,
-        MoveDirection.Right,
-        x,
-        y
-      );
-      if (!continueLooping) x = maxLength;
-    }
-  }
-  //left
-  y = selectedPiece.position.y;
-  for (let x = selectedPiece.position.x - 1; x >= 0; x--) {
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingEnemy(
-        tile.position,
-        pieces,
-        selectedPiece,
-        queenMoves,
-        MoveDirection.Left,
-        x,
-        y
-      );
-      if (!continueLooping) x = -1;
-    }
-  }
+  // Iterate over directions
+  iterateDirections(
+    directions,
+    selectedPiece,
+    maxLength,
+    availableTiles,
+    pieces,
+    queenMoves,
+    ValidationType.Enemy
+  );
   return queenMoves;
 };
 
@@ -1524,89 +1018,19 @@ const calculateBishopMovesCheckDetector = (
   let pieces = currentGame.statesOfPieces;
   let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
 
-  //upper-right
-  let x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
-    x++;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
+  // Define directions for queen movement
+  const directions: DirectionData[] = defineOnlyDiagonals();
 
-      if (currentGame.checkStatus.type === CheckType.Check) {
-        //check for intersects with checking piece's attack path
-      } else {
-        let continueLooping = validateTileWithLoopingCheckDetector(
-          tile.position,
-          pieces,
-          selectedPiece,
-          MoveDirection.UpperRight,
-          bishopMoves,
-          x,
-          y
-        );
-        if (!continueLooping) y = 0;
-      }
-    }
-  }
-
-  //upper-left
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
-    x--;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile tile
-      let continueLooping = validateTileWithLoopingCheckDetector(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.UpperLeft,
-        bishopMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = 0;
-    }
-  }
-
-  //bottom-left
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    x--;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile tile
-      let continueLooping = validateTileWithLoopingCheckDetector(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.BottomLeft,
-        bishopMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
-
-  //bottom-right
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    x++;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingCheckDetector(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.BottomRight,
-        bishopMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
+  // Iterate over directions
+  iterateDirections(
+    directions,
+    selectedPiece,
+    maxLength,
+    availableTiles,
+    pieces,
+    bishopMoves,
+    ValidationType.CheckDetector
+  );
 
   return bishopMoves;
 };
@@ -1621,89 +1045,19 @@ const calculateBishopMoves = (
   let pieces = currentGame.statesOfPieces;
   let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
 
-  //upper-right
-  let x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
-    x++;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
+  // Define directions for queen movement
+  const directions: DirectionData[] = defineOnlyDiagonals();
 
-      if (currentGame.checkStatus.type === CheckType.Check) {
-        //check for intersects with checking piece's attack path
-      } else {
-        let continueLooping = validateTileWithLooping(
-          tile.position,
-          pieces,
-          selectedPiece,
-          MoveDirection.UpperRight,
-          bishopMoves,
-          x,
-          y
-        );
-        if (!continueLooping) y = 0;
-      }
-    }
-  }
-
-  //upper-left
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
-    x--;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile tile
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.UpperLeft,
-        bishopMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = 0;
-    }
-  }
-
-  //bottom-left
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    x--;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile tile
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.BottomLeft,
-        bishopMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
-
-  //bottom-right
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    x++;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLooping(
-        tile.position,
-        pieces,
-        selectedPiece,
-        MoveDirection.BottomRight,
-        bishopMoves,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
+  // Iterate over directions
+  iterateDirections(
+    directions,
+    selectedPiece,
+    maxLength,
+    availableTiles,
+    pieces,
+    bishopMoves,
+    ValidationType.Default
+  );
 
   return bishopMoves;
 };
@@ -1716,85 +1070,19 @@ const calculateEnemyBishopMoves = (
   let availableTiles = currentGame.availableTiles;
   let pieces = currentGame.statesOfPieces;
   let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
-  //upper-right
-  let x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
-    x++;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile tile
-      let continueLooping = validateTileWithLoopingEnemy(
-        tile.position,
-        pieces,
-        selectedPiece,
-        bishopMoves,
-        MoveDirection.UpperRight,
-        x,
-        y
-      );
-      if (!continueLooping) y = 0;
-    }
-  }
+  // Define directions for queen movement
+  const directions: DirectionData[] = defineAllDirections();
 
-  //upper-left
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y >= 0; y--) {
-    x--;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile tile
-      let continueLooping = validateTileWithLoopingEnemy(
-        tile.position,
-        pieces,
-        selectedPiece,
-        bishopMoves,
-        MoveDirection.UpperLeft,
-        x,
-        y
-      );
-      if (!continueLooping) y = 0;
-    }
-  }
-
-  //bottom-left
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    x--;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile tile
-      let continueLooping = validateTileWithLoopingEnemy(
-        tile.position,
-        pieces,
-        selectedPiece,
-        bishopMoves,
-        MoveDirection.BottomLeft,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
-
-  //bottom-right
-  x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
-    x++;
-    for (let i = 0; i < availableTiles.length; i++) {
-      let tile = availableTiles[i];
-      //if position is a valid tile
-      let continueLooping = validateTileWithLoopingEnemy(
-        tile.position,
-        pieces,
-        selectedPiece,
-        bishopMoves,
-        MoveDirection.BottomRight,
-        x,
-        y
-      );
-      if (!continueLooping) y = maxLength;
-    }
-  }
+  // Iterate over directions
+  iterateDirections(
+    directions,
+    selectedPiece,
+    maxLength,
+    availableTiles,
+    pieces,
+    bishopMoves,
+    ValidationType.Enemy
+  );
 
   return bishopMoves;
 };

@@ -55,3 +55,9 @@ export enum MoveDirection {
   BottomRight,
   OneOff,
 }
+
+export enum ValidationType {
+  CheckDetector,
+  Default,
+  Enemy,
+}
