@@ -1,4 +1,10 @@
-import { Team, Type, CheckType, MoveDirection } from "../types/enums";
+import {
+  Team,
+  Type,
+  CheckType,
+  MoveDirection,
+  GameState,
+} from "../types/enums";
 import {
   AllGameStates,
   CurrentMoveState,
@@ -84,7 +90,9 @@ export const checkForDiscoveredChecks = (
   );
   if (enemyAboutToGetRekt) {
     enemyAboutToGetRekt.alive = false;
-    enemyTeamPieces = enemyTeamPieces.filter((x) => x.id !== enemyAboutToGetRekt.id);
+    enemyTeamPieces = enemyTeamPieces.filter(
+      (x) => x.id !== enemyAboutToGetRekt.id
+    );
   }
 
   if (currentMoveState && gameState && enemyTeamPieces) {
@@ -158,7 +166,7 @@ export const recalculateValidMovesAndCheck = (
 };
 
 export const calculateCheckmateState = (
-  gameToUpdate,
+  gameToUpdate: AllGameStates,
   currentMoveState: CurrentMoveState
 ) => {
   //IMPLEMENT CHECKMATE CHECK
@@ -185,7 +193,13 @@ export const calculateCheckmateState = (
   //if there are no moves, its a checkmate
   if (currentMoveState?.validMoves.length === 0) {
     if (gameToUpdate) {
-      gameToUpdate.checkStatus.type = CheckType.Checkmate;
+      if (gameToUpdate.checkStatus.checkingPiece === null) {
+        gameToUpdate.checkStatus.type = CheckType.None;
+        gameToUpdate.gameState = GameState.Draw;
+      } else {
+        gameToUpdate.checkStatus.type = CheckType.Checkmate;
+        gameToUpdate.gameState = GameState.WinnerDecided;
+      }
     }
   } else {
     if (currentMoveState?.validMoves) currentMoveState.validMoves = [];
