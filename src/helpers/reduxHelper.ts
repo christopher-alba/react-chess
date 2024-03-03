@@ -193,7 +193,7 @@ export const calculateCheckmateState = (
   //if there are no moves, its a checkmate
   if (currentMoveState?.validMoves.length === 0) {
     if (gameToUpdate) {
-      if (gameToUpdate.checkStatus.checkingPiece === null) {
+      if (gameToUpdate.checkStatus.checkingPiece === undefined) {
         gameToUpdate.checkStatus.type = CheckType.None;
         gameToUpdate.gameState = GameState.Draw;
       } else {
