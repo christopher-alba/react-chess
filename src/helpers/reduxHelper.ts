@@ -7,6 +7,7 @@ import {
   StatesOfPiece,
 } from "../types/gameTypes";
 import {
+  calculateEnemyMoves,
   calculateValidMoves,
   calculateValidMovesCheckDetector,
 } from "./moveHelper";
@@ -147,8 +148,13 @@ export const recalculateValidMovesAndCheck = (
   }
 };
 
-export const calculateCheckmateState = (gameToUpdate, currentMoveState) => {
+export const calculateCheckmateState = (
+  gameToUpdate,
+  currentMoveState: CurrentMoveState
+) => {
   //IMPLEMENT CHECKMATE CHECK
+  //recalculate all enemy moves
+  currentMoveState.allEnemyMoves = calculateEnemyMoves(gameToUpdate);
   //calculate all current team's moves
   let currentTeamPieces = gameToUpdate?.statesOfPieces.filter(
     (piece) => piece.team === gameToUpdate.currentTeam && piece.alive
@@ -173,8 +179,6 @@ export const calculateCheckmateState = (gameToUpdate, currentMoveState) => {
       gameToUpdate.checkStatus.type = CheckType.Checkmate;
     }
   } else {
-    console.log(currentMoveState?.validMoves);
-
     if (currentMoveState?.validMoves) currentMoveState.validMoves = [];
   }
 };
