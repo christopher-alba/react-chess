@@ -72,6 +72,9 @@ export const gameStateSlice = createSlice({
       const copyOfCurrentMove = cloneCurrentMoveState(currentMoveState);
 
       if (selectedPiece && copyOfGameState && copyOfCurrentMove) {
+        selectedPiece.position.x = action.payload.tile.x;
+        selectedPiece.position.y = action.payload.tile.y;
+        
         let copyOfSelectedPiece = copyOfGameState.statesOfPieces.find(
           (piece) => piece.id === selectedPiece.id
         );
