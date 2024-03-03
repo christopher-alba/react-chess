@@ -7,12 +7,7 @@ import {
   Position,
   StatesOfPiece,
 } from "../../types/gameTypes";
-import {
-  CheckType,
-  MoveDirection,
-  Team,
-  Type,
-} from "../../types/enums";
+import { CheckType, MoveDirection, Team, Type } from "../../types/enums";
 import {
   calculateEnemyMoves,
   calculateValidMoves,
@@ -81,17 +76,20 @@ export const gameStateSlice = createSlice({
         let originalPositionX = selectedPiece.position.x;
         let originalPositionY = selectedPiece.position.y;
 
+        //get all enemy pieces that could check the king
         let enemyTeamPieces = copyOfGameState?.statesOfPieces?.filter(
           (piece) => piece.team !== selectedPiece.team
         );
         let tempArray: MoveDetails[] = [];
+        //get ally king
         let allyKing = copyOfGameState?.statesOfPieces?.find(
           (piece) =>
             piece.type === Type.King && piece.team === selectedPiece.team
         );
         if (copyOfCurrentmove && copyOfGameState && enemyTeamPieces) {
+          //get all valid moves
           for (let i = 0; i < enemyTeamPieces?.length; i++) {
-            let moves = calculateValidMovesCheckDetector(
+            let moves = calculateValidMoves(
               enemyTeamPieces[i],
               copyOfGameState,
               copyOfCurrentmove.allEnemyMoves
@@ -100,7 +98,8 @@ export const gameStateSlice = createSlice({
           }
         }
         let intersectingMove = tempArray.find(
-          (x) => x.x === allyKing?.position.x && x.y === allyKing.position.y
+          (move) =>
+            move.x === allyKing?.position.x && move.y === allyKing.position.y
         );
         //if found, undo the move
         if (intersectingMove) {
