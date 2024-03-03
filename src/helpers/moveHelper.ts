@@ -1071,7 +1071,7 @@ const calculateEnemyBishopMoves = (
   let pieces = currentGame.statesOfPieces;
   let maxLength = currentGame.mode === Mode.TwoPlayer ? 8 : 14;
   // Define directions for queen movement
-  const directions: DirectionData[] = defineAllDirections();
+  const directions: DirectionData[] = defineOnlyDiagonals();
 
   // Iterate over directions
   iterateDirections(
