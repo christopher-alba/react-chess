@@ -6,21 +6,17 @@ import {
   MoveDetails,
   Position,
   StatesOfPiece,
-  Tile,
 } from "../../types/gameTypes";
 import {
   CheckType,
-  GameState,
   MoveDirection,
   Team,
   Type,
 } from "../../types/enums";
 import {
   calculateEnemyMoves,
-  calculateKingMoves,
   calculateValidMoves,
   calculateValidMovesCheckDetector,
-  isValidMove,
 } from "../../helpers/moveHelper";
 
 export const gameStateSlice = createSlice({
