@@ -87,7 +87,8 @@ export const gameStateSlice = createSlice({
           checkForDiscoveredChecks(
             gameToUpdate,
             currentMoveState,
-            selectedPiece
+            selectedPiece,
+            action.payload.tile
           )
         ) {
           // Undo the move if discovered check

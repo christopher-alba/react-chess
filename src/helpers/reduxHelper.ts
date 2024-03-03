@@ -3,7 +3,9 @@ import {
   AllGameStates,
   CurrentMoveState,
   MoveDetails,
+  Position,
   StatesOfPiece,
+  Tile,
 } from "../types/gameTypes";
 import {
   calculateValidMoves,
@@ -46,9 +48,10 @@ export const cloneCurrentMoveState = (currentMoveState): CurrentMoveState => {
 };
 
 export const checkForDiscoveredChecks = (
-  gameState,
+  gameState: AllGameStates,
   currentMoveState,
-  selectedPiece
+  selectedPiece,
+  tile: Position
 ) => {
   // Logic to check for discovered checks
 
@@ -61,6 +64,20 @@ export const checkForDiscoveredChecks = (
   let allyKing = gameState?.statesOfPieces?.find(
     (piece) => piece.type === Type.King && piece.team === selectedPiece.team
   );
+  //get checking piece
+  let checkingPiece = gameState.checkStatus.checkingPiece;
+  //if checkingPiece is about to be killed by the move, set it to alive = false
+  if (
+    checkingPiece &&
+    checkingPiece.position.x === tile.x &&
+    checkingPiece.position.y === tile.y
+  ) {
+    gameState.statesOfPieces.find(
+      (piece) => piece.id === checkingPiece.id
+    ).alive = false;
+    gameState.checkStatus.attackPath = [];
+    checkingPiece = undefined;
+  }
   if (currentMoveState && gameState && enemyTeamPieces) {
     //get all valid moves
     for (let i = 0; i < enemyTeamPieces?.length; i++) {
