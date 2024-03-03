@@ -5,7 +5,6 @@ import {
   MoveDetails,
   Position,
   StatesOfPiece,
-  Tile,
 } from "../types/gameTypes";
 import {
   calculateValidMoves,
