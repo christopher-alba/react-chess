@@ -33,9 +33,9 @@ export enum TileColor {
 }
 
 export enum CheckType {
-  None,
-  Check,
-  Checkmate,
+  None = "NONE",
+  Check = "CHECK",
+  Checkmate = "CHECKMATE",
 }
 
 export enum MoveType {
