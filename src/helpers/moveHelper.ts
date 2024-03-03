@@ -118,8 +118,10 @@ const isMatch = (
   checkingPiece: StatesOfPiece,
   obj: MoveDetails
 ) => {
-  return attackPath.some((item) => item.x === obj.x && item.y === obj.y) ||
-    (obj.x === checkingPiece.position.x && obj.y === checkingPiece.position.y);
+  return (
+    attackPath.some((item) => item.x === obj.x && item.y === obj.y) ||
+    (obj.x === checkingPiece.position.x && obj.y === checkingPiece.position.y)
+  );
 };
 
 export const calculateValidMovesCheckDetector = (
@@ -1026,7 +1028,7 @@ const calculateEnemyQueenMoves = (
   }
   //down
   x = selectedPiece.position.x;
-  for (let y = selectedPiece.position.y - 1; y > 0; y--) {
+  for (let y = selectedPiece.position.y + 1; y < maxLength; y++) {
     for (let i = 0; i < availableTiles.length; i++) {
       let tile = availableTiles[i];
       //if position is a valid tile
@@ -1039,7 +1041,7 @@ const calculateEnemyQueenMoves = (
         x,
         y
       );
-      if (!continueLooping) y = 0;
+      if (!continueLooping) y = maxLength;
     }
   }
 
@@ -1356,7 +1358,8 @@ const calculatePawnMoves = (
         pieces.find(
           (piece) =>
             piece.position.x === tile.position.x &&
-            piece.position.y === tile.position.y
+            piece.position.y === tile.position.y &&
+            piece.alive
         )
       ) {
         validateTileStatic(tile.position, pieces, selectedPiece, pawnMoves);
@@ -1367,7 +1370,8 @@ const calculatePawnMoves = (
         pieces.find(
           (piece) =>
             piece.position.x === tile.position.x &&
-            piece.position.y === tile.position.y
+            piece.position.y === tile.position.y &&
+            piece.alive
         )
       ) {
         validateTileStatic(tile.position, pieces, selectedPiece, pawnMoves);
@@ -1409,7 +1413,8 @@ const calculatePawnMoves = (
         pieces.find(
           (piece) =>
             piece.position.x === tile.position.x &&
-            piece.position.y === tile.position.y
+            piece.position.y === tile.position.y &&
+            piece.alive
         )
       ) {
         validateTileStatic(tile.position, pieces, selectedPiece, pawnMoves);
@@ -1420,7 +1425,8 @@ const calculatePawnMoves = (
         pieces.find(
           (piece) =>
             piece.position.x === tile.position.x &&
-            piece.position.y === tile.position.y
+            piece.position.y === tile.position.y &&
+            piece.alive
         )
       ) {
         validateTileStatic(tile.position, pieces, selectedPiece, pawnMoves);
