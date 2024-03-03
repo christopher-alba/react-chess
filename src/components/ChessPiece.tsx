@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { Position } from "../types/gameTypes";
 import { Team, Type } from "../types/enums";
 import styled, { css } from "styled-components";

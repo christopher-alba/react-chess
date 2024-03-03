@@ -270,14 +270,7 @@ const ChessBoard: FC = () => {
         )?.position;
         let selectedX = selectedPiecePos?.x;
         let selectedY = selectedPiecePos?.y;
-        let enemyPiece = reduxState.gamesStates
-          .find((x) => x.gameId === gameId)
-          ?.statesOfPieces.find(
-            (x) =>
-              x.team !== pieces?.find((x) => x.id === selectedPieceId)?.team &&
-              x.position.x === tile.x &&
-              x.position.y === tile.y
-          );
+      
         if (matching) {
           return (
             <Tile

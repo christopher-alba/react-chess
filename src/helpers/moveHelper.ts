@@ -8,7 +8,6 @@ import {
 } from "../types/enums";
 import {
   AllGameStates,
-  AllGamesStates,
   CheckStatus,
   MoveDetails,
   Position,
@@ -16,9 +15,6 @@ import {
   StatesOfPieces,
 } from "../types/gameTypes";
 
-export const isValidMove = (state: AllGamesStates, movePosition: Position) => {
-  return true;
-};
 export const calculateEnemyMoves = (currentGame: AllGameStates) => {
   let enemyMoves: MoveDetails[] = [];
   let enemyPieces = currentGame.statesOfPieces.filter(
@@ -165,7 +161,7 @@ export const calculateValidMovesCheckDetector = (
 const calculateKnightMoves = (
   selectedPiece: StatesOfPiece,
   currentGame: AllGameStates,
-  allEnemyMoves: MoveDetails[]
+  _allEnemyMoves: MoveDetails[]
 ) => {
   let knightMoves: MoveDetails[] = [];
   let availableTiles = currentGame.availableTiles;
@@ -335,7 +331,7 @@ const calculateEnemyKnightMoves = (
 const calculateRookMoves = (
   selectedPiece: StatesOfPiece,
   currentGame: AllGameStates,
-  allEnemyMoves: MoveDetails[]
+  _allEnemyMoves: MoveDetails[]
 ) => {
   let rookMoves: MoveDetails[] = [];
   let availableTiles = currentGame.availableTiles;
@@ -422,7 +418,7 @@ const calculateRookMoves = (
 const calculateRookMovesCheckDetector = (
   selectedPiece: StatesOfPiece,
   currentGame: AllGameStates,
-  allEnemyMoves: MoveDetails[]
+  _allEnemyMoves: MoveDetails[]
 ) => {
   let rookMoves: MoveDetails[] = [];
   let availableTiles = currentGame.availableTiles;
@@ -595,7 +591,7 @@ const calculateEnemyRookMoves = (
 const calculateQueenMoves = (
   selectedPiece: StatesOfPiece,
   currentGame: AllGameStates,
-  allEnemyMoves: MoveDetails[]
+  _allEnemyMoves: MoveDetails[]
 ) => {
   let queenMoves: MoveDetails[] = [];
   let availableTiles = currentGame.availableTiles;
@@ -760,7 +756,7 @@ const calculateQueenMoves = (
 const calculateQueenMovesCheckDetector = (
   selectedPiece: StatesOfPiece,
   currentGame: AllGameStates,
-  allEnemyMoves: MoveDetails[]
+  _allEnemyMoves: MoveDetails[]
 ) => {
   let queenMoves: MoveDetails[] = [];
   let availableTiles = currentGame.availableTiles;
@@ -1327,7 +1323,7 @@ const calculateEnemyKingMoves = (
 const calculatePawnMoves = (
   selectedPiece: StatesOfPiece,
   currentGame: AllGameStates,
-  allEnemyMoves: MoveDetails[]
+  _allEnemyMoves: MoveDetails[]
 ) => {
   let pawnMoves: MoveDetails[] = [];
   let availableTiles = currentGame.availableTiles;
@@ -1515,7 +1511,7 @@ const calculateEnemyPawnMoves = (
 const calculateBishopMovesCheckDetector = (
   selectedPiece: StatesOfPiece,
   currentGame: AllGameStates,
-  allEnemyMoves: MoveDetails[]
+  _allEnemyMoves: MoveDetails[]
 ) => {
   let bishopMoves: MoveDetails[] = [];
   let availableTiles = currentGame.availableTiles;
@@ -1612,7 +1608,7 @@ const calculateBishopMovesCheckDetector = (
 const calculateBishopMoves = (
   selectedPiece: StatesOfPiece,
   currentGame: AllGameStates,
-  allEnemyMoves: MoveDetails[]
+  _allEnemyMoves: MoveDetails[]
 ) => {
   let bishopMoves: MoveDetails[] = [];
   let availableTiles = currentGame.availableTiles;
@@ -1830,7 +1826,7 @@ const validateKingTileStatic = (
   movesArray: MoveDetails[],
   allEnemyMoves: MoveDetails[],
   checkPath?: MoveDetails[],
-  checkingPiece?: StatesOfPiece
+  _checkingPiece?: StatesOfPiece
 ) => {
   //if no friendly pieces are on the tile
   if (
