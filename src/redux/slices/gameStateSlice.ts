@@ -34,12 +34,6 @@ export const gameStateSlice = createSlice({
     createGameInstance: (state, action: PayloadAction<AllGameStates>) => {
       state.gamesStates.push(action.payload);
     },
-    updateGameInstance: (state, action: PayloadAction<AllGameStates>) => {
-      let boardToUpdate = state.gamesStates.find(
-        (x) => x.gameId === action.payload.gameId
-      );
-      boardToUpdate = action.payload;
-    },
     deleteGameInstance: (state, action: PayloadAction<AllGameStates>) => {
       state.gamesStates = state.gamesStates.filter(
         (x) => x.gameId !== action.payload.gameId
