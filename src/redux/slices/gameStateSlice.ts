@@ -5,7 +5,7 @@ import {
   Position,
   StatesOfPiece,
 } from "../../types/gameTypes";
-import { CheckType, Team } from "../../types/enums";
+import { CheckType } from "../../types/enums";
 import {
   calculateEnemyMoves,
   calculateValidMoves,
