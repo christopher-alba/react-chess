@@ -21,10 +21,10 @@ export enum Mode {
 }
 
 export enum GameState {
-  Ongoing,
-  Draw,
-  WinnerDecided,
-  Stopped,
+  Ongoing = "ONGOING",
+  Draw = "DRAW",
+  WinnerDecided = "WIN",
+  Stopped = "STOPPED",
 }
 
 export enum TileColor {
