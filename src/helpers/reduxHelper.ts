@@ -78,9 +78,18 @@ export const checkForDiscoveredChecks = (
     gameState.checkStatus.attackPath = [];
     checkingPiece = undefined;
   }
+  //if any enemy piece is about to be killed, make it alive = false and remove its attack path
+  let enemyAboutToGetRekt = enemyTeamPieces.find(
+    (piece) => piece.position.x === tile.x && piece.position.y === tile.y
+  );
+  if (enemyAboutToGetRekt) {
+    enemyAboutToGetRekt.alive = false;
+    enemyTeamPieces = enemyTeamPieces.filter((x) => x.id !== enemyAboutToGetRekt.id);
+  }
+
   if (currentMoveState && gameState && enemyTeamPieces) {
     //get all valid moves
-    for (let i = 0; i < enemyTeamPieces?.length; i++) {
+    for (let i = 0; i < enemyTeamPieces?.filter((x) => x.alive).length; i++) {
       let moves = calculateValidMoves(
         enemyTeamPieces[i],
         gameState,

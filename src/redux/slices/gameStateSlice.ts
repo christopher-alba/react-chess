@@ -70,29 +70,23 @@ export const gameStateSlice = createSlice({
       // Make copies of game state and current move state
       const copyOfGameState = cloneGameState(gameToUpdate);
       const copyOfCurrentMove = cloneCurrentMoveState(currentMoveState);
-
+      const copyOfSelectedPieceId = copyOfCurrentMove.selectedPieceId;
+      let copyOfSelectedPiece = copyOfGameState.statesOfPieces.find(
+        (x) => x.id === copyOfSelectedPieceId
+      );
       if (selectedPiece && copyOfGameState && copyOfCurrentMove) {
-        selectedPiece.position.x = action.payload.tile.x;
-        selectedPiece.position.y = action.payload.tile.y;
-        
-        let copyOfSelectedPiece = copyOfGameState.statesOfPieces.find(
-          (piece) => piece.id === selectedPiece.id
-        );
+        copyOfSelectedPiece.position.x = action.payload.tile.x;
+        copyOfSelectedPiece.position.y = action.payload.tile.y;
+
         // Check for discovered checks
-        const originalPosition = {
-          x: copyOfSelectedPiece.position.x,
-          y: copyOfSelectedPiece.position.y,
-        };
         if (
           checkForDiscoveredChecks(
-            gameToUpdate,
-            currentMoveState,
+            copyOfGameState,
+            copyOfCurrentMove,
             selectedPiece,
             action.payload.tile
           )
         ) {
-          // Undo the move if discovered check
-          selectedPiece.position = originalPosition;
           clearValidMoves(currentMoveState);
           return;
         } else {
