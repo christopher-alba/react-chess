@@ -270,7 +270,7 @@ const ChessBoard: FC = () => {
         )?.position;
         let selectedX = selectedPiecePos?.x;
         let selectedY = selectedPiecePos?.y;
-      
+
         if (matching) {
           return (
             <Tile

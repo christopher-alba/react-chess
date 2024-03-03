@@ -66,7 +66,7 @@ export const checkForDiscoveredChecks = (
   );
   //get checking piece
   let checkingPiece = gameState.checkStatus.checkingPiece;
-  //if checkingPiece is about to be killed by the move, set it to alive = false
+  //if checkingPiece is about to be killed by the move, set it to alive = false and remove the attack path
   if (
     checkingPiece &&
     checkingPiece.position.x === tile.x &&
