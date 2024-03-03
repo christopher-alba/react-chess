@@ -2,17 +2,25 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import {
   AllGameStates,
   AllGamesStates,
-  CurrentMoveState,
-  MoveDetails,
   Position,
   StatesOfPiece,
 } from "../../types/gameTypes";
-import { CheckType, MoveDirection, Team, Type } from "../../types/enums";
+import { CheckType, Team } from "../../types/enums";
 import {
   calculateEnemyMoves,
   calculateValidMoves,
-  calculateValidMovesCheckDetector,
 } from "../../helpers/moveHelper";
+import {
+  findPieceById,
+  findEnemyPiece,
+  cloneGameState,
+  cloneCurrentMoveState,
+  checkForDiscoveredChecks,
+  clearValidMoves,
+  recalculateValidMovesAndCheck,
+  calculateCheckmateState,
+  switchTeamsAndReset,
+} from "../../helpers/reduxHelper";
 
 export const gameStateSlice = createSlice({
   name: "gameState",
@@ -42,173 +50,66 @@ export const gameStateSlice = createSlice({
         tile: Position;
       }>
     ) => {
-      let gameToUpdate = state.gamesStates.find(
+      // Find selected piece and enemy piece
+      const gameToUpdate = state.gamesStates.find(
         (x) => x.gameId === action.payload.currentGameId
       );
-      let selectedPiece = gameToUpdate?.statesOfPieces.find(
-        (x) => x.id === action.payload.selectedPiece.id
-      );
-
-      let enemyPiece = gameToUpdate?.statesOfPieces.find(
-        (x) =>
-          x.team !== selectedPiece?.team &&
-          x.position.x === action.payload.tile.x &&
-          x.position.y === action.payload.tile.y
-      );
-      let currentMoveState = state.currentMovesState.find(
+      const currentMoveState = state.currentMovesState.find(
         (x) => x.gameId === action.payload.currentGameId
       );
-      let copyOfGameState = JSON.parse(
-        JSON.stringify(gameToUpdate)
-      ) as AllGameStates;
-      let copyOfCurrentmove = JSON.parse(
-        JSON.stringify(currentMoveState)
-      ) as CurrentMoveState;
-      let copySelectedPiece = copyOfGameState.statesOfPieces?.find(
-        (x) => x.id === action.payload.selectedPiece.id
+      const selectedPiece = findPieceById(
+        gameToUpdate,
+        action.payload.selectedPiece.id
+      );
+      const enemyPiece = findEnemyPiece(
+        gameToUpdate,
+        selectedPiece,
+        action.payload.tile
       );
 
-      if (selectedPiece && copySelectedPiece) {
-        copySelectedPiece.position.x = action.payload.tile.x;
-        copySelectedPiece.position.y = action.payload.tile.y;
+      // Make copies of game state and current move state
+      const copyOfGameState = cloneGameState(gameToUpdate);
+      const copyOfCurrentMove = cloneCurrentMoveState(currentMoveState);
 
-        //check for discovered checks
-        let originalPositionX = selectedPiece.position.x;
-        let originalPositionY = selectedPiece.position.y;
-
-        //get all enemy pieces that could check the king
-        let enemyTeamPieces = copyOfGameState?.statesOfPieces?.filter(
-          (piece) => piece.team !== selectedPiece.team && piece.alive
+      if (selectedPiece && copyOfGameState && copyOfCurrentMove) {
+        // Update selected piece position
+        selectedPiece.position.x = action.payload.tile.x;
+        selectedPiece.position.y = action.payload.tile.y;
+        let copyOfSelectedPiece = copyOfGameState.statesOfPieces.find(
+          (piece) => piece.id === selectedPiece.id
         );
-        let tempArray: MoveDetails[] = [];
-        //get ally king
-        let allyKing = copyOfGameState?.statesOfPieces?.find(
-          (piece) =>
-            piece.type === Type.King && piece.team === selectedPiece.team
-        );
-        if (copyOfCurrentmove && copyOfGameState && enemyTeamPieces) {
-          //get all valid moves
-          for (let i = 0; i < enemyTeamPieces?.length; i++) {
-            let moves = calculateValidMoves(
-              enemyTeamPieces[i],
-              copyOfGameState,
-              copyOfCurrentmove.allEnemyMoves
-            );
-            Array.prototype.push.apply(tempArray, moves);
-          }
-        }
-        let intersectingMove = tempArray.find(
-          (move) =>
-            move.x === allyKing?.position.x && move.y === allyKing.position.y
-        );
-        //if found, undo the move
+        // Check for discovered checks
+        const originalPosition = {
+          x: copyOfSelectedPiece.position.x,
+          y: copyOfSelectedPiece.position.y,
+        };
         if (
-          intersectingMove &&
-          intersectingMove.originPiece.team === gameToUpdate.currentTeam
+          checkForDiscoveredChecks(
+            gameToUpdate,
+            currentMoveState,
+            selectedPiece
+          )
         ) {
-          selectedPiece.position.x = originalPositionX;
-          selectedPiece.position.y = originalPositionY;
-          if (currentMoveState?.validMoves) currentMoveState.validMoves = [];
+          // Undo the move if discovered check
+          selectedPiece.position = originalPosition;
+          clearValidMoves(currentMoveState);
           return;
-        } else {
-          selectedPiece.position.x = action.payload.tile.x;
-          selectedPiece.position.y = action.payload.tile.y;
         }
 
-        if (enemyPiece) {
-          enemyPiece.alive = false;
-        }
+        // Capture enemy piece if exists
+        if (enemyPiece) enemyPiece.alive = false;
 
-        let enemyKing = gameToUpdate?.statesOfPieces.find(
-          (piece) =>
-            piece.type === Type.King && piece.team !== selectedPiece.team
+        // Recalculate valid moves and check for check
+        recalculateValidMovesAndCheck(
+          gameToUpdate,
+          currentMoveState,
+          selectedPiece
         );
-        //recalculate all valid moves based on new move
-        let currentTeamPieces = gameToUpdate?.statesOfPieces.filter(
-          (piece) => piece.team === selectedPiece.team && piece.alive
-        );
-        if (currentMoveState?.validMoves) currentMoveState.validMoves = [];
-        if (currentMoveState && gameToUpdate && currentTeamPieces) {
-          let tempArray: MoveDetails[] = [];
-          for (let i = 0; i < currentTeamPieces?.length; i++) {
-            let moves = calculateValidMovesCheckDetector(
-              currentTeamPieces[i],
-              gameToUpdate,
-              currentMoveState.allEnemyMoves
-            );
-            Array.prototype.push.apply(tempArray, moves);
-          }
-          currentMoveState.validMoves = tempArray;
-        }
-        //find the intersecting move
-        intersectingMove = currentMoveState?.validMoves.find(
-          (x) => x.x === enemyKing?.position.x && x.y === enemyKing.position.y
-        );
-        if (enemyKing && intersectingMove) {
-          if (gameToUpdate) {
-            gameToUpdate.checkStatus.type = CheckType.Check;
-            gameToUpdate.checkStatus.teamInCheck = enemyKing.team;
-            gameToUpdate.checkStatus.checkingPiece =
-              intersectingMove.originPiece;
-            gameToUpdate.checkStatus.attackPath =
-              currentMoveState?.validMoves.filter(
-                (move) =>
-                  move.moveDirection === intersectingMove.moveDirection &&
-                  intersectingMove.moveDirection !== MoveDirection.OneOff &&
-                  move.originPiece === intersectingMove.originPiece
-              );
-          }
-        } else {
-          if (gameToUpdate) {
-            gameToUpdate.checkStatus.type = CheckType.None;
-            gameToUpdate.checkStatus.teamInCheck = Team.None;
-            gameToUpdate.checkStatus.checkingPiece = undefined;
-            gameToUpdate.checkStatus.attackPath = [];
-          }
-        }
+        //reset checking states
+        switchTeamsAndReset(gameToUpdate, currentMoveState);
 
-        if (gameToUpdate?.currentTeam) {
-          gameToUpdate.currentTeam =
-            gameToUpdate.currentTeam === Team.Black ? Team.White : Team.Black;
-        }
-        if (currentMoveState?.validMoves) currentMoveState.validMoves = [];
-        if (currentMoveState?.selectedPieceId) {
-          currentMoveState.selectedPieceId = undefined;
-        }
-
-        if (currentMoveState?.allEnemyMoves && gameToUpdate) {
-          currentMoveState.allEnemyMoves = [];
-          currentMoveState.allEnemyMoves = calculateEnemyMoves(gameToUpdate);
-        }
-        //IMPLEMENT CHECKMATE CHECK
-        //calculate all current team's moves
-        currentTeamPieces = gameToUpdate?.statesOfPieces.filter(
-          (piece) => piece.team === gameToUpdate.currentTeam && piece.alive
-        );
-        if (currentMoveState && gameToUpdate && currentTeamPieces) {
-          let tempArray: MoveDetails[] = [];
-          for (let i = 0; i < currentTeamPieces?.length; i++) {
-            let moves = calculateValidMoves(
-              currentTeamPieces[i],
-              gameToUpdate,
-              currentMoveState.allEnemyMoves
-            );
-            Array.prototype.push.apply(tempArray, moves);
-          }
-          currentMoveState.validMoves = tempArray.filter(
-            (x) => x.originPiece.team === gameToUpdate.currentTeam
-          );
-        }
-        //if there are no moves, its a checkmate
-        if (currentMoveState?.validMoves.length === 0) {
-          if (gameToUpdate) {
-            gameToUpdate.checkStatus.type = CheckType.Checkmate;
-          }
-        } else {
-          console.log(currentMoveState?.validMoves);
-
-          if (currentMoveState?.validMoves) currentMoveState.validMoves = [];
-        }
+        // Update game state and current move state
+        calculateCheckmateState(gameToUpdate, currentMoveState);
       }
     },
     selectPiece: (
