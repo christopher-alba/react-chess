@@ -12,7 +12,6 @@ import {
 } from "../../helpers/moveHelper";
 import {
   findPieceById,
-  findEnemyPiece,
   cloneGameState,
   cloneCurrentMoveState,
   checkForDiscoveredChecks,
@@ -61,10 +60,12 @@ export const gameStateSlice = createSlice({
         gameToUpdate,
         action.payload.selectedPiece.id
       );
-      const enemyPiece = findEnemyPiece(
-        gameToUpdate,
-        selectedPiece,
-        action.payload.tile
+      const enemyPieces = gameToUpdate?.statesOfPieces.filter(
+        (piece) =>
+          piece.team !== selectedPiece?.team &&
+          piece.position.x === action.payload.tile.x &&
+          piece.position.y === action.payload.tile.y &&
+          piece.alive === true
       );
 
       // Make copies of game state and current move state
@@ -96,7 +97,10 @@ export const gameStateSlice = createSlice({
         }
 
         // Capture enemy piece if exists
-        if (enemyPiece) enemyPiece.alive = false;
+        if (enemyPieces?.length > 0)
+          enemyPieces.forEach((x) => {
+            if (x.alive) x.alive = false;
+          });
 
         // Recalculate valid moves and check for check
         recalculateValidMovesAndCheck(

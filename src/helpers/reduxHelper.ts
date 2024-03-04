@@ -11,6 +11,7 @@ import {
   MoveDetails,
   Position,
   StatesOfPiece,
+  StatesOfPieces,
 } from "../types/gameTypes";
 import {
   calculateEnemyMoves,
@@ -36,14 +37,6 @@ export const findPieceById = (
   return gameState?.statesOfPieces.find((piece) => piece.id === pieceId);
 };
 
-export const findEnemyPiece = (gameState, selectedPiece, tile) => {
-  return gameState?.statesOfPieces.find(
-    (piece) =>
-      piece.team !== selectedPiece?.team &&
-      piece.position.x === tile.x &&
-      piece.position.y === tile.y
-  );
-};
 
 export const cloneGameState = (gameState): AllGameStates => {
   return JSON.parse(JSON.stringify(gameState));
