@@ -11,7 +11,6 @@ import {
   MoveDetails,
   Position,
   StatesOfPiece,
-  StatesOfPieces,
 } from "../types/gameTypes";
 import {
   calculateEnemyMoves,
