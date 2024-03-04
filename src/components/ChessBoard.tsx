@@ -276,7 +276,7 @@ const ChessBoard: FC = () => {
         style={{
           display: "flex",
           flexWrap: "wrap",
-          background: "white",
+          background: "#f1f1f1",
           padding: "50px",
         }}
       >
