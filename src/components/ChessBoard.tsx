@@ -18,6 +18,7 @@ import { RootState } from "../redux/store";
 const ChessBoard: FC = () => {
   const [allTiles, setAllTiles] = useState<Position[]>();
   const [gameId, setGameId] = useState<string>();
+  const [deadPiecesState, setDeadPiecesState] = useState<StatesOfPieces>();
   const dispatch = useDispatch();
   const reduxState = useSelector((state: RootState) => state.gameStateReducer);
 
@@ -260,83 +261,109 @@ const ChessBoard: FC = () => {
     );
     console.log("testing A");
   }, []);
-  return (
-    <TilesWrapper>
-      {allTiles?.map((tile, index) => {
-        let pieces = reduxState.gamesStates.find(
-          (x) => x.gameId === gameId
-        )?.statesOfPieces;
-        let tiles = reduxState.gamesStates.find(
-          (x) => x.gameId === gameId
-        )?.availableTiles;
-        let matching = tiles?.find(
-          (x) => JSON.stringify(x.position) === JSON.stringify(tile)
-        );
-        let piece = pieces?.find(
-          (x) =>
-            JSON.stringify(x.position) === JSON.stringify(tile) &&
-            x.alive === true
-        );
-        let currentMoves = reduxState.currentMovesState.find(
-          (x) => x.gameId === gameId
-        );
-        let validMoves = currentMoves?.validMoves;
-        let attackPath = reduxState.gamesStates.find((x) => x.gameId === gameId)
-          ?.checkStatus.attackPath;
-        let checkingPiece = reduxState.gamesStates.find(
-          (x) => x.gameId === gameId
-        )?.checkStatus.checkingPiece;
-        let selectedPieceId = currentMoves?.selectedPieceId;
-        let selectedPiecePos = pieces?.find(
-          (x) => x.id === selectedPieceId
-        )?.position;
-        let selectedX = selectedPiecePos?.x;
-        let selectedY = selectedPiecePos?.y;
 
-        if (matching) {
+  useEffect(() => {
+    const deadPieces = reduxState?.gamesStates
+      .find((x) => x.gameId === gameId)
+      ?.statesOfPieces?.filter((x) => !x.alive);
+    setDeadPiecesState(deadPieces);
+    console.log(deadPiecesState);
+  }, [reduxState]);
+
+  return (
+    <>
+      <div style={{ display: "flex" }}>
+        {deadPiecesState?.map((piece, index) => {
           return (
-            <Tile
+            <ChessPiece
               key={index}
-              onMouseDown={() => {
-                handleTileClick(tile, validMoves, selectedPieceId);
-              }}
-              style={{
-                boxShadow: validMoves?.find(
-                  (x) => x.x === tile.x && x.y === tile.y
-                )
-                  ? "inset 0 0 30px #00f"
-                  : tile.x === selectedX && tile.y === selectedY
-                  ? "inset 0 0 30px #33ff00"
-                  : attackPath?.find(
-                      (path) => path.x === tile.x && path.y === tile.y
-                    )
-                  ? "inset 0 0 30px #ffffff"
-                  : checkingPiece?.position.x === tile.x &&
-                    checkingPiece.position.y === tile.y
-                  ? "inset 0 0 30px #ffd900"
-                  : "",
-                background:
-                  matching.color === TileColor.Dark ? "brown" : "gray",
-              }}
-              className={`x-${tile.x} y-${tile.y}`}
-            >
-              {piece && piece.alive && (
-                <ChessPiece
-                  key={index}
-                  position={piece.position}
-                  id={piece.id}
-                  team={piece.team}
-                  type={piece.type}
-                  gameId={gameId}
-                ></ChessPiece>
-              )}
-            </Tile>
+              position={piece.position}
+              id={piece.id}
+              team={piece.team}
+              type={piece.type}
+              gameId={gameId}
+            ></ChessPiece>
           );
-        } else {
-          return <Tile key={index}></Tile>;
-        }
-      })}
-    </TilesWrapper>
+        })}
+      </div>
+      <TilesWrapper>
+        {allTiles?.map((tile, index) => {
+          let pieces = reduxState.gamesStates.find(
+            (x) => x.gameId === gameId
+          )?.statesOfPieces;
+          let tiles = reduxState.gamesStates.find(
+            (x) => x.gameId === gameId
+          )?.availableTiles;
+          let matching = tiles?.find(
+            (x) => JSON.stringify(x.position) === JSON.stringify(tile)
+          );
+          let piece = pieces?.find(
+            (x) =>
+              JSON.stringify(x.position) === JSON.stringify(tile) &&
+              x.alive === true
+          );
+          let currentMoves = reduxState.currentMovesState.find(
+            (x) => x.gameId === gameId
+          );
+          let validMoves = currentMoves?.validMoves;
+          let attackPath = reduxState.gamesStates.find(
+            (x) => x.gameId === gameId
+          )?.checkStatus.attackPath;
+          let checkingPiece = reduxState.gamesStates.find(
+            (x) => x.gameId === gameId
+          )?.checkStatus.checkingPiece;
+          let selectedPieceId = currentMoves?.selectedPieceId;
+          let selectedPiecePos = pieces?.find(
+            (x) => x.id === selectedPieceId
+          )?.position;
+          let selectedX = selectedPiecePos?.x;
+          let selectedY = selectedPiecePos?.y;
+
+          if (matching) {
+            return (
+              <Tile
+                key={index}
+                onMouseDown={() => {
+                  handleTileClick(tile, validMoves, selectedPieceId);
+                }}
+                style={{
+                  boxShadow: validMoves?.find(
+                    (x) => x.x === tile.x && x.y === tile.y
+                  )
+                    ? "inset 0 0 30px #00f"
+                    : tile.x === selectedX && tile.y === selectedY
+                    ? "inset 0 0 30px #33ff00"
+                    : attackPath?.find(
+                        (path) => path.x === tile.x && path.y === tile.y
+                      )
+                    ? "inset 0 0 30px #ffffff"
+                    : checkingPiece?.position.x === tile.x &&
+                      checkingPiece.position.y === tile.y
+                    ? "inset 0 0 30px #ffd900"
+                    : "",
+                  background:
+                    matching.color === TileColor.Dark ? "brown" : "gray",
+                }}
+                className={`x-${tile.x} y-${tile.y}`}
+              >
+                {piece && piece.alive && (
+                  <ChessPiece
+                    key={index}
+                    position={piece.position}
+                    id={piece.id}
+                    team={piece.team}
+                    type={piece.type}
+                    gameId={gameId}
+                  ></ChessPiece>
+                )}
+              </Tile>
+            );
+          } else {
+            return <Tile key={index}></Tile>;
+          }
+        })}
+      </TilesWrapper>
+    </>
   );
 };
 
