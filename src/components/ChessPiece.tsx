@@ -15,8 +15,8 @@ type IconProps = {
   team: Team;
 };
 const commonCss = css`
-  width: 80%;
-  height: 80%;
+  width: 60%;
+  height: 60%;
 `;
 const KingIcon = styled(King)<IconProps>`
   color: ${({ team }) => {
@@ -115,6 +115,15 @@ const BishopIcon = styled(Bishop)<IconProps>`
 `;
 
 const IconWrapper = styled("div")`
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const IconWrapperSmall = styled("div")`
   width: 50px;
   height: 50px;
   background: transparent;
@@ -190,6 +199,77 @@ const ChessPiece: FC<{
         >
           <KnightIcon team={team} />
         </IconWrapper>
+      );
+  }
+};
+
+export const ChessPieceSmall: FC<{
+  position: Position;
+  type: Type;
+  team: Team;
+  id: string;
+  gameId?: string;
+}> = ({ position, type, team, id, gameId }) => {
+  const dispatch = useDispatch();
+  const handleMouseDown = () => {
+    if (gameId) {
+      dispatch(selectPiece({ gameId: gameId, id: id }));
+    }
+  };
+  switch (type) {
+    case Type.King:
+      return (
+        <IconWrapperSmall
+          onMouseDown={handleMouseDown}
+          className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
+        >
+          <KingIcon team={team} />
+        </IconWrapperSmall>
+      );
+    case Type.Queen:
+      return (
+        <IconWrapperSmall
+          onMouseDown={handleMouseDown}
+          className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
+        >
+          <QueenIcon team={team} />
+        </IconWrapperSmall>
+      );
+    case Type.Pawn:
+      return (
+        <IconWrapperSmall
+          onMouseDown={handleMouseDown}
+          className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
+        >
+          <PawnIcon team={team} />
+        </IconWrapperSmall>
+      );
+    case Type.Rook:
+      return (
+        <IconWrapperSmall
+          onMouseDown={handleMouseDown}
+          className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
+        >
+          <RookIcon team={team} />
+        </IconWrapperSmall>
+      );
+    case Type.Bishop:
+      return (
+        <IconWrapperSmall
+          onMouseDown={handleMouseDown}
+          className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
+        >
+          <BishopIcon team={team} />
+        </IconWrapperSmall>
+      );
+    case Type.Knight:
+      return (
+        <IconWrapperSmall
+          onMouseDown={handleMouseDown}
+          className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
+        >
+          <KnightIcon team={team} />
+        </IconWrapperSmall>
       );
   }
 };

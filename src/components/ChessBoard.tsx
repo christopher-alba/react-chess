@@ -12,7 +12,7 @@ import {
 } from "../types/enums";
 import { Position, StatesOfPieces, Tiles } from "../types/gameTypes";
 import styled from "styled-components";
-import ChessPiece from "./ChessPiece";
+import ChessPiece, { ChessPieceSmall } from "./ChessPiece";
 import { RootState } from "../redux/store";
 
 const ChessBoard: FC = () => {
@@ -220,8 +220,8 @@ const ChessBoard: FC = () => {
 
   useEffect(() => {
     let allTiles: Position[] = [];
-    for (let y = 0; y < 14; y++) {
-      for (let x = 0; x < 14; x++) {
+    for (let y = 0; y < 8; y++) {
+      for (let x = 0; x < 8; x++) {
         allTiles.push({
           x: x,
           y: y,
@@ -272,19 +272,28 @@ const ChessBoard: FC = () => {
 
   return (
     <>
-      <div style={{ display: "flex" }}>
-        {deadPiecesState?.map((piece, index) => {
-          return (
-            <ChessPiece
-              key={index}
-              position={piece.position}
-              id={piece.id}
-              team={piece.team}
-              type={piece.type}
-              gameId={gameId}
-            ></ChessPiece>
-          );
-        })}
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          background: "white",
+          padding: "50px",
+        }}
+      >
+        {deadPiecesState
+          ?.filter((piece) => piece.team === Team.Black)
+          .map((piece, index) => {
+            return (
+              <ChessPieceSmall
+                key={index}
+                position={piece.position}
+                id={piece.id}
+                team={piece.team}
+                type={piece.type}
+                gameId={gameId}
+              ></ChessPieceSmall>
+            );
+          })}
       </div>
       <TilesWrapper>
         {allTiles?.map((tile, index) => {
@@ -342,7 +351,7 @@ const ChessBoard: FC = () => {
                     ? "inset 0 0 30px #ffd900"
                     : "",
                   background:
-                    matching.color === TileColor.Dark ? "brown" : "gray",
+                    matching.color === TileColor.Dark ? "#ab6426" : "#e0a775",
                 }}
                 className={`x-${tile.x} y-${tile.y}`}
               >
@@ -363,13 +372,36 @@ const ChessBoard: FC = () => {
           }
         })}
       </TilesWrapper>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          background: "black",
+          padding: "50px",
+        }}
+      >
+        {deadPiecesState
+          ?.filter((piece) => piece.team === Team.White)
+          .map((piece, index) => {
+            return (
+              <ChessPieceSmall
+                key={index}
+                position={piece.position}
+                id={piece.id}
+                team={piece.team}
+                type={piece.type}
+                gameId={gameId}
+              ></ChessPieceSmall>
+            );
+          })}
+      </div>
     </>
   );
 };
 
 const Tile = styled("div")`
-  height: calc(800px / 14);
-  width: calc(800px / 14);
+  height: calc(600px / 8);
+  width: calc(600px / 8);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -377,10 +409,10 @@ const Tile = styled("div")`
 
 const TilesWrapper = styled("div")`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  width: 800px;
-  height: 800px;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  width: 600px;
+  height: 600px;
 `;
 
 export default ChessBoard;
