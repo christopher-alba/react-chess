@@ -9,15 +9,12 @@ import {
 } from "../types/enums";
 import {
   AllGameStates,
-  CastlingStates,
   CheckStatus,
   DirectionData,
   MoveDetails,
   Position,
   StatesOfPiece,
   StatesOfPieces,
-  TeamStates,
-  Tile,
   Tiles,
 } from "../types/gameTypes";
 
