@@ -80,6 +80,7 @@ export const gameStateSlice = createSlice({
         copyOfSelectedPiece.position.y = action.payload.tile.y;
 
         // Check for discovered checks
+        let rookMoved: StatesOfPiece = undefined;
         if (
           checkForDiscoveredChecks(
             copyOfGameState,
@@ -122,8 +123,8 @@ export const gameStateSlice = createSlice({
           //if its about to die, disable castling for it
           if (
             whiteQueenSideRook &&
-            action.payload.tile.x === whiteKingSideRook.position.x &&
-            action.payload.tile.y === whiteKingSideRook.position.y
+            action.payload.tile.x === whiteQueenSideRook.position.x &&
+            action.payload.tile.y === whiteQueenSideRook.position.y
           ) {
             currentTeam.castlingStates.KingSide = true;
             currentTeam.castlingStates.KingRookMoved = true;
@@ -164,17 +165,18 @@ export const gameStateSlice = createSlice({
             currentTeam.castlingStates.KingRookMoved = true;
           }
 
+          //detect white king side castling
           if (
             selectedPiece.team === Team.White &&
             selectedPiece.type === Type.King &&
             action.payload.tile.x === 6 &&
             selectedPiece.position.x === 4
           ) {
-            //detect white king side castling
             let kingSideRook = gameToUpdate.statesOfPieces.find(
               (piece) => piece.position.x === 7 && piece.position.y === 7
             );
             kingSideRook.position.x = 5;
+            rookMoved = kingSideRook;
           }
           //detect white queen side castling
           if (
@@ -183,10 +185,11 @@ export const gameStateSlice = createSlice({
             action.payload.tile.x === 2 &&
             selectedPiece.position.x === 4
           ) {
-            let kingSideRook = gameToUpdate.statesOfPieces.find(
+            let queenSideRook = gameToUpdate.statesOfPieces.find(
               (piece) => piece.position.x === 0 && piece.position.y === 7
             );
-            kingSideRook.position.x = 3;
+            queenSideRook.position.x = 3;
+            rookMoved = queenSideRook;
           }
 
           //detect black king side castling
@@ -200,6 +203,7 @@ export const gameStateSlice = createSlice({
               (piece) => piece.position.x === 7 && piece.position.y === 0
             );
             kingSideRook.position.x = 5;
+            rookMoved = kingSideRook;
           }
           //detect black queen side castling
           if (
@@ -208,10 +212,11 @@ export const gameStateSlice = createSlice({
             action.payload.tile.x === 2 &&
             selectedPiece.position.x === 4
           ) {
-            let kingSideRook = gameToUpdate.statesOfPieces.find(
+            let queenSideRook = gameToUpdate.statesOfPieces.find(
               (piece) => piece.position.x === 0 && piece.position.y === 0
             );
-            kingSideRook.position.x = 3;
+            queenSideRook.position.x = 3;
+            rookMoved = queenSideRook;
           }
 
           //If black king's first time moving, disable the ability to castle
@@ -254,11 +259,20 @@ export const gameStateSlice = createSlice({
           });
 
         // Recalculate valid moves and check for check
-        recalculateValidMovesAndCheck(
-          gameToUpdate,
-          currentMoveState,
-          selectedPiece
-        );
+        if (rookMoved) {
+          recalculateValidMovesAndCheck(
+            gameToUpdate,
+            currentMoveState,
+            rookMoved
+          );
+        } else {
+          recalculateValidMovesAndCheck(
+            gameToUpdate,
+            currentMoveState,
+            selectedPiece
+          );
+        }
+
         //reset checking states
         switchTeamsAndReset(gameToUpdate, currentMoveState);
 
