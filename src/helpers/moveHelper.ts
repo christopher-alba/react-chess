@@ -738,7 +738,7 @@ export const calculateKingMoves = (
       !isTileUnderAttack({ x: 2, y: 7 }, allEnemyMoves) &&
       !isTileUnderAttack({ x: 3, y: 7 }, allEnemyMoves) &&
       !isTileUnderAttack({ x: 4, y: 7 }, allEnemyMoves) &&
-      !hasKingRookMoved(currentGame) &&
+      !hasQueenRookMoved(currentGame) &&
       tile.position.x === 2 &&
       tile.position.y === 7
     ) {
@@ -785,7 +785,7 @@ export const calculateKingMoves = (
       !isTileUnderAttack({ x: 2, y: 0 }, allEnemyMoves) &&
       !isTileUnderAttack({ x: 3, y: 0 }, allEnemyMoves) &&
       !isTileUnderAttack({ x: 4, y: 0 }, allEnemyMoves) &&
-      !hasKingRookMoved(currentGame) &&
+      !hasQueenRookMoved(currentGame) &&
       tile.position.x === 2 &&
       tile.position.y === 0
     ) {
