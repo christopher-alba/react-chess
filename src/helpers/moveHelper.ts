@@ -9,12 +9,15 @@ import {
 } from "../types/enums";
 import {
   AllGameStates,
+  CastlingStates,
   CheckStatus,
   DirectionData,
   MoveDetails,
   Position,
   StatesOfPiece,
   StatesOfPieces,
+  TeamStates,
+  Tile,
   Tiles,
 } from "../types/gameTypes";
 
@@ -703,8 +706,155 @@ export const calculateKingMoves = (
         checkingPiece
       );
     }
+    //white King side castling
+    if (
+      currentGame.currentTeam === Team.White &&
+      isTileEmpty({ x: 5, y: 7 }, currentGame) &&
+      isTileEmpty({ x: 6, y: 7 }, currentGame) &&
+      !isTileUnderAttack({ x: 4, y: 7 }, allEnemyMoves) &&
+      !isTileUnderAttack({ x: 5, y: 7 }, allEnemyMoves) &&
+      !isTileUnderAttack({ x: 6, y: 7 }, allEnemyMoves) &&
+      !hasKingRookMoved(currentGame) &&
+      tile.position.x === 6 &&
+      tile.position.y === 7
+    ) {
+      validateKingTileStatic(
+        tile.position,
+        pieces,
+        selectedPiece,
+        kingMoves,
+        allEnemyMoves,
+        checkPath,
+        checkingPiece
+      );
+    }
+
+    //white Queen side castling
+    if (
+      currentGame.currentTeam === Team.White &&
+      isTileEmpty({ x: 1, y: 7 }, currentGame) &&
+      isTileEmpty({ x: 2, y: 7 }, currentGame) &&
+      isTileEmpty({ x: 3, y: 7 }, currentGame) &&
+      !isTileUnderAttack({ x: 2, y: 7 }, allEnemyMoves) &&
+      !isTileUnderAttack({ x: 3, y: 7 }, allEnemyMoves) &&
+      !isTileUnderAttack({ x: 4, y: 7 }, allEnemyMoves) &&
+      !hasKingRookMoved(currentGame) &&
+      tile.position.x === 2 &&
+      tile.position.y === 7
+    ) {
+      validateKingTileStatic(
+        tile.position,
+        pieces,
+        selectedPiece,
+        kingMoves,
+        allEnemyMoves,
+        checkPath,
+        checkingPiece
+      );
+    }
+
+    //black King side castling
+    if (
+      currentGame.currentTeam === Team.Black &&
+      isTileEmpty({ x: 5, y: 0 }, currentGame) &&
+      isTileEmpty({ x: 6, y: 0 }, currentGame) &&
+      !isTileUnderAttack({ x: 4, y: 0 }, allEnemyMoves) &&
+      !isTileUnderAttack({ x: 5, y: 0 }, allEnemyMoves) &&
+      !isTileUnderAttack({ x: 6, y: 0 }, allEnemyMoves) &&
+      !hasKingRookMoved(currentGame) &&
+      tile.position.x === 6 &&
+      tile.position.y === 0
+    ) {
+      validateKingTileStatic(
+        tile.position,
+        pieces,
+        selectedPiece,
+        kingMoves,
+        allEnemyMoves,
+        checkPath,
+        checkingPiece
+      );
+    }
+
+    //black Queen side castling
+    if (
+      currentGame.currentTeam === Team.Black &&
+      isTileEmpty({ x: 1, y: 0 }, currentGame) &&
+      isTileEmpty({ x: 2, y: 0 }, currentGame) &&
+      isTileEmpty({ x: 3, y: 0 }, currentGame) &&
+      !isTileUnderAttack({ x: 2, y: 0 }, allEnemyMoves) &&
+      !isTileUnderAttack({ x: 3, y: 0 }, allEnemyMoves) &&
+      !isTileUnderAttack({ x: 4, y: 0 }, allEnemyMoves) &&
+      !hasKingRookMoved(currentGame) &&
+      tile.position.x === 2 &&
+      tile.position.y === 0
+    ) {
+      validateKingTileStatic(
+        tile.position,
+        pieces,
+        selectedPiece,
+        kingMoves,
+        allEnemyMoves,
+        checkPath,
+        checkingPiece
+      );
+    }
   }
+
   return kingMoves;
+};
+
+const isTileUnderAttack = (
+  tileCoordinates: Position,
+  allEnemyMoves: MoveDetails[]
+) => {
+  let enemymovesInTile = allEnemyMoves.find(
+    (move) => move.x === tileCoordinates.x && move.y === tileCoordinates.y
+  );
+
+  if (enemymovesInTile) return true;
+
+  return false;
+};
+
+const isTileEmpty = (tileCoordinates: Position, currentGame: AllGameStates) => {
+  //find piece inside the same tile coordinates from statesOfPieces
+  let piece = currentGame.statesOfPieces.find(
+    (piece) =>
+      piece.position.x === tileCoordinates.x &&
+      piece.position.y === tileCoordinates.y
+  );
+
+  if (piece) return false;
+
+  return true;
+};
+const hasKingRookMoved = (currentGame: AllGameStates) => {
+  let currentTeam = currentGame.currentTeam;
+
+  let hasRookMoved = currentGame.teamStates.find(
+    (team) => team.teamName === currentTeam
+  ).castlingStates.KingRookMoved;
+
+  let hasKingMoved = currentGame.teamStates.find(
+    (team) => team.teamName === currentTeam
+  ).castlingStates.KingMoved;
+
+  return hasRookMoved && hasKingMoved;
+};
+
+const hasQueenRookMoved = (currentGame: AllGameStates) => {
+  let currentTeam = currentGame.currentTeam;
+
+  let hasRookMoved = currentGame.teamStates.find(
+    (team) => team.teamName === currentTeam
+  ).castlingStates.QueenRookMoved;
+
+  let hasKingMoved = currentGame.teamStates.find(
+    (team) => team.teamName === currentTeam
+  ).castlingStates.KingMoved;
+
+  return hasRookMoved && hasKingMoved;
 };
 
 const calculateEnemyKingMoves = (

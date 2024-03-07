@@ -28,10 +28,18 @@ export type Tile = {
   color: TileColor;
 };
 export type Tiles = Tile[];
+export type CastlingStates = {
+  KingMoved: boolean;
+  KingRookMoved: boolean;
+  QueenRookMoved: boolean;
+  KingSide: boolean;
+  QueenSide: boolean;
+};
 export type TeamState = {
   teamName: Team;
   alive: boolean;
   winner: boolean;
+  castlingStates: CastlingStates;
 };
 export type TeamStates = TeamState[];
 export type StatesOfPiece = {
