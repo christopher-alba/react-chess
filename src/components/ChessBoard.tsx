@@ -139,15 +139,15 @@ const ChessBoard: FC = () => {
       id: uuidv4(),
       type: Type.Rook,
     });
-    // for (let x = 0; x < 8; x++) {
-    //   pieces.push({
-    //     position: { x: x, y: 1 },
-    //     alive: true,
-    //     team: Team.Black,
-    //     id: uuidv4(),
-    //     type: Type.Pawn,
-    //   });
-    // }
+    for (let x = 0; x < 8; x++) {
+      pieces.push({
+        position: { x: x, y: 1 },
+        alive: true,
+        team: Team.Black,
+        id: uuidv4(),
+        type: Type.Pawn,
+      });
+    }
 
     //white pieces
     pieces.push({
@@ -206,15 +206,15 @@ const ChessBoard: FC = () => {
       id: uuidv4(),
       type: Type.Rook,
     });
-    // for (let x = 0; x < 8; x++) {
-    //   pieces.push({
-    //     position: { x: x, y: 6 },
-    //     alive: true,
-    //     team: Team.White,
-    //     id: uuidv4(),
-    //     type: Type.Pawn,
-    //   });
-    // }
+    for (let x = 0; x < 8; x++) {
+      pieces.push({
+        position: { x: x, y: 6 },
+        alive: true,
+        team: Team.White,
+        id: uuidv4(),
+        type: Type.Pawn,
+      });
+    }
     return pieces;
   };
 
