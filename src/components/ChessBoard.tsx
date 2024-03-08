@@ -457,6 +457,7 @@ const TilesWrapper = styled("div")`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  border: 2px solid white;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -556,6 +557,7 @@ const CapturedPiecesWrapper = styled("div")`
   box-sizing: border-box;
   width: 100%;
   margin-left: auto;
+  border: 2px solid white;
   box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
   background: linear-gradient(
     -90deg,
