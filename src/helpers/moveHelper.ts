@@ -1558,7 +1558,14 @@ const validateTileWithLoopingCheckDetector = (
         return false;
       }
     }
-    return false;
+    movesArray.push({
+      x: tile.x,
+      y: tile.y,
+      moveType: MoveType.DefaultMove,
+      moveDirection: direction,
+      originPiece: selectedPiece,
+    });
+    return true;
   }
   return true;
 };

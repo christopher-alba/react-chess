@@ -61,21 +61,21 @@ const ChessBoard: FC = () => {
   const initialize2PlayerBoardPieces = (): StatesOfPieces => {
     let pieces: StatesOfPieces = [];
     // pieces.push({
-    //   position: { x: 3, y: 7 },
+    //   position: { x: 3, y: 1 },
     //   alive: true,
     //   team: Team.White,
     //   id: uuidv4(),
     //   type: Type.Rook,
     // });
     // pieces.push({
-    //   position: { x: 3, y: 6},
+    //   position: { x: 1, y: 0},
     //   alive: true,
     //   team: Team.White,
     //   id: uuidv4(),
     //   type: Type.Bishop,
     // });
     // pieces.push({
-    //   position: { x: 3, y: 0 },
+    //   position: { x: 2, y: 0 },
     //   alive: true,
     //   team: Team.Black,
     //   id: uuidv4(),
