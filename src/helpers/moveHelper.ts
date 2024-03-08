@@ -985,7 +985,9 @@ const calculatePawnMoves = (
       if (
         Math.abs(
           alliedEnpassantPawn.position.x - enemyEnpassantPawn.position.x
-        ) === 1
+        ) === 1 &&
+        alliedEnpassantPawn.position.x === selectedPiece.position.x &&
+        alliedEnpassantPawn.position.y === selectedPiece.position.y
       ) {
         if (currentTeam.teamName === Team.Black) {
           validateTileStatic(
@@ -997,7 +999,7 @@ const calculatePawnMoves = (
             selectedPiece,
             pawnMoves
           );
-        } else if(currentTeam.teamName === Team.White){
+        } else if (currentTeam.teamName === Team.White) {
           validateTileStatic(
             {
               x: enemyEnpassantPawn.position.x,
