@@ -562,17 +562,8 @@ const CapturedPiecesWrapper = styled("div")`
   margin-left: auto;
   border: 2px solid white;
   box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
-  background: linear-gradient(
-    -90deg,
-    #e3e5e8 0%,
-    #ebe4e3 10%,
-    #e4e1e0 25%,
-    #ececec 45%,
-    #dadada 60%,
-    #b8b8b8 75%,
-    #d3d3d3 85%,
-    #ffffff 100%
-  );
+  background: ${({theme}) => theme.colors.primary1}
+
 `;
 
 const CapturedPiecesWrapperOverlay = styled("div")`
