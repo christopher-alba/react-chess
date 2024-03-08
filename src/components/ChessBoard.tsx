@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createGameInstance, makeMove } from "../redux/slices/gameStateSlice";
 import { v4 as uuidv4 } from "uuid";
@@ -11,7 +11,7 @@ import {
   Type,
 } from "../types/enums";
 import { Position, StatesOfPieces, Tiles } from "../types/gameTypes";
-import styled from "styled-components";
+import styled, { ThemeContext } from "styled-components";
 import ChessPiece, { ChessPieceSmall } from "./ChessPiece";
 import { RootState } from "../redux/store";
 
@@ -21,7 +21,7 @@ const ChessBoard: FC = () => {
   const [deadPiecesState, setDeadPiecesState] = useState<StatesOfPieces>();
   const dispatch = useDispatch();
   const reduxState = useSelector((state: RootState) => state.gameStateReducer);
-
+  const theme = useContext(ThemeContext);
   const handleTileClick = (
     tile: Position,
     validMoves?: Position[],
@@ -287,35 +287,43 @@ const ChessBoard: FC = () => {
   useEffect(() => {
     const deadPieces = reduxState?.gamesStates
       .find((x) => x.gameId === gameId)
-      ?.statesOfPieces?.filter((x) => !x.alive);
+      ?.statesOfPieces?.filter((x) => !x.alive)
+      .sort((a, b) => b.timeCapturedTimestamp - a.timeCapturedTimestamp);
     setDeadPiecesState(deadPieces);
   }, [reduxState]);
 
+  let currentTeam = reduxState.gamesStates.find(
+    (x) => x.gameId === gameId
+  )?.currentTeam;
+
   return (
-    <>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          background: "#f1f1f1",
-          padding: "50px",
-        }}
-      >
-        {deadPiecesState
-          ?.filter((piece) => piece.team === Team.Black)
-          .map((piece, index) => {
-            return (
-              <ChessPieceSmall
-                key={index}
-                position={piece.position}
-                id={piece.id}
-                team={piece.team}
-                type={piece.type}
-                gameId={gameId}
-              ></ChessPieceSmall>
-            );
-          })}
-      </div>
+    <MainChessboardWrapper>
+      <CapturedDivWrapper>
+        <PlayerName
+          style={{
+            color:
+              currentTeam === Team.Black ? theme.colors.tertiary1 : "inherit",
+          }}
+        >
+          Player 1
+        </PlayerName>
+        <CapturedPiecesWrapper style={{ background: "black" }}>
+          {deadPiecesState
+            ?.filter((piece) => piece.team === Team.White)
+            .map((piece, index) => {
+              return (
+                <ChessPieceSmall
+                  key={index}
+                  position={piece.position}
+                  id={piece.id}
+                  team={piece.team}
+                  type={piece.type}
+                  gameId={gameId}
+                ></ChessPieceSmall>
+              );
+            })}
+        </CapturedPiecesWrapper>
+      </CapturedDivWrapper>
       <TilesWrapper>
         {allTiles?.map((tile, index) => {
           let pieces = reduxState.gamesStates.find(
@@ -339,6 +347,7 @@ const ChessBoard: FC = () => {
           let attackPath = reduxState.gamesStates.find(
             (x) => x.gameId === gameId
           )?.checkStatus.attackPath;
+
           let checkingPiece = reduxState.gamesStates.find(
             (x) => x.gameId === gameId
           )?.checkStatus.checkingPiece;
@@ -358,9 +367,9 @@ const ChessBoard: FC = () => {
                 }}
                 style={{
                   boxShadow: validMoves?.find(
-                    (x) => x.x === tile.x && x.y === tile.y
+                    (x: Position) => x.x === tile.x && x.y === tile.y
                   )
-                    ? "inset 0 0 30px #00f"
+                    ? "inset 0 0 30px #eeff00"
                     : tile.x === selectedX && tile.y === selectedY
                     ? "inset 0 0 30px #33ff00"
                     : attackPath?.find(
@@ -372,7 +381,9 @@ const ChessBoard: FC = () => {
                     ? "inset 0 0 30px #ffd900"
                     : "",
                   background:
-                    matching.color === TileColor.Dark ? "#ab6426" : "#e0a775",
+                    matching.color === TileColor.Dark
+                      ? theme.colors.tertiary1
+                      : theme.colors.tertiary2,
                 }}
                 className={`x-${tile.x} y-${tile.y}`}
               >
@@ -393,47 +404,85 @@ const ChessBoard: FC = () => {
           }
         })}
       </TilesWrapper>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          background: "black",
-          padding: "50px",
-        }}
-      >
-        {deadPiecesState
-          ?.filter((piece) => piece.team === Team.White)
-          .map((piece, index) => {
-            return (
-              <ChessPieceSmall
-                key={index}
-                position={piece.position}
-                id={piece.id}
-                team={piece.team}
-                type={piece.type}
-                gameId={gameId}
-              ></ChessPieceSmall>
-            );
-          })}
-      </div>
-    </>
+      <CapturedDivWrapper>
+        <PlayerName
+          style={{
+            color:
+              currentTeam === Team.White ? theme.colors.tertiary1 : "inherit",
+          }}
+        >
+          Player 2
+        </PlayerName>
+        <CapturedPiecesWrapper style={{ background: "white" }}>
+          {deadPiecesState
+            ?.filter((piece) => piece.team === Team.Black)
+            .map((piece, index) => {
+              return (
+                <ChessPieceSmall
+                  key={index}
+                  position={piece.position}
+                  id={piece.id}
+                  team={piece.team}
+                  type={piece.type}
+                  gameId={gameId}
+                ></ChessPieceSmall>
+              );
+            })}
+        </CapturedPiecesWrapper>
+      </CapturedDivWrapper>
+    </MainChessboardWrapper>
   );
 };
 
 const Tile = styled("div")`
-  height: calc(600px / 8);
-  width: calc(600px / 8);
+  height: 1/8;
+  width: 1/8;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
 `;
 
 const TilesWrapper = styled("div")`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  width: 600px;
-  height: 600px;
+  width: 100%;
+  height: 100%;
+  background: ${({ theme }) => theme.colors.tertiary2};
+  padding: 20px;
+  border-radius: 10px;
+  box-sizing: border-box;
+`;
+
+const CapturedPiecesWrapper = styled("div")`
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  padding: 20px;
+  border-radius: 10px;
+  height: 100%;
+  box-sizing: border-box;
+  width: 70%;
+  overflow: hidden;
+  margin-left: auto;
+`;
+
+const CapturedDivWrapper = styled("div")`
+  margin-top: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  height: 50px;
+  overflow: hidden;
+  align-items: center;
+`;
+
+const PlayerName = styled("h1")`
+  margin: 0;
+`;
+
+const MainChessboardWrapper = styled("div")`
+  max-width: 550px;
 `;
 
 export default ChessBoard;

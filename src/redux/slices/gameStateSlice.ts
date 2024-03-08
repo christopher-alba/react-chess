@@ -120,7 +120,10 @@ export const gameStateSlice = createSlice({
         // Capture enemy piece if exists
         if (enemyPieces?.length > 0)
           enemyPieces.forEach((x) => {
-            if (x.alive) x.alive = false;
+            if (x.alive) {
+              x.alive = false;
+              x.timeCapturedTimestamp = Date.now();
+            }
           });
 
         // Recalculate valid moves and check for check

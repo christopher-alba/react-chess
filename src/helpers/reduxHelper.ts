@@ -301,6 +301,7 @@ export const handleEnpassant = (
     );
     if (pawnToBeCaptured) {
       pawnToBeCaptured.alive = false;
+      pawnToBeCaptured.timeCapturedTimestamp = Date.now();
     }
   }
   //BLACK ENPASSANT
@@ -320,6 +321,7 @@ export const handleEnpassant = (
     );
     if (pawnToBeCaptured) {
       pawnToBeCaptured.alive = false;
+      pawnToBeCaptured.timeCapturedTimestamp = Date.now();
     }
   }
 };
@@ -352,6 +354,9 @@ export const checkForDiscoveredChecks = (
     gameState.statesOfPieces.find(
       (piece) => piece.id === checkingPiece.id
     ).alive = false;
+    gameState.statesOfPieces.find(
+      (piece) => piece.id === checkingPiece.id
+    ).timeCapturedTimestamp = Date.now();
     gameState.checkStatus.attackPath = [];
     checkingPiece = undefined;
   }
@@ -361,6 +366,7 @@ export const checkForDiscoveredChecks = (
   );
   if (enemyAboutToGetRekt) {
     enemyAboutToGetRekt.alive = false;
+    enemyAboutToGetRekt.timeCapturedTimestamp = Date.now();
     enemyTeamPieces = enemyTeamPieces.filter(
       (x) => x.id !== enemyAboutToGetRekt.id
     );
