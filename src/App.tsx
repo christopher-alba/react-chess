@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import ChessBoard from "./components/ChessBoard";
 import { ThemeProvider } from "styled-components";
 import themes from "./themes/schema.json";
 import { GlobalStyles } from "./themes/globalStyles";
@@ -21,7 +20,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyles />
-      <Navbar />
+      <Navbar setTheme={setTheme} />
       <ClassicChess />
     </ThemeProvider>
   );

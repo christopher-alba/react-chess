@@ -387,7 +387,7 @@ const ChessBoard: FC = () => {
                     : "",
                   background:
                     matching.color === TileColor.Light
-                      ? "#FFFFFF" + "99"
+                      ? "#FFFFFF" + "55"
                       : "transparent",
                 }}
                 className={`x-${tile.x} y-${tile.y}`}
@@ -567,8 +567,8 @@ const CapturedPiecesWrapper = styled("div")`
     #ececec 45%,
     #dadada 60%,
     #b8b8b8 75%,
-    #d3d3d37c 85%,
-    #0000003a 100%
+    #d3d3d3 85%,
+    #ffffff 100%
   );
 `;
 
