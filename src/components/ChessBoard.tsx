@@ -555,7 +555,6 @@ const CapturedPiecesWrapper = styled("div")`
   border-radius: 10px;
   overflow: hidden;
   height: 100%;
-  padding-right: 20px;
   box-sizing: border-box;
   width: 100%;
   margin-left: auto;
@@ -584,6 +583,7 @@ const CapturedPiecesWrapperOverlay = styled("div")`
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
+  padding-right: 20px;
 `;
 
 const CapturedDivWrapper = styled("div")`
