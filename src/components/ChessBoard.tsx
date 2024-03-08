@@ -306,7 +306,7 @@ const ChessBoard: FC = () => {
                 color:
                   currentTeam === Team.Black
                     ? theme.colors.tertiary1
-                    : "inherit",
+                    : "black",
               }}
             >
               Player 1
@@ -419,7 +419,7 @@ const ChessBoard: FC = () => {
                 color:
                   currentTeam === Team.White
                     ? theme.colors.tertiary1
-                    : "inherit",
+                    : "black",
               }}
             >
               Player 2
