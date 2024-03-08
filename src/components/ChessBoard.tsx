@@ -463,7 +463,7 @@ const TilesWrapper = styled("div")`
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: ${({theme}) => theme.colors.primary2};
+  background: #EAEAEA;
   backdrop-filter: blur(8px);
   padding: 20px;
   border-radius: 10px;
@@ -482,7 +482,7 @@ const CapturedPiecesWrapper = styled("div")`
   margin-left: auto;
   border: 2px solid white;
   box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
-  background: ${({theme}) => theme.colors.primary1}
+  background: #EAEAEA;
 
 `;
 
