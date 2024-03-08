@@ -325,6 +325,7 @@ const ChessBoard: FC = () => {
         </CapturedPiecesWrapper>
       </CapturedDivWrapper>
       <TilesWrapper>
+        <div className="circles"></div>
         {allTiles?.map((tile, index) => {
           let pieces = reduxState.gamesStates.find(
             (x) => x.gameId === gameId
@@ -382,8 +383,8 @@ const ChessBoard: FC = () => {
                     : "",
                   background:
                     matching.color === TileColor.Dark
-                      ? theme.colors.tertiary1
-                      : theme.colors.tertiary2,
+                      ? "#FFFFFF" + "99"
+                      : "transparent",
                 }}
                 className={`x-${tile.x} y-${tile.y}`}
               >
@@ -449,10 +450,91 @@ const TilesWrapper = styled("div")`
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   width: 100%;
   height: 100%;
-  background: ${({ theme }) => theme.colors.tertiary2};
+  overflow: hidden;
+  background: linear-gradient(
+    -90deg,
+    #e3e5e8 0%,
+    #ebe4e3 10%,
+    #e4e1e0 25%,
+    #e1cee9 45%,
+    #ccb2e1 60%,
+    #caa2e5 75%,
+    #b782e2 85%,
+    #9339e8 100%
+  );
+  backdrop-filter: blur(8px);
   padding: 20px;
   border-radius: 10px;
   box-sizing: border-box;
+  &::before,
+  &::after,
+  & > .circles,
+  & > .circles::before,
+  & > .circles::after {
+    filter: blur(75px);
+    z-index: -1;
+  }
+
+  & > .circles::before:hover,
+  & > .circles::after:hover {
+    transform: scale(0.7);
+  }
+
+  &::before,
+  &::after {
+    position: absolute;
+    content: "";
+    width: 390px;
+    height: 390px;
+    border-radius: 100%;
+  }
+
+  &::before {
+    background: #ffecf5;
+    top: -195px;
+    left: -195px;
+  }
+
+  &::after {
+    background: #86e1ef;
+    right: -195px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  & > .circles,
+  & > .circles::before,
+  & > .circles::after {
+    border-radius: 100%;
+    position: absolute;
+  }
+
+  & > .circles::before,
+  & > .circles::after {
+    content: "";
+    width: 140px;
+    height: 140px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  & > .circles {
+    width: 230px;
+    height: 230px;
+    background: #ffc285;
+    bottom: -60px;
+    left: 75px;
+  }
+
+  & > .circles::before {
+    background: #8600ff;
+    left: -40%;
+  }
+
+  & > .circles::after {
+    background: #ff0000;
+    right: -20%;
+  }
 `;
 
 const CapturedPiecesWrapper = styled("div")`

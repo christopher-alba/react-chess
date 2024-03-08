@@ -17,6 +17,7 @@ type IconProps = {
 const commonCss = css`
   width: 60%;
   height: 60%;
+  filter: drop-shadow(rgba(0, 0, 0, 0.5) 0px 4px 12px);
 `;
 const KingIcon = styled(King)<IconProps>`
   color: ${({ team }) => {
