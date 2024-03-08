@@ -453,9 +453,7 @@ const Tile = styled("div")`
 `;
 
 const TilesWrapper = styled("div")`
-  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
-    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
-    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
@@ -558,9 +556,7 @@ const CapturedPiecesWrapper = styled("div")`
   box-sizing: border-box;
   width: 100%;
   margin-left: auto;
-  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
-    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
-    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
   background: linear-gradient(
     -90deg,
     #e3e5e8 0%,
@@ -597,7 +593,10 @@ const CapturedDivWrapper = styled("div")`
 const PlayerName = styled("h3")`
   margin: 0;
   width: 200px;
+  transition: 500ms;
   padding-left:30px;
+  font-weight: 200;
+  letter-spacing: 3px;
 `;
 
 const MainChessboardWrapper = styled("div")`
