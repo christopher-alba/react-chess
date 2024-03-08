@@ -299,29 +299,33 @@ const ChessBoard: FC = () => {
   return (
     <MainChessboardWrapper>
       <CapturedDivWrapper>
-        <PlayerName
-          style={{
-            color:
-              currentTeam === Team.Black ? theme.colors.tertiary1 : "inherit",
-          }}
-        >
-          Player 1
-        </PlayerName>
-        <CapturedPiecesWrapper style={{ background: "black" }}>
-          {deadPiecesState
-            ?.filter((piece) => piece.team === Team.White)
-            .map((piece, index) => {
-              return (
-                <ChessPieceSmall
-                  key={index}
-                  position={piece.position}
-                  id={piece.id}
-                  team={piece.team}
-                  type={piece.type}
-                  gameId={gameId}
-                ></ChessPieceSmall>
-              );
-            })}
+        <CapturedPiecesWrapper>
+          <CapturedPiecesWrapperOverlay>
+            <PlayerName
+              style={{
+                color:
+                  currentTeam === Team.Black
+                    ? theme.colors.tertiary1
+                    : "inherit",
+              }}
+            >
+              Player 1
+            </PlayerName>
+            {deadPiecesState
+              ?.filter((piece) => piece.team === Team.White)
+              .map((piece, index) => {
+                return (
+                  <ChessPieceSmall
+                    key={index}
+                    position={piece.position}
+                    id={piece.id}
+                    team={piece.team}
+                    type={piece.type}
+                    gameId={gameId}
+                  ></ChessPieceSmall>
+                );
+              })}
+          </CapturedPiecesWrapperOverlay>
         </CapturedPiecesWrapper>
       </CapturedDivWrapper>
       <TilesWrapper>
@@ -406,29 +410,33 @@ const ChessBoard: FC = () => {
         })}
       </TilesWrapper>
       <CapturedDivWrapper>
-        <PlayerName
-          style={{
-            color:
-              currentTeam === Team.White ? theme.colors.tertiary1 : "inherit",
-          }}
-        >
-          Player 2
-        </PlayerName>
-        <CapturedPiecesWrapper style={{ background: "white" }}>
-          {deadPiecesState
-            ?.filter((piece) => piece.team === Team.Black)
-            .map((piece, index) => {
-              return (
-                <ChessPieceSmall
-                  key={index}
-                  position={piece.position}
-                  id={piece.id}
-                  team={piece.team}
-                  type={piece.type}
-                  gameId={gameId}
-                ></ChessPieceSmall>
-              );
-            })}
+        <CapturedPiecesWrapper>
+          <CapturedPiecesWrapperOverlay>
+            <PlayerName
+              style={{
+                color:
+                  currentTeam === Team.White
+                    ? theme.colors.tertiary1
+                    : "inherit",
+              }}
+            >
+              Player 2
+            </PlayerName>
+            {deadPiecesState
+              ?.filter((piece) => piece.team === Team.Black)
+              .map((piece, index) => {
+                return (
+                  <ChessPieceSmall
+                    key={index}
+                    position={piece.position}
+                    id={piece.id}
+                    team={piece.team}
+                    type={piece.type}
+                    gameId={gameId}
+                  ></ChessPieceSmall>
+                );
+              })}
+          </CapturedPiecesWrapperOverlay>
         </CapturedPiecesWrapper>
       </CapturedDivWrapper>
     </MainChessboardWrapper>
@@ -445,6 +453,9 @@ const Tile = styled("div")`
 `;
 
 const TilesWrapper = styled("div")`
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
@@ -541,13 +552,38 @@ const CapturedPiecesWrapper = styled("div")`
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  padding: 20px;
   border-radius: 10px;
-  height: 100%;
-  box-sizing: border-box;
-  width: 70%;
   overflow: hidden;
+  height: 100%;
+  padding-right: 20px;
+  box-sizing: border-box;
+  width: 100%;
   margin-left: auto;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  background: linear-gradient(
+    -90deg,
+    #e3e5e8 0%,
+    #ebe4e3 10%,
+    #e4e1e0 25%,
+    #ececec 45%,
+    #dadada 60%,
+    #b8b8b8 75%,
+    #d3d3d37c 85%,
+    #0000003a 100%
+  );
+`;
+
+const CapturedPiecesWrapperOverlay = styled("div")`
+  backdrop-filter: blur(18px);
+  height: 100%;
+  width: 100%;
+  height: 50px;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
 `;
 
 const CapturedDivWrapper = styled("div")`
@@ -555,16 +591,18 @@ const CapturedDivWrapper = styled("div")`
   margin-bottom: 10px;
   display: flex;
   height: 50px;
-  overflow: hidden;
   align-items: center;
 `;
 
-const PlayerName = styled("h1")`
+const PlayerName = styled("h3")`
   margin: 0;
+  width: 200px;
+  padding-left:30px;
 `;
 
 const MainChessboardWrapper = styled("div")`
   max-width: 550px;
+  aspect-ratio: 1/1;
 `;
 
 export default ChessBoard;
