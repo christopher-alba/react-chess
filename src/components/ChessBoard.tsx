@@ -382,7 +382,7 @@ const ChessBoard: FC = () => {
                     ? "inset 0 0 30px #ffd900"
                     : "",
                   background:
-                    matching.color === TileColor.Dark
+                    matching.color === TileColor.Light
                       ? "#FFFFFF" + "99"
                       : "transparent",
                 }}
