@@ -210,18 +210,11 @@ export const ChessPieceSmall: FC<{
   team: Team;
   id: string;
   gameId?: string;
-}> = ({ position, type, team, id, gameId }) => {
-  const dispatch = useDispatch();
-  const handleMouseDown = () => {
-    if (gameId) {
-      dispatch(selectPiece({ gameId: gameId, id: id }));
-    }
-  };
+}> = ({ position, type, team }) => {
   switch (type) {
     case Type.King:
       return (
         <IconWrapperSmall
-          onMouseDown={handleMouseDown}
           className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
         >
           <KingIcon team={team} />
@@ -230,7 +223,6 @@ export const ChessPieceSmall: FC<{
     case Type.Queen:
       return (
         <IconWrapperSmall
-          onMouseDown={handleMouseDown}
           className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
         >
           <QueenIcon team={team} />
@@ -239,7 +231,6 @@ export const ChessPieceSmall: FC<{
     case Type.Pawn:
       return (
         <IconWrapperSmall
-          onMouseDown={handleMouseDown}
           className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
         >
           <PawnIcon team={team} />
@@ -248,7 +239,6 @@ export const ChessPieceSmall: FC<{
     case Type.Rook:
       return (
         <IconWrapperSmall
-          onMouseDown={handleMouseDown}
           className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
         >
           <RookIcon team={team} />
@@ -257,7 +247,6 @@ export const ChessPieceSmall: FC<{
     case Type.Bishop:
       return (
         <IconWrapperSmall
-          onMouseDown={handleMouseDown}
           className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
         >
           <BishopIcon team={team} />
@@ -266,7 +255,6 @@ export const ChessPieceSmall: FC<{
     case Type.Knight:
       return (
         <IconWrapperSmall
-          onMouseDown={handleMouseDown}
           className={`x-${position.x} y-${position.y} team-${team} type-${type}`}
         >
           <KnightIcon team={team} />
