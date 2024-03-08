@@ -1565,7 +1565,7 @@ const validateTileWithLoopingCheckDetector = (
       moveDirection: direction,
       originPiece: selectedPiece,
     });
-    return true;
+    return false;
   }
   return true;
 };
