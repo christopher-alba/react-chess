@@ -299,14 +299,11 @@ const ChessBoard: FC = () => {
   return (
     <MainChessboardWrapper>
       <CapturedDivWrapper>
-        <CapturedPiecesWrapper>
+        <CapturedPiecesWrapper style={{opacity: currentTeam === Team.Black ? 1 : 0.3}}>
           <CapturedPiecesWrapperOverlay>
             <PlayerName
               style={{
-                color:
-                  currentTeam === Team.Black
-                    ? theme.colors.tertiary1
-                    : "black",
+                color: "black",
               }}
             >
               Player 1
@@ -389,7 +386,7 @@ const ChessBoard: FC = () => {
                     : "",
                   background:
                     matching.color === TileColor.Light
-                      ? "#FFFFFF" + "EE"
+                      ? "#FFFFFF" + "55"
                       : "transparent",
                 }}
                 className={`x-${tile.x} y-${tile.y}`}
@@ -412,14 +409,11 @@ const ChessBoard: FC = () => {
         })}
       </TilesWrapper>
       <CapturedDivWrapper>
-        <CapturedPiecesWrapper>
-          <CapturedPiecesWrapperOverlay>
+        <CapturedPiecesWrapper style={{opacity: currentTeam === Team.White ? 1 : 0.3}}>
+          <CapturedPiecesWrapperOverlay >
             <PlayerName
               style={{
-                color:
-                  currentTeam === Team.White
-                    ? theme.colors.tertiary1
-                    : "black",
+                color: "black",
               }}
             >
               Player 2
@@ -463,7 +457,7 @@ const TilesWrapper = styled("div")`
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #EAEAEA;
+  background: #92734f;
   backdrop-filter: blur(8px);
   padding: 20px;
   border-radius: 10px;
@@ -482,8 +476,7 @@ const CapturedPiecesWrapper = styled("div")`
   margin-left: auto;
   border: 2px solid white;
   box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
-  background: #EAEAEA;
-
+  background: #92734f;
 `;
 
 const CapturedPiecesWrapperOverlay = styled("div")`
