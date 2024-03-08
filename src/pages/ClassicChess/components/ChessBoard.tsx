@@ -1,6 +1,9 @@
 import { FC, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createGameInstance, makeMove } from "../redux/slices/gameStateSlice";
+import {
+  createGameInstance,
+  makeMove,
+} from "../../../redux/slices/gameStateSlice";
 import { v4 as uuidv4 } from "uuid";
 import {
   CheckType,
@@ -9,11 +12,12 @@ import {
   Team,
   TileColor,
   Type,
-} from "../types/enums";
-import { Position, StatesOfPieces, Tiles } from "../types/gameTypes";
+} from "../../../types/enums";
+import { Position, StatesOfPieces, Tiles } from "../../../types/gameTypes";
 import styled, { ThemeContext } from "styled-components";
 import ChessPiece, { ChessPieceSmall } from "./ChessPiece";
-import { RootState } from "../redux/store";
+import { RootState } from "../../../redux/store";
+import { mapCoordinatesToChessNotation } from "../../../helpers/general";
 
 const ChessBoard: FC = () => {
   const [allTiles, setAllTiles] = useState<Position[]>();
@@ -50,6 +54,7 @@ const ChessBoard: FC = () => {
             x: x,
             y: y,
           },
+          chessNotationPosition: mapCoordinatesToChessNotation(x, y),
           isWall: false,
           color: color,
         });
@@ -89,6 +94,7 @@ const ChessBoard: FC = () => {
       team: Team.Black,
       id: uuidv4(),
       type: Type.Rook,
+      chessNotationPosition: mapCoordinatesToChessNotation(0, 0),
     });
     pieces.push({
       position: { x: 1, y: 0 },
@@ -96,6 +102,7 @@ const ChessBoard: FC = () => {
       team: Team.Black,
       id: uuidv4(),
       type: Type.Knight,
+      chessNotationPosition: mapCoordinatesToChessNotation(1, 0),
     });
     pieces.push({
       position: { x: 2, y: 0 },
@@ -103,6 +110,7 @@ const ChessBoard: FC = () => {
       team: Team.Black,
       id: uuidv4(),
       type: Type.Bishop,
+      chessNotationPosition: mapCoordinatesToChessNotation(2, 0),
     });
     pieces.push({
       position: { x: 4, y: 0 },
@@ -110,6 +118,7 @@ const ChessBoard: FC = () => {
       team: Team.Black,
       id: uuidv4(),
       type: Type.King,
+      chessNotationPosition: mapCoordinatesToChessNotation(4, 0),
     });
     pieces.push({
       position: { x: 3, y: 0 },
@@ -117,6 +126,7 @@ const ChessBoard: FC = () => {
       team: Team.Black,
       id: uuidv4(),
       type: Type.Queen,
+      chessNotationPosition: mapCoordinatesToChessNotation(3, 0),
     });
     pieces.push({
       position: { x: 5, y: 0 },
@@ -124,6 +134,7 @@ const ChessBoard: FC = () => {
       team: Team.Black,
       id: uuidv4(),
       type: Type.Bishop,
+      chessNotationPosition: mapCoordinatesToChessNotation(5, 0),
     });
     pieces.push({
       position: { x: 6, y: 0 },
@@ -131,6 +142,7 @@ const ChessBoard: FC = () => {
       team: Team.Black,
       id: uuidv4(),
       type: Type.Knight,
+      chessNotationPosition: mapCoordinatesToChessNotation(6, 0),
     });
     pieces.push({
       position: { x: 7, y: 0 },
@@ -138,6 +150,7 @@ const ChessBoard: FC = () => {
       team: Team.Black,
       id: uuidv4(),
       type: Type.Rook,
+      chessNotationPosition: mapCoordinatesToChessNotation(7, 0),
     });
     for (let x = 0; x < 8; x++) {
       pieces.push({
@@ -146,6 +159,7 @@ const ChessBoard: FC = () => {
         team: Team.Black,
         id: uuidv4(),
         type: Type.Pawn,
+        chessNotationPosition: mapCoordinatesToChessNotation(x, 1),
       });
     }
 
@@ -156,6 +170,7 @@ const ChessBoard: FC = () => {
       team: Team.White,
       id: uuidv4(),
       type: Type.Rook,
+      chessNotationPosition: mapCoordinatesToChessNotation(0, 7),
     });
     pieces.push({
       position: { x: 1, y: 7 },
@@ -163,6 +178,7 @@ const ChessBoard: FC = () => {
       team: Team.White,
       id: uuidv4(),
       type: Type.Knight,
+      chessNotationPosition: mapCoordinatesToChessNotation(1, 7),
     });
     pieces.push({
       position: { x: 2, y: 7 },
@@ -170,6 +186,7 @@ const ChessBoard: FC = () => {
       team: Team.White,
       id: uuidv4(),
       type: Type.Bishop,
+      chessNotationPosition: mapCoordinatesToChessNotation(2, 7),
     });
     pieces.push({
       position: { x: 4, y: 7 },
@@ -177,6 +194,7 @@ const ChessBoard: FC = () => {
       team: Team.White,
       id: uuidv4(),
       type: Type.King,
+      chessNotationPosition: mapCoordinatesToChessNotation(4, 7),
     });
     pieces.push({
       position: { x: 3, y: 7 },
@@ -184,6 +202,7 @@ const ChessBoard: FC = () => {
       team: Team.White,
       id: uuidv4(),
       type: Type.Queen,
+      chessNotationPosition: mapCoordinatesToChessNotation(3, 7),
     });
     pieces.push({
       position: { x: 5, y: 7 },
@@ -191,6 +210,7 @@ const ChessBoard: FC = () => {
       team: Team.White,
       id: uuidv4(),
       type: Type.Bishop,
+      chessNotationPosition: mapCoordinatesToChessNotation(5, 7),
     });
     pieces.push({
       position: { x: 6, y: 7 },
@@ -198,6 +218,7 @@ const ChessBoard: FC = () => {
       team: Team.White,
       id: uuidv4(),
       type: Type.Knight,
+      chessNotationPosition: mapCoordinatesToChessNotation(6, 7),
     });
     pieces.push({
       position: { x: 7, y: 7 },
@@ -205,6 +226,7 @@ const ChessBoard: FC = () => {
       team: Team.White,
       id: uuidv4(),
       type: Type.Rook,
+      chessNotationPosition: mapCoordinatesToChessNotation(7, 7),
     });
     for (let x = 0; x < 8; x++) {
       pieces.push({
@@ -213,6 +235,7 @@ const ChessBoard: FC = () => {
         team: Team.White,
         id: uuidv4(),
         type: Type.Pawn,
+        chessNotationPosition: mapCoordinatesToChessNotation(x, 6),
       });
     }
     return pieces;
@@ -237,6 +260,7 @@ const ChessBoard: FC = () => {
         gameId: id,
         mode: Mode.TwoPlayer,
         currentTeam: Team.White,
+        moveHistory: [],
         teamStates: [
           {
             teamName: Team.White,
@@ -298,8 +322,12 @@ const ChessBoard: FC = () => {
 
   return (
     <MainChessboardWrapper>
-      <CapturedDivWrapper>
-        <CapturedPiecesWrapper style={{opacity: currentTeam === Team.Black ? 1 : 0.3}}>
+      <CapturedDivWrapper style={{ marginTop: 0 }}>
+        <CapturedPiecesWrapper
+          style={{
+            opacity: currentTeam === Team.Black ? 1 : 0.3,
+          }}
+        >
           <CapturedPiecesWrapperOverlay>
             <PlayerName
               style={{
@@ -372,7 +400,7 @@ const ChessBoard: FC = () => {
                   )
                     ? "inset 0 0 30px #eeff00"
                     : tile.x === selectedX && tile.y === selectedY
-                    ? `inset 0 0 30px ${theme.colors.tertiary1}`
+                    ? `inset 0 0 30px ${theme.colors.tertiary2}`
                     : attackPath?.find(
                         (path) => path.x === tile.x && path.y === tile.y
                       )
@@ -401,6 +429,19 @@ const ChessBoard: FC = () => {
                     gameId={gameId}
                   ></ChessPiece>
                 )}
+                <p
+                  style={{
+                    position: "absolute",
+                    left: "5px",
+                    bottom: "5px",
+                    margin: 0,
+                    opacity: 0.7,
+                    color: "#000000",
+                    zIndex: -1,
+                  }}
+                >
+                  {matching.chessNotationPosition}
+                </p>
               </Tile>
             );
           } else {
@@ -408,9 +449,13 @@ const ChessBoard: FC = () => {
           }
         })}
       </TilesWrapper>
-      <CapturedDivWrapper>
-        <CapturedPiecesWrapper style={{opacity: currentTeam === Team.White ? 1 : 0.3}}>
-          <CapturedPiecesWrapperOverlay >
+      <CapturedDivWrapper style={{ marginBottom: 0 }}>
+        <CapturedPiecesWrapper
+          style={{
+            opacity: currentTeam === Team.White ? 1 : 0.3,
+          }}
+        >
+          <CapturedPiecesWrapperOverlay>
             <PlayerName
               style={{
                 color: "black",
@@ -446,6 +491,7 @@ const Tile = styled("div")`
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  position: relative;
 `;
 
 const TilesWrapper = styled("div")`
@@ -454,14 +500,13 @@ const TilesWrapper = styled("div")`
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   border: 2px solid white;
-  width: 100%;
-  height: 100%;
   overflow: hidden;
-  background: #92734f;
+  background: ${({ theme }) => theme.colors.tertiary1};
   backdrop-filter: blur(8px);
   padding: 20px;
   border-radius: 10px;
   box-sizing: border-box;
+  aspect-ratio: 1/1;
 `;
 
 const CapturedPiecesWrapper = styled("div")`
@@ -476,7 +521,7 @@ const CapturedPiecesWrapper = styled("div")`
   margin-left: auto;
   border: 2px solid white;
   box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
-  background: #92734f;
+  background: ${({ theme }) => theme.colors.tertiary1};
 `;
 
 const CapturedPiecesWrapperOverlay = styled("div")`
@@ -510,6 +555,7 @@ const PlayerName = styled("h3")`
 
 const MainChessboardWrapper = styled("div")`
   max-width: 550px;
+  max-height: 550px;
   aspect-ratio: 1/1;
 `;
 

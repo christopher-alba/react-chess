@@ -19,6 +19,7 @@ import {
   calculateValidMoves,
   calculateValidMovesCheckDetector,
 } from "./moveHelper";
+import { mapCoordinatesToChessNotation } from "./general";
 
 export const switchTeamsAndReset = (
   gameState: AllGameStates,
@@ -137,6 +138,7 @@ export const handleCastling = (
       (piece) => piece.position.x === 7 && piece.position.y === 7
     );
     kingSideRook.position.x = 5;
+    kingSideRook.chessNotationPosition = mapCoordinatesToChessNotation(5, 7);
     rookMoved = kingSideRook;
   }
   //detect white queen side castling
@@ -150,6 +152,7 @@ export const handleCastling = (
       (piece) => piece.position.x === 0 && piece.position.y === 7
     );
     queenSideRook.position.x = 3;
+    queenSideRook.chessNotationPosition = mapCoordinatesToChessNotation(3, 7);
     rookMoved = queenSideRook;
   }
 
@@ -164,6 +167,7 @@ export const handleCastling = (
       (piece) => piece.position.x === 7 && piece.position.y === 0
     );
     kingSideRook.position.x = 5;
+    kingSideRook.chessNotationPosition = mapCoordinatesToChessNotation(5, 0);
     rookMoved = kingSideRook;
   }
   //detect black queen side castling
@@ -177,6 +181,7 @@ export const handleCastling = (
       (piece) => piece.position.x === 0 && piece.position.y === 0
     );
     queenSideRook.position.x = 3;
+    queenSideRook.chessNotationPosition = mapCoordinatesToChessNotation(3, 0);
     rookMoved = queenSideRook;
   }
 
@@ -496,6 +501,7 @@ export const recalculateValidMovesAndCheck = (
         attackPath = attackPath.concat(temp);
       }
       gameState.checkStatus.attackPath = attackPath;
+      return CheckType.Check;
     }
   } else {
     if (gameState) {
@@ -503,6 +509,7 @@ export const recalculateValidMovesAndCheck = (
       gameState.checkStatus.teamInCheck = Team.None;
       gameState.checkStatus.checkingPieces = undefined;
       gameState.checkStatus.attackPath = [];
+      return CheckType.None;
     }
   }
 };
@@ -538,13 +545,18 @@ export const calculateCheckmateState = (
       if (gameToUpdate.checkStatus.checkingPieces === undefined) {
         gameToUpdate.checkStatus.type = CheckType.None;
         gameToUpdate.gameState = GameState.Draw;
+        return GameState.Draw;
       } else {
         gameToUpdate.checkStatus.type = CheckType.Checkmate;
         gameToUpdate.gameState = GameState.WinnerDecided;
+        return GameState.WinnerDecided;
       }
     }
   } else {
-    if (currentMoveState?.validMoves) currentMoveState.validMoves = [];
+    if (currentMoveState?.validMoves) {
+      currentMoveState.validMoves = [];
+      return GameState.Ongoing;
+    }
   }
 };
 

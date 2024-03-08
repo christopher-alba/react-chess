@@ -2,10 +2,11 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import {
   AllGameStates,
   AllGamesStates,
+  MoveDetailsForHistory,
   Position,
   StatesOfPiece,
 } from "../../types/gameTypes";
-import { CheckType } from "../../types/enums";
+import { CheckType, GameState, MoveConsequence } from "../../types/enums";
 import {
   calculateEnemyMoves,
   calculateValidMoves,
@@ -22,6 +23,7 @@ import {
   handleCastling,
   handleEnpassant,
 } from "../../helpers/reduxHelper";
+import { mapCoordinatesToChessNotation } from "../../helpers/general";
 
 export const gameStateSlice = createSlice({
   name: "gameState",
@@ -114,38 +116,99 @@ export const gameStateSlice = createSlice({
         handleEnpassant(gameToUpdate, selectedPiece, action);
 
         // Update selected piece position
+        const copyOfOriginPosition: Position = JSON.parse(
+          JSON.stringify(selectedPiece.position)
+        );
         selectedPiece.position.x = action.payload.tile.x;
         selectedPiece.position.y = action.payload.tile.y;
+        selectedPiece.chessNotationPosition = mapCoordinatesToChessNotation(
+          action.payload.tile.x,
+          action.payload.tile.y
+        );
 
+        let enemyCaptured = false;
         // Capture enemy piece if exists
         if (enemyPieces?.length > 0)
           enemyPieces.forEach((x) => {
             if (x.alive) {
               x.alive = false;
               x.timeCapturedTimestamp = Date.now();
+              enemyCaptured = true;
             }
           });
-
+        let checkType;
         // Recalculate valid moves and check for check
         if (rookMoved) {
-          recalculateValidMovesAndCheck(
+          checkType = recalculateValidMovesAndCheck(
             gameToUpdate,
             currentMoveState,
             rookMoved
           );
         } else {
-          recalculateValidMovesAndCheck(
+          checkType = recalculateValidMovesAndCheck(
             gameToUpdate,
             currentMoveState,
             selectedPiece
           );
         }
-
+        let originPiece: StatesOfPiece = JSON.parse(
+          JSON.stringify(selectedPiece)
+        );
         //reset checking states
         switchTeamsAndReset(gameToUpdate, currentMoveState);
 
         // Update game state and current move state
-        calculateCheckmateState(gameToUpdate, currentMoveState);
+        let cmState = calculateCheckmateState(gameToUpdate, currentMoveState);
+        let finalConsequence: MoveConsequence = undefined;
+        let finalCaptured: StatesOfPiece = undefined;
+        let finalCapturedChessPos: string = undefined;
+
+        if (enemyCaptured) {
+          finalCaptured = enemyPieces[0];
+          finalCapturedChessPos = enemyPieces[0].chessNotationPosition;
+        }
+
+        if (cmState === GameState.WinnerDecided) {
+          if (enemyCaptured) {
+            finalConsequence = MoveConsequence.CaptureAndCheckmate;
+          } else {
+            finalConsequence = MoveConsequence.Checkmate;
+          }
+        } else if (cmState === GameState.Draw) {
+          if (enemyCaptured) {
+            finalConsequence = MoveConsequence.CaptureAndDraw;
+          } else {
+            finalConsequence = MoveConsequence.Draw;
+          }
+        } else if (checkType === CheckType.Check) {
+          if (enemyCaptured) {
+            finalConsequence = MoveConsequence.CaptureAndCheck;
+          } else {
+            finalConsequence = MoveConsequence.Check;
+          }
+        } else if (enemyCaptured) {
+          finalConsequence = MoveConsequence.Capture;
+        } else {
+          finalConsequence = MoveConsequence.Default;
+        }
+
+        gameToUpdate.moveHistory.push({
+          x: action.payload.tile.x,
+          y: action.payload.tile.y,
+          moveConsequence: finalConsequence,
+          originPiece: originPiece,
+          team: originPiece.team,
+          chessNotationPosition: mapCoordinatesToChessNotation(
+            action.payload.tile.x,
+            action.payload.tile.y
+          ),
+          chessNotationOriginPosition: mapCoordinatesToChessNotation(
+            copyOfOriginPosition.x,
+            copyOfOriginPosition.y
+          ),
+          capturedPiece: finalCaptured,
+          chessNotationPositionCaptured: finalCapturedChessPos,
+        } as MoveDetailsForHistory);
       }
     },
     selectPiece: (

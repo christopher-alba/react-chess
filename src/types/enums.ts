@@ -43,7 +43,16 @@ export enum MoveType {
   CheckPath,
   DefaultMove,
 }
-
+export enum MoveConsequence {
+  Check = "Check",
+  Checkmate = "Checkmate",
+  Capture = "Capture",
+  Default = "Default",
+  Draw = "Draw",
+  CaptureAndCheck = "CaptureAndCheck",
+  CaptureAndCheckmate = "CaptureAndCheckmate",
+  CaptureAndDraw = "CaptureAndDraw"
+}
 export enum MoveDirection {
   Up,
   Down,

@@ -1,15 +1,15 @@
 import { FC } from "react";
-import { Position } from "../types/gameTypes";
-import { Team, Type } from "../types/enums";
+import { Position } from "../../../types/gameTypes";
+import { Team, Type } from "../../../types/enums";
 import styled, { css } from "styled-components";
-import King from "../assets/svg/chess-king-solid.svg?react";
-import Queen from "../assets/svg/chess-queen-solid.svg?react";
-import Pawn from "../assets/svg/chess-pawn-solid.svg?react";
-import Knight from "../assets/svg/chess-knight-solid.svg?react";
-import Rook from "../assets/svg/chess-rook-solid.svg?react";
-import Bishop from "../assets/svg/chess-bishop-solid.svg?react";
+import King from "../../../assets/svg/chess-king-solid.svg?react";
+import Queen from "../../../assets/svg/chess-queen-solid.svg?react";
+import Pawn from "../../../assets/svg/chess-pawn-solid.svg?react";
+import Knight from "../../../assets/svg/chess-knight-solid.svg?react";
+import Rook from "../../../assets/svg/chess-rook-solid.svg?react";
+import Bishop from "../../../assets/svg/chess-bishop-solid.svg?react";
 import { useDispatch } from "react-redux";
-import { selectPiece } from "../redux/slices/gameStateSlice";
+import { selectPiece } from "../../../redux/slices/gameStateSlice";
 
 type IconProps = {
   team: Team;

@@ -2,6 +2,7 @@ import {
   CheckType,
   GameState,
   Mode,
+  MoveConsequence,
   MoveDirection,
   MoveType,
   Team,
@@ -22,10 +23,23 @@ export type MoveDetails = {
   originPiece: StatesOfPiece;
 };
 
+export type MoveDetailsForHistory = {
+  x: number;
+  y: number;
+  moveConsequence: MoveConsequence;
+  originPiece: StatesOfPiece;
+  capturedPiece?: StatesOfPiece;
+  chessNotationOriginPosition: string;
+  chessNotationPosition: string;
+  chessNotationPositionCaptured?: string;
+  team: Team;
+};
+
 export type Tile = {
   position: Position;
   isWall: boolean;
   color: TileColor;
+  chessNotationPosition: string;
 };
 export type Tiles = Tile[];
 export type CastlingStates = {
@@ -56,6 +70,7 @@ export type StatesOfPiece = {
   id: string;
   type: Type;
   timeCapturedTimestamp?: number;
+  chessNotationPosition: string;
 };
 export type StatesOfPieces = StatesOfPiece[];
 
@@ -68,6 +83,7 @@ export type AllGameStates = {
   availableTiles: Tiles;
   statesOfPieces: StatesOfPieces;
   checkStatus: CheckStatus;
+  moveHistory: MoveDetailsForHistory[];
 };
 
 export type CheckStatus = {
