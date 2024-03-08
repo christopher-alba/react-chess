@@ -372,11 +372,11 @@ const ChessBoard: FC = () => {
                   )
                     ? "inset 0 0 30px #eeff00"
                     : tile.x === selectedX && tile.y === selectedY
-                    ? "inset 0 0 30px #33ff00"
+                    ? `inset 0 0 30px ${theme.colors.tertiary1}`
                     : attackPath?.find(
                         (path) => path.x === tile.x && path.y === tile.y
                       )
-                    ? "inset 0 0 30px #ffffff"
+                    ? "inset 0 0 30px #ff0000"
                     : checkingPiece?.position.x === tile.x &&
                       checkingPiece.position.y === tile.y
                     ? "inset 0 0 30px #ffd900"
