@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice, current } from "@reduxjs/toolkit";
 import {
   AllGameStates,
   AllGamesStates,
@@ -95,6 +95,12 @@ export const gameStateSlice = createSlice({
           const currentTeam = gameToUpdate.teamStates.find(
             (x) => x.teamName === gameToUpdate.currentTeam
           );
+
+          //clear enemyEnpassantStates
+          gameToUpdate.teamStates.forEach((team) => {
+            team.enpassantStates.enemyEnpassantPawns = [];
+          });
+
           //disable castling if rooks are dead.
           const whiteKingSideRook = gameToUpdate.statesOfPieces.find(
             (piece) =>
@@ -248,6 +254,99 @@ export const gameStateSlice = createSlice({
           }
         }
 
+        //Check for enpassant pieces
+        if (gameToUpdate.currentTeam === Team.Black) {
+          //check for attacking pieces
+          const enpassantStates = gameToUpdate.teamStates.find(
+            (team) => team.teamName === Team.Black
+          ).enpassantStates;
+          if (
+            selectedPiece.team === Team.Black &&
+            selectedPiece.type === Type.Pawn &&
+            action.payload.tile.y - 1 === 3
+          ) {
+            enpassantStates.alliedEnpassantPawns.push(selectedPiece);
+          } else {
+            enpassantStates.alliedEnpassantPawns =
+              enpassantStates.alliedEnpassantPawns.filter(
+                (pawn) => pawn.id !== selectedPiece.id
+              );
+          }
+
+          //check for pieces to be captured
+          const enemyEnpassantStates = gameToUpdate.teamStates.find(
+            (team) => team.teamName === Team.White
+          ).enpassantStates;
+          //if current team's pawn moves forward 2 spaces, add it to teh enemy team's enpassantStates in enemyEnpassantPawns
+          if (
+            selectedPiece.team === Team.Black &&
+            selectedPiece.type === Type.Pawn &&
+            action.payload.tile.y - 1 === 2
+          ) {
+            enemyEnpassantStates.enemyEnpassantPawns.push(selectedPiece);
+          }
+        }
+        if (gameToUpdate.currentTeam === Team.White) {
+          const enpassantStates = gameToUpdate.teamStates.find(
+            (team) => team.teamName === Team.White
+          ).enpassantStates;
+          if (
+            selectedPiece.team === Team.White &&
+            selectedPiece.type === Type.Pawn &&
+            6 - action.payload.tile.y === 3
+          ) {
+            enpassantStates.alliedEnpassantPawns.push(selectedPiece);
+          } else {
+            enpassantStates.alliedEnpassantPawns =
+              enpassantStates.alliedEnpassantPawns?.filter(
+                (pawn) => pawn.id !== selectedPiece.id
+              );
+          }
+
+          //check for pieces to be captured
+          const enemyEnpassantStates = gameToUpdate.teamStates.find(
+            (team) => team.teamName === Team.Black
+          ).enpassantStates;
+          //if current team's pawn moves forward 2 spaces, add it to teh enemy team's enpassantStates in enemyEnpassantPawns
+          if (
+            selectedPiece.team === Team.White &&
+            selectedPiece.type === Type.Pawn &&
+            6 - action.payload.tile.y === 2
+          ) {
+            enemyEnpassantStates.enemyEnpassantPawns.push(selectedPiece);
+          }
+        }
+
+        //check for enpassant moves being performed
+        //WHITE ENPASSANT
+        if (
+          selectedPiece.team === Team.White &&
+          selectedPiece.type === Type.Pawn &&
+          Math.abs(selectedPiece.position.x - action.payload.tile.x) === 1
+        ) {
+          //get pawn to be captured, and set it to alive = false
+          const pawnToBeCaptured = gameToUpdate.statesOfPieces.find(
+            (piece) =>
+              piece.position.x === action.payload.tile.x &&
+              piece.position.y === action.payload.tile.y + 1
+          );
+          pawnToBeCaptured.alive = false;
+        }
+        //BLACK ENPASSANT
+        if (
+          selectedPiece.team === Team.Black &&
+          selectedPiece.type === Type.Pawn &&
+          Math.abs(selectedPiece.position.x - action.payload.tile.x) === 1
+        ) {
+          //get pawn to be captured, and set it to alive = false
+          const pawnToBeCaptured = gameToUpdate.statesOfPieces.find(
+            (piece) =>
+              piece.position.x === action.payload.tile.x &&
+              piece.position.y === action.payload.tile.y - 1
+          );
+          pawnToBeCaptured.alive = false;
+        }
+
         // Update selected piece position
         selectedPiece.position.x = action.payload.tile.x;
         selectedPiece.position.y = action.payload.tile.y;
@@ -291,6 +390,7 @@ export const gameStateSlice = createSlice({
       let matchingPiece = currentGame?.statesOfPieces.find(
         (x) => x.id === action.payload.id
       );
+      console.log(JSON.stringify(currentGame));
       let currentMoveState = state.currentMovesState.find(
         (x) => x.gameId === action.payload.gameId
       );

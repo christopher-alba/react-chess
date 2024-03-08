@@ -40,7 +40,14 @@ export type TeamState = {
   alive: boolean;
   winner: boolean;
   castlingStates: CastlingStates;
+  enpassantStates: EnpassantStates
 };
+
+export type EnpassantStates = {
+  alliedEnpassantPawns: StatesOfPieces;
+  enemyEnpassantPawns: StatesOfPieces;
+}
+
 export type TeamStates = TeamState[];
 export type StatesOfPiece = {
   position: Position;

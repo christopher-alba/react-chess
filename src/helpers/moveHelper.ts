@@ -972,8 +972,49 @@ const calculatePawnMoves = (
   let availableTiles = currentGame.availableTiles;
   let pieces = currentGame.statesOfPieces;
 
+  //ENPASSANT CHECKS BEGIN
+  //if an allied enpassant piece is directly side by side an enemy enpassant piece, enpassant can be performed
+  const currentTeam = currentGame.teamStates.find(
+    (team) => team.teamName === currentGame.currentTeam
+  );
+  const enpassantStates = currentTeam.enpassantStates;
+  for (let i = 0; i < enpassantStates.alliedEnpassantPawns.length; i++) {
+    const alliedEnpassantPawn = enpassantStates.alliedEnpassantPawns[i];
+    for (let j = 0; j < enpassantStates.enemyEnpassantPawns.length; j++) {
+      const enemyEnpassantPawn = enpassantStates.enemyEnpassantPawns[j];
+      if (
+        Math.abs(
+          alliedEnpassantPawn.position.x - enemyEnpassantPawn.position.x
+        ) === 1
+      ) {
+        if (currentTeam.teamName === Team.Black) {
+          validateTileStatic(
+            {
+              x: enemyEnpassantPawn.position.x,
+              y: enemyEnpassantPawn.position.y + 1,
+            },
+            pieces,
+            selectedPiece,
+            pawnMoves
+          );
+        } else if(currentTeam.teamName === Team.White){
+          validateTileStatic(
+            {
+              x: enemyEnpassantPawn.position.x,
+              y: enemyEnpassantPawn.position.y - 1,
+            },
+            pieces,
+            selectedPiece,
+            pawnMoves
+          );
+        }
+      }
+    }
+  }
+  //ENPASSANT CHECKS END
+
   for (let i = 0; i < availableTiles.length; i++) {
-    let tile = availableTiles[i];
+    const tile = availableTiles[i];
     if (selectedPiece.team === Team.White) {
       //initial 2 forward moves
       if (selectedPiece.position.y === 6) {

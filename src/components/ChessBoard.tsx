@@ -249,6 +249,10 @@ const ChessBoard: FC = () => {
               KingSide: false,
               QueenSide: false,
             },
+            enpassantStates: {
+              alliedEnpassantPawns: [],
+              enemyEnpassantPawns: [],
+            },
           },
           {
             teamName: Team.Black,
@@ -260,6 +264,10 @@ const ChessBoard: FC = () => {
               QueenRookMoved: false,
               KingSide: false,
               QueenSide: false,
+            },
+            enpassantStates: {
+              alliedEnpassantPawns: [],
+              enemyEnpassantPawns: [],
             },
           },
         ],
@@ -281,7 +289,6 @@ const ChessBoard: FC = () => {
       .find((x) => x.gameId === gameId)
       ?.statesOfPieces?.filter((x) => !x.alive);
     setDeadPiecesState(deadPieces);
-    console.log(deadPiecesState);
   }, [reduxState]);
 
   return (
