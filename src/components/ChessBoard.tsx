@@ -61,25 +61,25 @@ const ChessBoard: FC = () => {
   const initialize2PlayerBoardPieces = (): StatesOfPieces => {
     let pieces: StatesOfPieces = [];
     // pieces.push({
-    //   position: { x: 6, y: 1 },
+    //   position: { x: 3, y: 7 },
+    //   alive: true,
+    //   team: Team.White,
+    //   id: uuidv4(),
+    //   type: Type.Rook,
+    // });
+    // pieces.push({
+    //   position: { x: 3, y: 6},
+    //   alive: true,
+    //   team: Team.White,
+    //   id: uuidv4(),
+    //   type: Type.Bishop,
+    // });
+    // pieces.push({
+    //   position: { x: 3, y: 0 },
     //   alive: true,
     //   team: Team.Black,
     //   id: uuidv4(),
     //   type: Type.King,
-    // });
-    // pieces.push({
-    //   position: { x: 5, y: 2 },
-    //   alive: true,
-    //   team: Team.Black,
-    //   id: uuidv4(),
-    //   type: Type.Queen,
-    // });
-    // pieces.push({
-    //   position: { x: 3, y: 4 },
-    //   alive: true,
-    //   team: Team.White,
-    //   id: uuidv4(),
-    //   type: Type.Queen,
     // });
 
     // black pieces
@@ -275,7 +275,7 @@ const ChessBoard: FC = () => {
         checkStatus: {
           type: CheckType.None,
           teamInCheck: Team.None,
-          checkingPiece: undefined,
+          checkingPieces: undefined,
         },
         availableTiles: initialize2PlayerBoardTiles(),
         statesOfPieces: initialize2PlayerBoardPieces(),
@@ -353,9 +353,9 @@ const ChessBoard: FC = () => {
             (x) => x.gameId === gameId
           )?.checkStatus.attackPath;
 
-          let checkingPiece = reduxState.gamesStates.find(
+          let checkingPieces = reduxState.gamesStates.find(
             (x) => x.gameId === gameId
-          )?.checkStatus.checkingPiece;
+          )?.checkStatus.checkingPieces;
           let selectedPieceId = currentMoves?.selectedPieceId;
           let selectedPiecePos = pieces?.find(
             (x) => x.id === selectedPieceId
@@ -381,8 +381,11 @@ const ChessBoard: FC = () => {
                         (path) => path.x === tile.x && path.y === tile.y
                       )
                     ? "inset 0 0 30px #ff0000"
-                    : checkingPiece?.position.x === tile.x &&
-                      checkingPiece.position.y === tile.y
+                    : checkingPieces?.find(
+                        (piece) =>
+                          piece.position.x === tile.x &&
+                          piece.position.y === tile.y
+                      )
                     ? "inset 0 0 30px #ffd900"
                     : "",
                   background:
@@ -596,7 +599,7 @@ const PlayerName = styled("h3")`
   margin: 0;
   width: 200px;
   transition: 500ms;
-  padding-left:30px;
+  padding-left: 30px;
   font-weight: 200;
   letter-spacing: 3px;
 `;

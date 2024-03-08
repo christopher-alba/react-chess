@@ -10,6 +10,7 @@ import {
 import {
   AllGameStates,
   CheckStatus,
+  DirectionAndOrigin,
   DirectionData,
   MoveDetails,
   Position,
@@ -99,15 +100,16 @@ const filterMovesForCheckState = (
   movesToFilter: MoveDetails[],
   checkStatus: CheckStatus
 ) => {
+  if (checkStatus.checkingPieces?.length >= 2) return [];
   if (
     checkStatus.attackPath &&
-    checkStatus.checkingPiece &&
+    checkStatus.checkingPieces &&
     checkStatus.type === CheckType.Check
   ) {
     return movesToFilter.filter((obj) =>
       isMatch(
         checkStatus.attackPath as MoveDetails[],
-        checkStatus.checkingPiece as StatesOfPiece,
+        checkStatus.checkingPieces[0] as StatesOfPiece,
         obj
       )
     );
@@ -586,8 +588,7 @@ export const calculateKingMoves = (
   let kingMoves: MoveDetails[] = [];
   let availableTiles = currentGame.availableTiles;
   let pieces = currentGame.statesOfPieces;
-  let checkPath = currentGame.checkStatus.attackPath;
-  let checkingPiece = currentGame.checkStatus.checkingPiece;
+  let checkingPieces = currentGame.checkStatus.checkingPieces;
 
   for (let i = 0; i < availableTiles.length; i++) {
     let tile = availableTiles[i];
@@ -600,8 +601,7 @@ export const calculateKingMoves = (
           selectedPiece,
           kingMoves,
           allEnemyMoves,
-          checkPath,
-          checkingPiece
+          checkingPieces
         );
       }
       //down
@@ -612,8 +612,7 @@ export const calculateKingMoves = (
           selectedPiece,
           kingMoves,
           allEnemyMoves,
-          checkPath,
-          checkingPiece
+          checkingPieces
         );
       }
     }
@@ -626,8 +625,7 @@ export const calculateKingMoves = (
           selectedPiece,
           kingMoves,
           allEnemyMoves,
-          checkPath,
-          checkingPiece
+          checkingPieces
         );
       }
       //right
@@ -638,8 +636,7 @@ export const calculateKingMoves = (
           selectedPiece,
           kingMoves,
           allEnemyMoves,
-          checkPath,
-          checkingPiece
+          checkingPieces
         );
       }
     }
@@ -654,8 +651,7 @@ export const calculateKingMoves = (
         selectedPiece,
         kingMoves,
         allEnemyMoves,
-        checkPath,
-        checkingPiece
+        checkingPieces
       );
     }
     //bottom left
@@ -669,8 +665,7 @@ export const calculateKingMoves = (
         selectedPiece,
         kingMoves,
         allEnemyMoves,
-        checkPath,
-        checkingPiece
+        checkingPieces
       );
     }
     //upper left
@@ -684,8 +679,7 @@ export const calculateKingMoves = (
         selectedPiece,
         kingMoves,
         allEnemyMoves,
-        checkPath,
-        checkingPiece
+        checkingPieces
       );
     }
     //upper right
@@ -699,8 +693,7 @@ export const calculateKingMoves = (
         selectedPiece,
         kingMoves,
         allEnemyMoves,
-        checkPath,
-        checkingPiece
+        checkingPieces
       );
     }
     if (
@@ -726,8 +719,7 @@ export const calculateKingMoves = (
           selectedPiece,
           kingMoves,
           allEnemyMoves,
-          checkPath,
-          checkingPiece
+          checkingPieces
         );
       }
 
@@ -750,8 +742,7 @@ export const calculateKingMoves = (
           selectedPiece,
           kingMoves,
           allEnemyMoves,
-          checkPath,
-          checkingPiece
+          checkingPieces
         );
       }
 
@@ -773,8 +764,7 @@ export const calculateKingMoves = (
           selectedPiece,
           kingMoves,
           allEnemyMoves,
-          checkPath,
-          checkingPiece
+          checkingPieces
         );
       }
 
@@ -797,8 +787,7 @@ export const calculateKingMoves = (
           selectedPiece,
           kingMoves,
           allEnemyMoves,
-          checkPath,
-          checkingPiece
+          checkingPieces
         );
       }
     }
@@ -1306,8 +1295,7 @@ const validateKingTileStatic = (
   selectedPiece: StatesOfPiece,
   movesArray: MoveDetails[],
   allEnemyMoves: MoveDetails[],
-  checkPath?: MoveDetails[],
-  _checkingPiece?: StatesOfPiece
+  checkingPieces?: StatesOfPieces
 ) => {
   //if no friendly pieces are on the tile
   if (
@@ -1328,8 +1316,37 @@ const validateKingTileStatic = (
       console.log("move intersects", intersects?.x, intersects?.y);
       if (intersects) return;
     }
+    let possibleAttackPaths: MoveDetails[];
     //if the tile is in the attack path of a checking piece
-    if (checkPath?.find((path) => path.x === tile.x && path.y === tile.y)) {
+    for (let i = 0; i < checkingPieces?.length; i++) {
+      //calculate attack path of checking piece using all enemy moves
+      possibleAttackPaths = allEnemyMoves.filter(
+        (move) =>
+          JSON.stringify(move.originPiece) === JSON.stringify(checkingPieces[i])
+      );
+    }
+    //filter down all possible attack paths using selected piece to find king tile, then use it to get the direction of attack
+    let kingLocation = selectedPiece.position;
+    let attackDestinations = possibleAttackPaths?.filter(
+      (path) => path.x === kingLocation.x && path.y === kingLocation.y
+    );
+    let attackDirectionsAndOrigins = attackDestinations?.map(
+      (x) =>
+        ({
+          direction: x.moveDirection,
+          originPiece: x.originPiece,
+        } as DirectionAndOrigin)
+    );
+
+    let attackPaths = possibleAttackPaths?.filter((path) =>
+      attackDirectionsAndOrigins.find(
+        (atk) =>
+          atk.direction === path.moveDirection &&
+          JSON.stringify(atk.originPiece) === JSON.stringify(path.originPiece)
+      )
+    );
+
+    if (attackPaths?.find((x) => x.x === tile.x && x.y === tile.y)) {
       return;
     }
 
@@ -1399,15 +1416,14 @@ const validateTileWithLoopingEnemy = (
       )
     ) {
       //if no enemy pieces are on the tile
-      if (
-        !pieces.find(
-          (piece) =>
-            piece.team !== selectedPiece.team &&
-            tile.x === piece.position.x &&
-            tile.y === piece.position.y &&
-            piece.alive === true
-        )
-      ) {
+      let enemyPiece = pieces.find(
+        (piece) =>
+          piece.team !== selectedPiece.team &&
+          tile.x === piece.position.x &&
+          tile.y === piece.position.y &&
+          piece.alive === true
+      );
+      if (!enemyPiece) {
         movesArray.push({
           x: tile.x,
           y: tile.y,
@@ -1425,18 +1441,13 @@ const validateTileWithLoopingEnemy = (
           moveDirection: direction,
           originPiece: selectedPiece,
         });
+        if (enemyPiece.type === Type.King) {
+          return true;
+        }
         return false;
       }
-    } else {
-      movesArray.push({
-        x: tile.x,
-        y: tile.y,
-        moveType: MoveType.AttackPath,
-        moveDirection: direction,
-        originPiece: selectedPiece,
-      });
-      return false;
     }
+    return false;
   }
   return true;
 };
@@ -1462,15 +1473,14 @@ const validateTileWithLooping = (
       )
     ) {
       //if no enemy pieces are on the tile
-      if (
-        !pieces.find(
-          (piece) =>
-            piece.team !== selectedPiece.team &&
-            tile.x === piece.position.x &&
-            tile.y === piece.position.y &&
-            piece.alive === true
-        )
-      ) {
+      let enemyPiece = pieces.find(
+        (piece) =>
+          piece.team !== selectedPiece.team &&
+          tile.x === piece.position.x &&
+          tile.y === piece.position.y &&
+          piece.alive === true
+      );
+      if (!enemyPiece) {
         movesArray.push({
           x: tile.x,
           y: tile.y,

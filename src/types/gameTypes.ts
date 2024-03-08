@@ -73,7 +73,7 @@ export type AllGameStates = {
 export type CheckStatus = {
   type: CheckType;
   teamInCheck: Team;
-  checkingPiece?: StatesOfPiece;
+  checkingPieces?: StatesOfPieces;
   attackPath?: MoveDetails[];
 };
 export type AllGamesStates = {
@@ -93,4 +93,9 @@ export type DirectionData = {
   dx: number;
   dy: number;
   direction: MoveDirection;
+};
+
+export type DirectionAndOrigin = {
+  direction: MoveDirection;
+  originPiece: StatesOfPiece;
 };

@@ -222,8 +222,8 @@ export const handleCastling = (
     whiteCastlingStates.KingRookMoved = true;
   }
 
-   //if white queenside rook first time moving, disable the ability to queenside castle
-   if (
+  //if white queenside rook first time moving, disable the ability to queenside castle
+  if (
     action.payload.selectedPiece.team === Team.White &&
     action.payload.selectedPiece.type === Type.Rook &&
     action.payload.selectedPiece.position.x === 7 &&
@@ -235,7 +235,7 @@ export const handleCastling = (
     whiteCastlingStates.QueenSide = true;
     whiteCastlingStates.QueenRookMoved = true;
   }
-  
+
   //if black kingside rook first time moving, disable the ability to kingside castle
   if (
     action.payload.selectedPiece.team === Team.Black &&
@@ -250,8 +250,8 @@ export const handleCastling = (
     blackCastlingStates.KingRookMoved = true;
   }
 
-   //if black queenside rook first time moving, disable the ability to queenside castle
-   if (
+  //if black queenside rook first time moving, disable the ability to queenside castle
+  if (
     action.payload.selectedPiece.team === Team.Black &&
     action.payload.selectedPiece.type === Type.Rook &&
     action.payload.selectedPiece.position.x === 7 &&
@@ -399,21 +399,23 @@ export const checkForDiscoveredChecks = (
     (piece) => piece.type === Type.King && piece.team === selectedPiece.team
   );
   //get checking piece
-  let checkingPiece = gameState.checkStatus.checkingPiece;
+  let checkingPieces = gameState.checkStatus.checkingPieces;
   //if checkingPiece is about to be killed by the move, set it to alive = false and remove the attack path
-  if (
-    checkingPiece &&
-    checkingPiece.position.x === tile.x &&
-    checkingPiece.position.y === tile.y
-  ) {
-    gameState.statesOfPieces.find(
-      (piece) => piece.id === checkingPiece.id
-    ).alive = false;
-    gameState.statesOfPieces.find(
-      (piece) => piece.id === checkingPiece.id
-    ).timeCapturedTimestamp = Date.now();
-    gameState.checkStatus.attackPath = [];
-    checkingPiece = undefined;
+  for (let i = 0; i < checkingPieces?.length; i++) {
+    if (
+      checkingPieces &&
+      checkingPieces[i].position.x === tile.x &&
+      checkingPieces[i].position.y === tile.y
+    ) {
+      gameState.statesOfPieces.find(
+        (piece) => piece.id === checkingPieces[i].id
+      ).alive = false;
+      gameState.statesOfPieces.find(
+        (piece) => piece.id === checkingPieces[i].id
+      ).timeCapturedTimestamp = Date.now();
+      gameState.checkStatus.attackPath = [];
+      checkingPieces = undefined;
+    }
   }
   //if any enemy piece is about to be killed, make it alive = false and remove its attack path
   let enemyAboutToGetRekt = enemyTeamPieces.find(
@@ -446,9 +448,9 @@ export const checkForDiscoveredChecks = (
 };
 
 export const recalculateValidMovesAndCheck = (
-  gameState,
-  currentMoveState,
-  selectedPiece
+  gameState: AllGameStates,
+  currentMoveState: CurrentMoveState,
+  selectedPiece: StatesOfPiece
 ) => {
   // Logic to recalculate valid moves and check for checkmate
   let enemyKing = gameState?.statesOfPieces.find(
@@ -472,26 +474,34 @@ export const recalculateValidMovesAndCheck = (
     currentMoveState.validMoves = tempArray;
   }
   //find the intersecting move
-  let intersectingMove = currentMoveState?.validMoves.find(
+  let intersectingMoves = currentMoveState?.validMoves.filter(
     (x) => x.x === enemyKing?.position.x && x.y === enemyKing.position.y
   );
-  if (enemyKing && intersectingMove) {
+  if (enemyKing && intersectingMoves.length > 0) {
     if (gameState) {
       gameState.checkStatus.type = CheckType.Check;
       gameState.checkStatus.teamInCheck = enemyKing.team;
-      gameState.checkStatus.checkingPiece = intersectingMove.originPiece;
-      gameState.checkStatus.attackPath = currentMoveState?.validMoves.filter(
-        (move) =>
-          move.moveDirection === intersectingMove.moveDirection &&
-          intersectingMove.moveDirection !== MoveDirection.OneOff &&
-          move.originPiece === intersectingMove.originPiece
+      gameState.checkStatus.checkingPieces = intersectingMoves.map(
+        (move) => move.originPiece
       );
+      let attackPath = [];
+      gameState.checkStatus.attackPath = [];
+      for (let i = 0; i < intersectingMoves.length; i++) {
+        let temp = currentMoveState?.validMoves.filter(
+          (move) =>
+            move.moveDirection === intersectingMoves[i].moveDirection &&
+            intersectingMoves[i].moveDirection !== MoveDirection.OneOff &&
+            move.originPiece === intersectingMoves[i].originPiece
+        );
+        attackPath = attackPath.concat(temp);
+      }
+      gameState.checkStatus.attackPath = attackPath;
     }
   } else {
     if (gameState) {
       gameState.checkStatus.type = CheckType.None;
       gameState.checkStatus.teamInCheck = Team.None;
-      gameState.checkStatus.checkingPiece = undefined;
+      gameState.checkStatus.checkingPieces = undefined;
       gameState.checkStatus.attackPath = [];
     }
   }
@@ -525,7 +535,7 @@ export const calculateCheckmateState = (
   //if there are no moves, its a checkmate
   if (currentMoveState?.validMoves.length === 0) {
     if (gameToUpdate) {
-      if (gameToUpdate.checkStatus.checkingPiece === undefined) {
+      if (gameToUpdate.checkStatus.checkingPieces === undefined) {
         gameToUpdate.checkStatus.type = CheckType.None;
         gameToUpdate.gameState = GameState.Draw;
       } else {
