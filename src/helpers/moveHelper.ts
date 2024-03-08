@@ -1447,6 +1447,13 @@ const validateTileWithLoopingEnemy = (
         return false;
       }
     }
+    movesArray.push({
+      x: tile.x,
+      y: tile.y,
+      moveType: MoveType.AttackPath,
+      moveDirection: direction,
+      originPiece: selectedPiece,
+    });
     return false;
   }
   return true;
