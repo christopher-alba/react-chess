@@ -1,11 +1,11 @@
-import { PayloadAction, createSlice, current } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import {
   AllGameStates,
   AllGamesStates,
   Position,
   StatesOfPiece,
 } from "../../types/gameTypes";
-import { CheckType, Team, Type } from "../../types/enums";
+import { CheckType } from "../../types/enums";
 import {
   calculateEnemyMoves,
   calculateValidMoves,
@@ -19,6 +19,8 @@ import {
   recalculateValidMovesAndCheck,
   calculateCheckmateState,
   switchTeamsAndReset,
+  handleCastling,
+  handleEnpassant,
 } from "../../helpers/reduxHelper";
 
 export const gameStateSlice = createSlice({
@@ -101,251 +103,15 @@ export const gameStateSlice = createSlice({
             team.enpassantStates.enemyEnpassantPawns = [];
           });
 
-          //disable castling if rooks are dead.
-          const whiteKingSideRook = gameToUpdate.statesOfPieces.find(
-            (piece) =>
-              piece.position.x === 7 &&
-              piece.position.y === 7 &&
-              piece.type === Type.Rook &&
-              piece.team === Team.White
+          rookMoved = handleCastling(
+            gameToUpdate,
+            action,
+            currentTeam,
+            rookMoved
           );
-          //if its about to die, disable castling for it
-          if (
-            whiteKingSideRook &&
-            action.payload.tile.x === whiteKingSideRook.position.x &&
-            action.payload.tile.y === whiteKingSideRook.position.y
-          ) {
-            currentTeam.castlingStates.KingSide = true;
-            currentTeam.castlingStates.KingRookMoved = true;
-          }
-
-          const whiteQueenSideRook = gameToUpdate.statesOfPieces.find(
-            (piece) =>
-              piece.position.x === 0 &&
-              piece.position.y === 7 &&
-              piece.type === Type.Rook &&
-              piece.team === Team.White
-          );
-          //if its about to die, disable castling for it
-          if (
-            whiteQueenSideRook &&
-            action.payload.tile.x === whiteQueenSideRook.position.x &&
-            action.payload.tile.y === whiteQueenSideRook.position.y
-          ) {
-            currentTeam.castlingStates.KingSide = true;
-            currentTeam.castlingStates.KingRookMoved = true;
-          }
-
-          const blackQueenSideRook = gameToUpdate.statesOfPieces.find(
-            (piece) =>
-              piece.position.x === 0 &&
-              piece.position.y === 0 &&
-              piece.type === Type.Rook &&
-              piece.team === Team.Black
-          );
-
-          //if its about to die, disable castling for it
-          if (
-            blackQueenSideRook &&
-            action.payload.tile.x === blackQueenSideRook.position.x &&
-            action.payload.tile.y === blackQueenSideRook.position.y
-          ) {
-            currentTeam.castlingStates.QueenSide = true;
-            currentTeam.castlingStates.QueenRookMoved = true;
-          }
-          //find black king side rook
-          const blackKingSideRook = gameToUpdate.statesOfPieces.find(
-            (piece) =>
-              piece.position.x === 7 &&
-              piece.position.y === 0 &&
-              piece.type === Type.Rook &&
-              piece.team === Team.Black
-          );
-          //if its about to die, disable castling for it
-          if (
-            blackKingSideRook &&
-            action.payload.tile.x === blackKingSideRook.position.x &&
-            action.payload.tile.y === blackKingSideRook.position.y
-          ) {
-            currentTeam.castlingStates.KingSide = true;
-            currentTeam.castlingStates.KingRookMoved = true;
-          }
-
-          //detect white king side castling
-          if (
-            selectedPiece.team === Team.White &&
-            selectedPiece.type === Type.King &&
-            action.payload.tile.x === 6 &&
-            selectedPiece.position.x === 4
-          ) {
-            let kingSideRook = gameToUpdate.statesOfPieces.find(
-              (piece) => piece.position.x === 7 && piece.position.y === 7
-            );
-            kingSideRook.position.x = 5;
-            rookMoved = kingSideRook;
-          }
-          //detect white queen side castling
-          if (
-            selectedPiece.team === Team.White &&
-            selectedPiece.type === Type.King &&
-            action.payload.tile.x === 2 &&
-            selectedPiece.position.x === 4
-          ) {
-            let queenSideRook = gameToUpdate.statesOfPieces.find(
-              (piece) => piece.position.x === 0 && piece.position.y === 7
-            );
-            queenSideRook.position.x = 3;
-            rookMoved = queenSideRook;
-          }
-
-          //detect black king side castling
-          if (
-            selectedPiece.team === Team.Black &&
-            selectedPiece.type === Type.King &&
-            action.payload.tile.x === 6 &&
-            selectedPiece.position.x === 4
-          ) {
-            let kingSideRook = gameToUpdate.statesOfPieces.find(
-              (piece) => piece.position.x === 7 && piece.position.y === 0
-            );
-            kingSideRook.position.x = 5;
-            rookMoved = kingSideRook;
-          }
-          //detect black queen side castling
-          if (
-            selectedPiece.team === Team.Black &&
-            selectedPiece.type === Type.King &&
-            action.payload.tile.x === 2 &&
-            selectedPiece.position.x === 4
-          ) {
-            let queenSideRook = gameToUpdate.statesOfPieces.find(
-              (piece) => piece.position.x === 0 && piece.position.y === 0
-            );
-            queenSideRook.position.x = 3;
-            rookMoved = queenSideRook;
-          }
-
-          //If black king's first time moving, disable the ability to castle
-          if (
-            selectedPiece.team === Team.Black &&
-            selectedPiece.type === Type.King &&
-            selectedPiece.position.x === 4 &&
-            selectedPiece.position.y === 0
-          ) {
-            let blackCastlingStates = gameToUpdate.teamStates.find(
-              (team) => team.teamName === Team.Black
-            ).castlingStates;
-            blackCastlingStates.KingMoved = true;
-            blackCastlingStates.KingSide = true;
-            blackCastlingStates.QueenSide = true;
-          } else if (
-            //If white king's first time moving, disable the ability to castle
-            selectedPiece.team === Team.White &&
-            selectedPiece.type === Type.King &&
-            selectedPiece.position.x === 4 &&
-            selectedPiece.position.y === 7
-          ) {
-            let whiteCastlingStates = gameToUpdate.teamStates.find(
-              (team) => team.teamName === Team.White
-            ).castlingStates;
-            whiteCastlingStates.KingMoved = true;
-            whiteCastlingStates.KingSide = true;
-            whiteCastlingStates.QueenSide = true;
-          }
         }
 
-        //Check for enpassant pieces
-        if (gameToUpdate.currentTeam === Team.Black) {
-          //check for attacking pieces
-          const enpassantStates = gameToUpdate.teamStates.find(
-            (team) => team.teamName === Team.Black
-          ).enpassantStates;
-          if (
-            selectedPiece.team === Team.Black &&
-            selectedPiece.type === Type.Pawn &&
-            action.payload.tile.y - 1 === 3
-          ) {
-            enpassantStates.alliedEnpassantPawns.push(selectedPiece);
-          } else {
-            enpassantStates.alliedEnpassantPawns =
-              enpassantStates.alliedEnpassantPawns.filter(
-                (pawn) => pawn.id !== selectedPiece.id
-              );
-          }
-
-          //check for pieces to be captured
-          const enemyEnpassantStates = gameToUpdate.teamStates.find(
-            (team) => team.teamName === Team.White
-          ).enpassantStates;
-          //if current team's pawn moves forward 2 spaces, add it to teh enemy team's enpassantStates in enemyEnpassantPawns
-          if (
-            selectedPiece.team === Team.Black &&
-            selectedPiece.type === Type.Pawn &&
-            action.payload.tile.y - 1 === 2
-          ) {
-            enemyEnpassantStates.enemyEnpassantPawns.push(selectedPiece);
-          }
-        }
-        if (gameToUpdate.currentTeam === Team.White) {
-          const enpassantStates = gameToUpdate.teamStates.find(
-            (team) => team.teamName === Team.White
-          ).enpassantStates;
-          if (
-            selectedPiece.team === Team.White &&
-            selectedPiece.type === Type.Pawn &&
-            6 - action.payload.tile.y === 3
-          ) {
-            enpassantStates.alliedEnpassantPawns.push(selectedPiece);
-          } else {
-            enpassantStates.alliedEnpassantPawns =
-              enpassantStates.alliedEnpassantPawns?.filter(
-                (pawn) => pawn.id !== selectedPiece.id
-              );
-          }
-
-          //check for pieces to be captured
-          const enemyEnpassantStates = gameToUpdate.teamStates.find(
-            (team) => team.teamName === Team.Black
-          ).enpassantStates;
-          //if current team's pawn moves forward 2 spaces, add it to teh enemy team's enpassantStates in enemyEnpassantPawns
-          if (
-            selectedPiece.team === Team.White &&
-            selectedPiece.type === Type.Pawn &&
-            6 - action.payload.tile.y === 2
-          ) {
-            enemyEnpassantStates.enemyEnpassantPawns.push(selectedPiece);
-          }
-        }
-
-        //check for enpassant moves being performed
-        //WHITE ENPASSANT
-        if (
-          selectedPiece.team === Team.White &&
-          selectedPiece.type === Type.Pawn &&
-          Math.abs(selectedPiece.position.x - action.payload.tile.x) === 1
-        ) {
-          //get pawn to be captured, and set it to alive = false
-          const pawnToBeCaptured = gameToUpdate.statesOfPieces.find(
-            (piece) =>
-              piece.position.x === action.payload.tile.x &&
-              piece.position.y === action.payload.tile.y + 1
-          );
-          pawnToBeCaptured.alive = false;
-        }
-        //BLACK ENPASSANT
-        if (
-          selectedPiece.team === Team.Black &&
-          selectedPiece.type === Type.Pawn &&
-          Math.abs(selectedPiece.position.x - action.payload.tile.x) === 1
-        ) {
-          //get pawn to be captured, and set it to alive = false
-          const pawnToBeCaptured = gameToUpdate.statesOfPieces.find(
-            (piece) =>
-              piece.position.x === action.payload.tile.x &&
-              piece.position.y === action.payload.tile.y - 1
-          );
-          pawnToBeCaptured.alive = false;
-        }
+        handleEnpassant(gameToUpdate, selectedPiece, action);
 
         // Update selected piece position
         selectedPiece.position.x = action.payload.tile.x;
