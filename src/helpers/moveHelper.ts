@@ -802,9 +802,8 @@ export const calculateKingMoves = (
         );
       }
     }
-
-    return kingMoves;
   }
+  return kingMoves;
 };
 
 const isTileUnderAttack = (
@@ -839,11 +838,7 @@ const hasKingRookMoved = (currentGame: AllGameStates) => {
     (team) => team.teamName === currentTeam
   ).castlingStates.KingRookMoved;
 
-  let hasKingMoved = currentGame.teamStates.find(
-    (team) => team.teamName === currentTeam
-  ).castlingStates.KingMoved;
-
-  return hasRookMoved && hasKingMoved;
+  return hasRookMoved;
 };
 
 const hasQueenRookMoved = (currentGame: AllGameStates) => {
@@ -853,11 +848,7 @@ const hasQueenRookMoved = (currentGame: AllGameStates) => {
     (team) => team.teamName === currentTeam
   ).castlingStates.QueenRookMoved;
 
-  let hasKingMoved = currentGame.teamStates.find(
-    (team) => team.teamName === currentTeam
-  ).castlingStates.KingMoved;
-
-  return hasRookMoved && hasKingMoved;
+  return hasRookMoved;
 };
 
 const calculateEnemyKingMoves = (
