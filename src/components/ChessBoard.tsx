@@ -459,8 +459,8 @@ const TilesWrapper = styled("div")`
     #e1cee9 45%,
     #ccb2e1 60%,
     #caa2e5 75%,
-    #b782e2 85%,
-    #9339e8 100%
+    #b782e27f 85%,
+    #9339e83b 100%
   );
   backdrop-filter: blur(8px);
   padding: 20px;
@@ -496,7 +496,7 @@ const TilesWrapper = styled("div")`
   }
 
   &::after {
-    background: #86e1ef;
+    background: #86e1ef78;
     right: -195px;
     top: 50%;
     transform: translateY(-50%);
@@ -521,18 +521,18 @@ const TilesWrapper = styled("div")`
   & > .circles {
     width: 230px;
     height: 230px;
-    background: #ffc285;
+    background: #ffc28560;
     bottom: -60px;
     left: 75px;
   }
 
   & > .circles::before {
-    background: #8600ff;
+    background: #8800ff89;
     left: -40%;
   }
 
   & > .circles::after {
-    background: #ff0000;
+    background: #ff000063;
     right: -20%;
   }
 `;
