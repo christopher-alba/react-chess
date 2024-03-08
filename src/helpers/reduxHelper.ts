@@ -208,6 +208,61 @@ export const handleCastling = (
     whiteCastlingStates.QueenSide = true;
   }
 
+  //if white kingside rook first time moving, disable the ability to kingside castle
+  if (
+    action.payload.selectedPiece.team === Team.White &&
+    action.payload.selectedPiece.type === Type.Rook &&
+    action.payload.selectedPiece.position.x === 0 &&
+    action.payload.selectedPiece.position.y === 7
+  ) {
+    let whiteCastlingStates = gameToUpdate.teamStates.find(
+      (team) => team.teamName === Team.White
+    ).castlingStates;
+    whiteCastlingStates.KingSide = true;
+    whiteCastlingStates.KingRookMoved = true;
+  }
+
+   //if white queenside rook first time moving, disable the ability to queenside castle
+   if (
+    action.payload.selectedPiece.team === Team.White &&
+    action.payload.selectedPiece.type === Type.Rook &&
+    action.payload.selectedPiece.position.x === 7 &&
+    action.payload.selectedPiece.position.y === 7
+  ) {
+    let whiteCastlingStates = gameToUpdate.teamStates.find(
+      (team) => team.teamName === Team.White
+    ).castlingStates;
+    whiteCastlingStates.QueenSide = true;
+    whiteCastlingStates.QueenRookMoved = true;
+  }
+  
+  //if black kingside rook first time moving, disable the ability to kingside castle
+  if (
+    action.payload.selectedPiece.team === Team.Black &&
+    action.payload.selectedPiece.type === Type.Rook &&
+    action.payload.selectedPiece.position.x === 0 &&
+    action.payload.selectedPiece.position.y === 0
+  ) {
+    let blackCastlingStates = gameToUpdate.teamStates.find(
+      (team) => team.teamName === Team.Black
+    ).castlingStates;
+    blackCastlingStates.KingSide = true;
+    blackCastlingStates.KingRookMoved = true;
+  }
+
+   //if black queenside rook first time moving, disable the ability to queenside castle
+   if (
+    action.payload.selectedPiece.team === Team.Black &&
+    action.payload.selectedPiece.type === Type.Rook &&
+    action.payload.selectedPiece.position.x === 7 &&
+    action.payload.selectedPiece.position.y === 0
+  ) {
+    let blackCastlingStates = gameToUpdate.teamStates.find(
+      (team) => team.teamName === Team.Black
+    ).castlingStates;
+    blackCastlingStates.QueenSide = true;
+    blackCastlingStates.QueenRookMoved = true;
+  }
   return rookMoved;
 };
 

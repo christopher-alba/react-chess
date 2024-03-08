@@ -703,102 +703,108 @@ export const calculateKingMoves = (
         checkingPiece
       );
     }
-    //white King side castling
     if (
-      currentGame.currentTeam === Team.White &&
-      isTileEmpty({ x: 5, y: 7 }, currentGame) &&
-      isTileEmpty({ x: 6, y: 7 }, currentGame) &&
-      !isTileUnderAttack({ x: 4, y: 7 }, allEnemyMoves) &&
-      !isTileUnderAttack({ x: 5, y: 7 }, allEnemyMoves) &&
-      !isTileUnderAttack({ x: 6, y: 7 }, allEnemyMoves) &&
-      !hasKingRookMoved(currentGame) &&
-      tile.position.x === 6 &&
-      tile.position.y === 7
+      !currentGame.teamStates.find(
+        (x) => x.teamName === currentGame.currentTeam
+      ).castlingStates.KingMoved
     ) {
-      validateKingTileStatic(
-        tile.position,
-        pieces,
-        selectedPiece,
-        kingMoves,
-        allEnemyMoves,
-        checkPath,
-        checkingPiece
-      );
+      //white King side castling
+      if (
+        currentGame.currentTeam === Team.White &&
+        isTileEmpty({ x: 5, y: 7 }, currentGame) &&
+        isTileEmpty({ x: 6, y: 7 }, currentGame) &&
+        !isTileUnderAttack({ x: 4, y: 7 }, allEnemyMoves) &&
+        !isTileUnderAttack({ x: 5, y: 7 }, allEnemyMoves) &&
+        !isTileUnderAttack({ x: 6, y: 7 }, allEnemyMoves) &&
+        !hasKingRookMoved(currentGame) &&
+        tile.position.x === 6 &&
+        tile.position.y === 7
+      ) {
+        validateKingTileStatic(
+          tile.position,
+          pieces,
+          selectedPiece,
+          kingMoves,
+          allEnemyMoves,
+          checkPath,
+          checkingPiece
+        );
+      }
+
+      //white Queen side castling
+      if (
+        currentGame.currentTeam === Team.White &&
+        isTileEmpty({ x: 1, y: 7 }, currentGame) &&
+        isTileEmpty({ x: 2, y: 7 }, currentGame) &&
+        isTileEmpty({ x: 3, y: 7 }, currentGame) &&
+        !isTileUnderAttack({ x: 2, y: 7 }, allEnemyMoves) &&
+        !isTileUnderAttack({ x: 3, y: 7 }, allEnemyMoves) &&
+        !isTileUnderAttack({ x: 4, y: 7 }, allEnemyMoves) &&
+        !hasQueenRookMoved(currentGame) &&
+        tile.position.x === 2 &&
+        tile.position.y === 7
+      ) {
+        validateKingTileStatic(
+          tile.position,
+          pieces,
+          selectedPiece,
+          kingMoves,
+          allEnemyMoves,
+          checkPath,
+          checkingPiece
+        );
+      }
+
+      //black King side castling
+      if (
+        currentGame.currentTeam === Team.Black &&
+        isTileEmpty({ x: 5, y: 0 }, currentGame) &&
+        isTileEmpty({ x: 6, y: 0 }, currentGame) &&
+        !isTileUnderAttack({ x: 4, y: 0 }, allEnemyMoves) &&
+        !isTileUnderAttack({ x: 5, y: 0 }, allEnemyMoves) &&
+        !isTileUnderAttack({ x: 6, y: 0 }, allEnemyMoves) &&
+        !hasKingRookMoved(currentGame) &&
+        tile.position.x === 6 &&
+        tile.position.y === 0
+      ) {
+        validateKingTileStatic(
+          tile.position,
+          pieces,
+          selectedPiece,
+          kingMoves,
+          allEnemyMoves,
+          checkPath,
+          checkingPiece
+        );
+      }
+
+      //black Queen side castling
+      if (
+        currentGame.currentTeam === Team.Black &&
+        isTileEmpty({ x: 1, y: 0 }, currentGame) &&
+        isTileEmpty({ x: 2, y: 0 }, currentGame) &&
+        isTileEmpty({ x: 3, y: 0 }, currentGame) &&
+        !isTileUnderAttack({ x: 2, y: 0 }, allEnemyMoves) &&
+        !isTileUnderAttack({ x: 3, y: 0 }, allEnemyMoves) &&
+        !isTileUnderAttack({ x: 4, y: 0 }, allEnemyMoves) &&
+        !hasQueenRookMoved(currentGame) &&
+        tile.position.x === 2 &&
+        tile.position.y === 0
+      ) {
+        validateKingTileStatic(
+          tile.position,
+          pieces,
+          selectedPiece,
+          kingMoves,
+          allEnemyMoves,
+          checkPath,
+          checkingPiece
+        );
+      }
     }
 
-    //white Queen side castling
-    if (
-      currentGame.currentTeam === Team.White &&
-      isTileEmpty({ x: 1, y: 7 }, currentGame) &&
-      isTileEmpty({ x: 2, y: 7 }, currentGame) &&
-      isTileEmpty({ x: 3, y: 7 }, currentGame) &&
-      !isTileUnderAttack({ x: 2, y: 7 }, allEnemyMoves) &&
-      !isTileUnderAttack({ x: 3, y: 7 }, allEnemyMoves) &&
-      !isTileUnderAttack({ x: 4, y: 7 }, allEnemyMoves) &&
-      !hasQueenRookMoved(currentGame) &&
-      tile.position.x === 2 &&
-      tile.position.y === 7
-    ) {
-      validateKingTileStatic(
-        tile.position,
-        pieces,
-        selectedPiece,
-        kingMoves,
-        allEnemyMoves,
-        checkPath,
-        checkingPiece
-      );
-    }
-
-    //black King side castling
-    if (
-      currentGame.currentTeam === Team.Black &&
-      isTileEmpty({ x: 5, y: 0 }, currentGame) &&
-      isTileEmpty({ x: 6, y: 0 }, currentGame) &&
-      !isTileUnderAttack({ x: 4, y: 0 }, allEnemyMoves) &&
-      !isTileUnderAttack({ x: 5, y: 0 }, allEnemyMoves) &&
-      !isTileUnderAttack({ x: 6, y: 0 }, allEnemyMoves) &&
-      !hasKingRookMoved(currentGame) &&
-      tile.position.x === 6 &&
-      tile.position.y === 0
-    ) {
-      validateKingTileStatic(
-        tile.position,
-        pieces,
-        selectedPiece,
-        kingMoves,
-        allEnemyMoves,
-        checkPath,
-        checkingPiece
-      );
-    }
-
-    //black Queen side castling
-    if (
-      currentGame.currentTeam === Team.Black &&
-      isTileEmpty({ x: 1, y: 0 }, currentGame) &&
-      isTileEmpty({ x: 2, y: 0 }, currentGame) &&
-      isTileEmpty({ x: 3, y: 0 }, currentGame) &&
-      !isTileUnderAttack({ x: 2, y: 0 }, allEnemyMoves) &&
-      !isTileUnderAttack({ x: 3, y: 0 }, allEnemyMoves) &&
-      !isTileUnderAttack({ x: 4, y: 0 }, allEnemyMoves) &&
-      !hasQueenRookMoved(currentGame) &&
-      tile.position.x === 2 &&
-      tile.position.y === 0
-    ) {
-      validateKingTileStatic(
-        tile.position,
-        pieces,
-        selectedPiece,
-        kingMoves,
-        allEnemyMoves,
-        checkPath,
-        checkingPiece
-      );
-    }
+    return kingMoves;
   }
-
-  return kingMoves;
 };
 
 const isTileUnderAttack = (
