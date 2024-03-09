@@ -40,12 +40,12 @@ type IconProps = {
 export const PromoteButton = styled("button")`
   width: 50px;
   height: 50px;
-  background: ${({ theme }) => theme.colors.primary2};
+  background: ${({ theme }) => theme.colors.primary1 + "50"};
   border: none;
   margin: 10px;
   cursor: pointer;
   &:hover {
-    background: ${({ theme }) => theme.colors.primary1};
+    background: ${({ theme }) => theme.colors.primary1 + "30"};
   }
 `;
 
