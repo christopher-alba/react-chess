@@ -19,16 +19,8 @@ import {
   calculateValidMoves,
 } from "../../helpers/moveHelper";
 import {
-  findPieceById,
-  cloneGameState,
-  cloneCurrentMoveState,
-  checkForDiscoveredChecks,
-  clearValidMoves,
   recalculateValidMovesAndCheck,
   calculateCheckmateState,
-  switchTeamsAndReset,
-  handleCastling,
-  handleEnpassant,
   makeSingleMove,
 } from "../../helpers/reduxHelper";
 import { mapCoordinatesToChessNotation } from "../../helpers/general";
