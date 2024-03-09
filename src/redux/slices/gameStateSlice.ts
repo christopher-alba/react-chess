@@ -131,7 +131,7 @@ export const gameStateSlice = createSlice({
           allGamesStates: AllGamesStates;
           gameID: string;
         },
-        ({ error, color }) => {
+        ({ color }) => {
           console.log({ color });
         }
       );

@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { Container } from "../../components/container";
 import ChessBoard from "./components/ChessBoard";
 import PlayersAndSpectators from "./components/PlayersAndSpectators/PlayersAndSpectators";
