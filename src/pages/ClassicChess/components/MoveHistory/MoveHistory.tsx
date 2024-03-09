@@ -16,7 +16,7 @@ const MoveHistory: FC = () => {
       <Title>Move History</Title>
       <InnerWrapper>
         {moveHistory?.map((move, index) => (
-          <MoveWrapper>
+          <MoveWrapper key={index}>
             <p>
               Move #{moveHistory.length - index}.{" "}
               <strong>

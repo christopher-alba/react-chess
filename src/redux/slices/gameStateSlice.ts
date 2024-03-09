@@ -131,6 +131,8 @@ export const gameStateSlice = createSlice({
       let matchingPiece = currentGame?.statesOfPieces.find(
         (x) => x.id === action.payload.id
       );
+      if (matchingPiece.team !== currentGame.currentTeam) return;
+      
       let currentMoveState = state.currentMovesState.find(
         (x) => x.gameId === action.payload.gameId
       );
@@ -138,6 +140,7 @@ export const gameStateSlice = createSlice({
         currentMoveState.gameId = currentGame?.gameId;
         currentMoveState.selectedPieceId = action.payload.id;
         currentMoveState.allEnemyMoves = calculateEnemyMoves(currentGame);
+        currentMoveState.validMoves = [];
       }
       if (matchingPiece && matchingPiece?.team === currentGame?.currentTeam) {
         if (!currentMoveState) {
