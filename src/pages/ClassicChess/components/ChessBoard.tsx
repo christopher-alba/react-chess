@@ -66,18 +66,20 @@ const ChessBoard: FC = () => {
   const initialize2PlayerBoardPieces = (): StatesOfPieces => {
     let pieces: StatesOfPieces = [];
     // pieces.push({
-    //   position: { x: 3, y: 1 },
+    //   position: { x: 0, y: 6 },
     //   alive: true,
-    //   team: Team.White,
+    //   team: Team.Black,
     //   id: uuidv4(),
-    //   type: Type.Rook,
+    //   type: Type.Pawn,
+    //   chessNotationPosition: mapCoordinatesToChessNotation(0, 6),
     // });
     // pieces.push({
-    //   position: { x: 1, y: 0},
+    //   position: { x: 5, y: 7},
     //   alive: true,
     //   team: Team.White,
     //   id: uuidv4(),
-    //   type: Type.Bishop,
+    //   type: Type.King,
+    //   chessNotationPosition: mapCoordinatesToChessNotation(5, 7),
     // });
     // pieces.push({
     //   position: { x: 2, y: 0 },

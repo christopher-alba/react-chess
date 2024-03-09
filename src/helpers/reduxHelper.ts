@@ -518,6 +518,12 @@ export const calculateCheckmateState = (
   gameToUpdate: AllGameStates,
   currentMoveState: CurrentMoveState
 ) => {
+  if (
+    gameToUpdate.currentTeam === Team.BlackPromotion ||
+    gameToUpdate.currentTeam === Team.WhitePromotion
+  ) {
+    return GameState.Ongoing;
+  }
   //IMPLEMENT CHECKMATE CHECK
   //recalculate all enemy moves
   currentMoveState.allEnemyMoves = calculateEnemyMoves(gameToUpdate);

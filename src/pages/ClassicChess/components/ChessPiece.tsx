@@ -26,10 +26,6 @@ const KingIcon = styled(King)<IconProps>`
         return "black";
       case Team.White:
         return "white";
-      case Team.Left:
-        return "blue";
-      case Team.Right:
-        return "red";
     }
   }};
   ${commonCss}
@@ -42,10 +38,6 @@ const QueenIcon = styled(Queen)<IconProps>`
         return "black";
       case Team.White:
         return "white";
-      case Team.Left:
-        return "blue";
-      case Team.Right:
-        return "red";
     }
   }};
   ${commonCss}
@@ -58,10 +50,6 @@ const PawnIcon = styled(Pawn)<IconProps>`
         return "black";
       case Team.White:
         return "white";
-      case Team.Left:
-        return "blue";
-      case Team.Right:
-        return "red";
     }
   }};
   ${commonCss}
@@ -74,10 +62,6 @@ const RookIcon = styled(Rook)<IconProps>`
         return "black";
       case Team.White:
         return "white";
-      case Team.Left:
-        return "blue";
-      case Team.Right:
-        return "red";
     }
   }};
   ${commonCss}
@@ -90,10 +74,6 @@ const KnightIcon = styled(Knight)<IconProps>`
         return "black";
       case Team.White:
         return "white";
-      case Team.Left:
-        return "blue";
-      case Team.Right:
-        return "red";
     }
   }};
   ${commonCss}
@@ -106,10 +86,6 @@ const BishopIcon = styled(Bishop)<IconProps>`
         return "black";
       case Team.White:
         return "white";
-      case Team.Left:
-        return "blue";
-      case Team.Right:
-        return "red";
     }
   }};
   ${commonCss}

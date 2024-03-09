@@ -10,8 +10,8 @@ export enum Type {
 export enum Team {
   Black = "BLACK",
   White = "WHITE",
-  Left = "LEFT",
-  Right = "RIGHT",
+  BlackPromotion = "BLACK PROMOTION",
+  WhitePromotion = "WHITE PROMOTION",
   None = "NONE",
 }
 
@@ -51,7 +51,11 @@ export enum MoveConsequence {
   Draw = "Draw",
   CaptureAndCheck = "CaptureAndCheck",
   CaptureAndCheckmate = "CaptureAndCheckmate",
-  CaptureAndDraw = "CaptureAndDraw"
+  CaptureAndDraw = "CaptureAndDraw",
+  PromotionAndCheckmate = "PromotionAndCheckmate",
+  PromotionAndCheck = "PromotionAndCheck",
+  PromotionAndDraw = "PromotionAndDraw",
+  Promotion = "Promotion",
 }
 export enum MoveDirection {
   Up,

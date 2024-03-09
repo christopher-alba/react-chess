@@ -699,7 +699,7 @@ export const calculateKingMoves = (
     if (
       !currentGame.teamStates.find(
         (x) => x.teamName === currentGame.currentTeam
-      ).castlingStates.KingMoved
+      )?.castlingStates?.KingMoved
     ) {
       //white King side castling
       if (
@@ -963,8 +963,8 @@ const calculatePawnMoves = (
   const currentTeam = currentGame.teamStates.find(
     (team) => team.teamName === currentGame.currentTeam
   );
-  const enpassantStates = currentTeam.enpassantStates;
-  for (let i = 0; i < enpassantStates.alliedEnpassantPawns.length; i++) {
+  const enpassantStates = currentTeam?.enpassantStates;
+  for (let i = 0; i < enpassantStates?.alliedEnpassantPawns.length; i++) {
     const alliedEnpassantPawn = enpassantStates.alliedEnpassantPawns[i];
     for (let j = 0; j < enpassantStates.enemyEnpassantPawns.length; j++) {
       const enemyEnpassantPawn = enpassantStates.enemyEnpassantPawns[j];

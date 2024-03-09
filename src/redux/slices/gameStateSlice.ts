@@ -6,7 +6,13 @@ import {
   Position,
   StatesOfPiece,
 } from "../../types/gameTypes";
-import { CheckType, GameState, MoveConsequence } from "../../types/enums";
+import {
+  CheckType,
+  GameState,
+  MoveConsequence,
+  Team,
+  Type,
+} from "../../types/enums";
 import {
   calculateEnemyMoves,
   calculateValidMoves,
@@ -44,6 +50,71 @@ export const gameStateSlice = createSlice({
       state.gamesStates = state.gamesStates.filter(
         (x) => x.gameId !== action.payload.gameId
       );
+    },
+    promotePawn: (
+      state: AllGamesStates,
+      action: PayloadAction<{
+        currentGameId: string;
+        pawnToPromote: StatesOfPiece;
+        targetPieceType: Type;
+      }>
+    ) => {
+      const currentGame = state.gamesStates.find(
+        (x) => x.gameId === action.payload.currentGameId
+      );
+      const currentMoveState = state.currentMovesState.find(
+        (x) => x.gameId === action.payload.currentGameId
+      );
+      const pawnToPromote = currentGame.statesOfPieces.find(
+        (x) => x.id === action.payload.pawnToPromote.id
+      );
+      pawnToPromote.type = action.payload.targetPieceType;
+
+      let checkType = recalculateValidMovesAndCheck(
+        currentGame,
+        currentMoveState,
+        pawnToPromote
+      );
+
+      if (currentGame.currentTeam === Team.WhitePromotion) {
+        currentGame.currentTeam = Team.Black;
+      } else if (currentGame.currentTeam === Team.BlackPromotion) {
+        currentGame.currentTeam = Team.White;
+      }
+      currentMoveState.selectedPieceId = undefined;
+
+      let finalConsequence: MoveConsequence = undefined;
+
+      //check for checkmate
+      let cmState = calculateCheckmateState(currentGame, currentMoveState);
+
+      if (cmState === GameState.WinnerDecided) {
+        finalConsequence = MoveConsequence.PromotionAndCheckmate;
+      } else if (cmState === GameState.Draw) {
+        finalConsequence = MoveConsequence.PromotionAndDraw;
+      } else if (checkType === CheckType.Check) {
+        finalConsequence = MoveConsequence.PromotionAndCheck;
+      } else {
+        finalConsequence = MoveConsequence.Promotion;
+      }
+
+      currentGame.moveHistory.push({
+        x: pawnToPromote.position.x,
+        y: pawnToPromote.position.y,
+        moveConsequence: finalConsequence,
+        originPiece: pawnToPromote,
+        team: pawnToPromote.team,
+        chessNotationPosition: mapCoordinatesToChessNotation(
+          pawnToPromote.position.x,
+          pawnToPromote.position.y
+        ),
+        chessNotationOriginPosition: mapCoordinatesToChessNotation(
+          pawnToPromote.position.x,
+          pawnToPromote.position.y
+        ),
+        capturedPiece: undefined,
+        chessNotationPositionCaptured: undefined,
+      } as MoveDetailsForHistory);
     },
     makeMove: (
       state: AllGamesStates,
@@ -155,7 +226,24 @@ export const gameStateSlice = createSlice({
           JSON.stringify(selectedPiece)
         );
         //reset checking states
-        switchTeamsAndReset(gameToUpdate, currentMoveState);
+        gameToUpdate.promotionPiece = selectedPiece;
+        currentMoveState.allEnemyMoves = [];
+        currentMoveState.validMoves = [];
+        if (
+          selectedPiece.position.y === 0 &&
+          selectedPiece.team === Team.White &&
+          selectedPiece.type === Type.Pawn
+        ) {
+          gameToUpdate.currentTeam = Team.WhitePromotion;
+        } else if (
+          selectedPiece.position.y === 7 &&
+          selectedPiece.team === Team.Black &&
+          selectedPiece.type === Type.Pawn
+        ) {
+          gameToUpdate.currentTeam = Team.BlackPromotion;
+        } else {
+          switchTeamsAndReset(gameToUpdate, currentMoveState);
+        }
 
         // Update game state and current move state
         let cmState = calculateCheckmateState(gameToUpdate, currentMoveState);
@@ -252,7 +340,7 @@ export const gameStateSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { createGameInstance, makeMove, selectPiece } =
+export const { createGameInstance, makeMove, selectPiece, promotePawn } =
   gameStateSlice.actions;
 
 export default gameStateSlice.reducer;

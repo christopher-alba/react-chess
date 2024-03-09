@@ -84,6 +84,7 @@ export type AllGameStates = {
   statesOfPieces: StatesOfPieces;
   checkStatus: CheckStatus;
   moveHistory: MoveDetailsForHistory[];
+  promotionPiece?: StatesOfPiece;
 };
 
 export type CheckStatus = {
