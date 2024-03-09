@@ -24,6 +24,7 @@ import {
   makeSingleMove,
 } from "../../helpers/reduxHelper";
 import { mapCoordinatesToChessNotation } from "../../helpers/general";
+import { socket } from "../../socket";
 
 export const gameStateSlice = createSlice({
   name: "gameState",
@@ -44,6 +45,11 @@ export const gameStateSlice = createSlice({
       state.gamesStates = state.gamesStates.filter(
         (x) => x.gameId !== action.payload.gameId
       );
+    },
+    updateGameInstance: (state, action: PayloadAction<AllGamesStates>) => {
+      state.currentMovesState = action.payload.currentMovesState;
+      state.gamesStates = action.payload.gamesStates;
+      console.log(state);
     },
     promotePawn: (
       state: AllGamesStates,
@@ -119,6 +125,16 @@ export const gameStateSlice = createSlice({
       }>
     ) => {
       makeSingleMove(state, action);
+      socket.emit(
+        "move",
+        { allGamesStates: state, gameID: state.gamesStates[0].gameId } as {
+          allGamesStates: AllGamesStates;
+          gameID: string;
+        },
+        ({ error, color }) => {
+          console.log({ color });
+        }
+      );
     },
     selectPiece: (
       state,
@@ -132,7 +148,7 @@ export const gameStateSlice = createSlice({
         (x) => x.id === action.payload.id
       );
       if (matchingPiece.team !== currentGame.currentTeam) return;
-      
+
       let currentMoveState = state.currentMovesState.find(
         (x) => x.gameId === action.payload.gameId
       );
@@ -183,7 +199,12 @@ export const gameStateSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { createGameInstance, makeMove, selectPiece, promotePawn } =
-  gameStateSlice.actions;
+export const {
+  createGameInstance,
+  makeMove,
+  selectPiece,
+  promotePawn,
+  updateGameInstance,
+} = gameStateSlice.actions;
 
 export default gameStateSlice.reducer;

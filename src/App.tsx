@@ -4,7 +4,7 @@ import themes from "./themes/schema.json";
 import { GlobalStyles } from "./themes/globalStyles";
 import ClassicChess from "./pages/ClassicChess/ClassicChess";
 import Navbar from "./components/Navbar/Navbar";
-
+import "./socket";
 function App() {
   const [theme, setTheme] = useState(
     localStorage.getItem("theme")?.length ?? -1 > 0

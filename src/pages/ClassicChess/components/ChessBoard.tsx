@@ -1,8 +1,9 @@
-import { FC, useContext, useEffect, useState } from "react";
+import { ChangeEvent, FC, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createGameInstance,
   makeMove,
+  updateGameInstance,
 } from "../../../redux/slices/gameStateSlice";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -13,19 +14,53 @@ import {
   TileColor,
   Type,
 } from "../../../types/enums";
-import { Position, StatesOfPieces, Tiles } from "../../../types/gameTypes";
+import {
+  AllGamesStates,
+  Position,
+  StatesOfPieces,
+  Tiles,
+} from "../../../types/gameTypes";
 import styled, { ThemeContext } from "styled-components";
 import ChessPiece, { ChessPieceSmall } from "./ChessPiece";
 import { RootState } from "../../../redux/store";
 import { mapCoordinatesToChessNotation } from "../../../helpers/general";
+import { socket } from "../../../socket";
 
 const ChessBoard: FC = () => {
   const [allTiles, setAllTiles] = useState<Position[]>();
   const [gameId, setGameId] = useState<string>();
+  const [inputId, setInputId] = useState<string>();
+  const [playerTeam, setPlayerTeam] = useState<Team>();
   const [deadPiecesState, setDeadPiecesState] = useState<StatesOfPieces>();
-  const dispatch = useDispatch();
   const reduxState = useSelector((state: RootState) => state.gameStateReducer);
   const theme = useContext(ThemeContext);
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    socket.on("welcome", ({ message, opponent }) => {
+      console.log({ message, opponent });
+    });
+    socket.on("opponentJoin", ({ message, opponent }) => {
+      console.log({ message, opponent });
+    });
+
+    socket.on("opponentMove", (props: { allGamesStates: AllGamesStates }) => {
+      dispatch(updateGameInstance(props.allGamesStates));
+      console.log(props.allGamesStates);
+    });
+
+    socket.on("message", ({ message }) => {
+      console.log({ message });
+    });
+
+    return () => {
+      socket.off("welcome");
+      socket.off("opponentJoin");
+      socket.off("opponentMove");
+      socket.off("message");
+    };
+  }, []);
+
   const handleTileClick = (
     tile: Position,
     validMoves?: Position[],
@@ -311,6 +346,10 @@ const ChessBoard: FC = () => {
   }, []);
 
   useEffect(() => {
+    setGameId(reduxState?.gamesStates[0]?.gameId);
+  }, [reduxState]);
+
+  useEffect(() => {
     const deadPieces = reduxState?.gamesStates
       .find((x) => x.gameId === gameId)
       ?.statesOfPieces?.filter((x) => !x.alive)
@@ -322,8 +361,44 @@ const ChessBoard: FC = () => {
     (x) => x.gameId === gameId
   )?.currentTeam;
 
+  function handleIdChange(event: ChangeEvent<HTMLInputElement>): void {
+    setInputId(event.target.value);
+  }
+
   return (
     <MainChessboardWrapper>
+      <input type="text" onChange={handleIdChange} />
+      <button
+        onClick={() => {
+          if (!gameId) return;
+          socket.connect();
+          socket.emit(
+            "join",
+            { name: "Frank 2", gameID: inputId },
+            ({ color }) => {
+              setPlayerTeam(color);
+            }
+          );
+        }}
+      >
+        Join Game
+      </button>
+      <button
+        onClick={() => {
+          if (!gameId) return;
+          socket.connect();
+          socket.emit(
+            "create",
+            { name: "Frank", gameID: gameId },
+            ({ color }) => {
+              setPlayerTeam(color);
+            }
+          );
+        }}
+      >
+        Create Game
+      </button>
+      <button onClick={() => socket.disconnect()}>Disconnect</button>
       <CapturedDivWrapper style={{ marginTop: 0 }}>
         <CapturedPiecesWrapper
           style={{
@@ -429,6 +504,7 @@ const ChessBoard: FC = () => {
                     team={piece.team}
                     type={piece.type}
                     gameId={gameId}
+                    playerTeam={playerTeam}
                   ></ChessPiece>
                 )}
                 <p
