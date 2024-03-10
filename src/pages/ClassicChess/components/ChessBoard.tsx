@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useContext, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   makeMove,
@@ -7,6 +7,7 @@ import {
 import { Team, TileColor } from "../../../types/enums";
 import {
   AllGamesStates,
+  OnlineReturnState,
   Position,
   StatesOfPieces,
 } from "../../../types/gameTypes";
@@ -14,20 +15,25 @@ import styled, { ThemeContext } from "styled-components";
 import ChessPiece, { ChessPieceSmall } from "./ChessPiece";
 import { RootState } from "../../../redux/store";
 import { socket } from "../../../socket";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ChessBoard: FC<{
   playerTeam: Team;
   setPlayerTeam: React.Dispatch<React.SetStateAction<Team>>;
 }> = ({ playerTeam, setPlayerTeam }) => {
   const [gameId, setGameId] = useState<string>();
-  const [inputId, setInputId] = useState<string>();
-
+  const location = useLocation();
+  const navigate = useNavigate();
   const [deadPiecesState, setDeadPiecesState] = useState<StatesOfPieces>();
   const reduxState = useSelector((state: RootState) => state.gameStateReducer);
   const theme = useContext(ThemeContext);
 
   const dispatch = useDispatch();
   useEffect(() => {
+    const state = location.state as OnlineReturnState;
+    setPlayerTeam(state.color);
+    dispatch(updateGameInstance(state.state));
+    socket.connect();
     socket.on("welcome", ({ message, opponent }) => {
       console.log({ message, opponent });
     });
@@ -86,46 +92,10 @@ const ChessBoard: FC<{
     (x) => x.gameId === gameId
   )?.currentTeam;
 
-  function handleIdChange(event: ChangeEvent<HTMLInputElement>): void {
-    setInputId(event.target.value);
-  }
-
   return (
     <MainChessboardWrapper>
       <h1>gameID: {gameId}</h1>
       <p>Your Team: {playerTeam}</p>
-      <input type="text" onChange={handleIdChange} />
-      <button
-        onClick={() => {
-          socket.connect();
-          socket.emit(
-            "join",
-            { name: "Frank 2", gameID: inputId },
-            ({ color, state }) => {
-              setPlayerTeam(color);
-              setGameId(inputId);
-              dispatch(updateGameInstance(state));
-            }
-          );
-        }}
-      >
-        Join Game
-      </button>
-      <button
-        onClick={() => {
-          socket.connect();
-          socket.emit(
-            "create",
-            { name: "Frank", gameID: gameId },
-            ({ color, state }) => {
-              setPlayerTeam(color);
-              dispatch(updateGameInstance(state));
-            }
-          );
-        }}
-      >
-        Create Game
-      </button>
       <button
         onClick={() => {
           setPlayerTeam(undefined);
@@ -133,6 +103,7 @@ const ChessBoard: FC<{
             updateGameInstance({ currentMovesState: [], gamesStates: [] })
           );
           socket.disconnect();
+          navigate("/online");
         }}
       >
         Disconnect

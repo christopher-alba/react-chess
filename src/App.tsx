@@ -5,6 +5,8 @@ import { GlobalStyles } from "./themes/globalStyles";
 import ClassicChess from "./pages/ClassicChess/ClassicChess";
 import Navbar from "./components/Navbar/Navbar";
 import "./socket";
+import { Route, Routes } from "react-router-dom";
+import OnlineLobbies from "./pages/OnlineLobbies/OnlineLobbies";
 function App() {
   const [theme, setTheme] = useState(
     localStorage.getItem("theme")?.length ?? -1 > 0
@@ -21,7 +23,14 @@ function App() {
     <ThemeProvider theme={theme}>
       <GlobalStyles />
       <Navbar setTheme={setTheme} />
-      <ClassicChess />
+      <Routes>
+        <Route path="offline" element={<ClassicChess onlineMode={false} />} />
+        <Route path="online" element={<OnlineLobbies />} />
+        <Route
+          path="online/classicChess"
+          element={<ClassicChess onlineMode={true} />}
+        />
+      </Routes>
     </ThemeProvider>
   );
 }

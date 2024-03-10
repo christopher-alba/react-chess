@@ -2,6 +2,7 @@ import { FC, useContext } from "react";
 import { MainWrapper } from "./styled";
 import { DefaultTheme, ThemeContext } from "styled-components";
 import themes from "../../themes/schema.json";
+import { Link } from "react-router-dom";
 
 const Navbar: FC<{ setTheme: (theme: DefaultTheme) => void }> = ({
   setTheme,
@@ -20,6 +21,8 @@ const Navbar: FC<{ setTheme: (theme: DefaultTheme) => void }> = ({
     <MainWrapper>
       <h1>Navbar</h1>
       <button onClick={toggleTheme}>Toggle</button>
+      <Link to="online">Online</Link>
+      <Link to="offline">Offline</Link>
     </MainWrapper>
   );
 };

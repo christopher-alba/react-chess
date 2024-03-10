@@ -116,3 +116,28 @@ export type DirectionAndOrigin = {
   direction: MoveDirection;
   originPiece: StatesOfPiece;
 };
+
+export type Game = {
+  gameID: string;
+  players: Player[];
+  allGamesStates: AllGamesStates;
+};
+
+export class Player {
+  public name: string;
+  public color: Team;
+  public playerID: string;
+  public gameID: string;
+
+  constructor(name: string, color: Team, playerID: string, gameID: string) {
+    this.name = name;
+    this.color = color;
+    this.playerID = playerID;
+    this.gameID = gameID;
+  }
+}
+
+export type OnlineReturnState = {
+  color: Team;
+  state: AllGamesStates;
+};
