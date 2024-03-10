@@ -14,7 +14,10 @@ import {
 } from "./styled";
 import Draggable from "react-draggable";
 
-const Promotion: FC<{ playerTeam: Team }> = ({ playerTeam }) => {
+const Promotion: FC<{ playerTeam?: Team; online: boolean }> = ({
+  playerTeam,
+  online,
+}) => {
   const reduxState = useSelector((state: RootState) => state.gameStateReducer);
   const dispatch = useDispatch();
   const handlePromotionClick = (type: Type) => {
@@ -32,12 +35,17 @@ const Promotion: FC<{ playerTeam: Team }> = ({ playerTeam }) => {
       );
     }
   };
+  let shouldDisplay = true;
+  if (online) {
+    shouldDisplay = reduxState.gamesStates?.[0]?.currentTeam
+      .toLowerCase()
+      .includes(playerTeam?.toLowerCase());
+  }
+
   return (
     (reduxState.gamesStates?.[0]?.currentTeam === Team.WhitePromotion ||
       reduxState.gamesStates?.[0]?.currentTeam === Team.BlackPromotion) &&
-    reduxState.gamesStates?.[0]?.currentTeam
-      .toLowerCase()
-      .includes(playerTeam.toLowerCase()) && (
+    shouldDisplay && (
       <ModalBackdrop>
         <Draggable bounds="parent">
           <ModalBody>

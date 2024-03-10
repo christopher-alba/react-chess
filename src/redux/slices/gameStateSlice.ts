@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice, current } from "@reduxjs/toolkit";
 import {
   AllGameStates,
   AllGamesStates,
@@ -47,12 +47,9 @@ export const gameStateSlice = createSlice({
       );
     },
     updateGameInstance: (state, action: PayloadAction<AllGamesStates>) => {
-      state.currentMovesState = action.payload.currentMovesState;
-      state.gamesStates = action.payload.gamesStates;
-      console.log(state);
-    },
-    updateGameId: (state, action: PayloadAction<string>) => {
-      state.gamesStates[0].gameId = action.payload;
+      state.currentMovesState = action.payload?.currentMovesState;
+      state.gamesStates = action.payload?.gamesStates;
+      console.log(current(state));
     },
     promotePawn: (
       state: AllGamesStates,
@@ -218,7 +215,6 @@ export const {
   selectPiece,
   promotePawn,
   updateGameInstance,
-  updateGameId,
 } = gameStateSlice.actions;
 
 export default gameStateSlice.reducer;

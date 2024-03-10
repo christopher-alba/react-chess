@@ -115,12 +115,15 @@ const ChessPiece: FC<{
   team: Team;
   id: string;
   gameId?: string;
-  playerTeam: Team;
-}> = ({ position, type, team, id, gameId, playerTeam }) => {
+  playerTeam?: Team;
+  online: boolean;
+}> = ({ position, type, team, id, gameId, playerTeam, online }) => {
   const dispatch = useDispatch();
   const handleMouseDown = () => {
     console.log(playerTeam);
-    
+
+    if (!online) dispatch(selectPiece({ gameId: gameId, id: id }));
+
     if (gameId && playerTeam === team) {
       dispatch(selectPiece({ gameId: gameId, id: id }));
     }

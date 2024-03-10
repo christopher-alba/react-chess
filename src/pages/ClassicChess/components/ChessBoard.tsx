@@ -1,37 +1,24 @@
 import { ChangeEvent, FC, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  createGameInstance,
   makeMove,
-  updateGameId,
   updateGameInstance,
 } from "../../../redux/slices/gameStateSlice";
-import { v4 as uuidv4 } from "uuid";
-import {
-  CheckType,
-  GameState,
-  Mode,
-  Team,
-  TileColor,
-  Type,
-} from "../../../types/enums";
+import { Team, TileColor } from "../../../types/enums";
 import {
   AllGamesStates,
   Position,
   StatesOfPieces,
-  Tiles,
 } from "../../../types/gameTypes";
 import styled, { ThemeContext } from "styled-components";
 import ChessPiece, { ChessPieceSmall } from "./ChessPiece";
 import { RootState } from "../../../redux/store";
-import { mapCoordinatesToChessNotation } from "../../../helpers/general";
 import { socket } from "../../../socket";
 
 const ChessBoard: FC<{
   playerTeam: Team;
   setPlayerTeam: React.Dispatch<React.SetStateAction<Team>>;
 }> = ({ playerTeam, setPlayerTeam }) => {
-  const [allTiles, setAllTiles] = useState<Position[]>();
   const [gameId, setGameId] = useState<string>();
   const [inputId, setInputId] = useState<string>();
 
@@ -83,285 +70,19 @@ const ChessBoard: FC<{
     }
   };
 
-  const initialize2PlayerBoardTiles = (): Tiles => {
-    let tilesArray: Tiles = [];
-    for (let y = 0; y < 8; y++) {
-      let color = y % 2 === 0 ? TileColor.Light : TileColor.Dark;
-      for (let x = 0; x < 8; x++) {
-        tilesArray.push({
-          position: {
-            x: x,
-            y: y,
-          },
-          chessNotationPosition: mapCoordinatesToChessNotation(x, y),
-          isWall: false,
-          color: color,
-        });
-        color = color === TileColor.Light ? TileColor.Dark : TileColor.Light;
-      }
-    }
-    return tilesArray;
-  };
-  const initialize2PlayerBoardPieces = (): StatesOfPieces => {
-    let pieces: StatesOfPieces = [];
-    // pieces.push({
-    //   position: { x: 0, y: 6 },
-    //   alive: true,
-    //   team: Team.Black,
-    //   id: uuidv4(),
-    //   type: Type.Pawn,
-    //   chessNotationPosition: mapCoordinatesToChessNotation(0, 6),
-    // });
-    // pieces.push({
-    //   position: { x: 5, y: 7},
-    //   alive: true,
-    //   team: Team.White,
-    //   id: uuidv4(),
-    //   type: Type.King,
-    //   chessNotationPosition: mapCoordinatesToChessNotation(5, 7),
-    // });
-    // pieces.push({
-    //   position: { x: 2, y: 0 },
-    //   alive: true,
-    //   team: Team.Black,
-    //   id: uuidv4(),
-    //   type: Type.King,
-    // });
-
-    // black pieces
-    pieces.push({
-      position: { x: 0, y: 0 },
-      alive: true,
-      team: Team.Black,
-      id: uuidv4(),
-      type: Type.Rook,
-      chessNotationPosition: mapCoordinatesToChessNotation(0, 0),
-    });
-    pieces.push({
-      position: { x: 1, y: 0 },
-      alive: true,
-      team: Team.Black,
-      id: uuidv4(),
-      type: Type.Knight,
-      chessNotationPosition: mapCoordinatesToChessNotation(1, 0),
-    });
-    pieces.push({
-      position: { x: 2, y: 0 },
-      alive: true,
-      team: Team.Black,
-      id: uuidv4(),
-      type: Type.Bishop,
-      chessNotationPosition: mapCoordinatesToChessNotation(2, 0),
-    });
-    pieces.push({
-      position: { x: 4, y: 0 },
-      alive: true,
-      team: Team.Black,
-      id: uuidv4(),
-      type: Type.King,
-      chessNotationPosition: mapCoordinatesToChessNotation(4, 0),
-    });
-    pieces.push({
-      position: { x: 3, y: 0 },
-      alive: true,
-      team: Team.Black,
-      id: uuidv4(),
-      type: Type.Queen,
-      chessNotationPosition: mapCoordinatesToChessNotation(3, 0),
-    });
-    pieces.push({
-      position: { x: 5, y: 0 },
-      alive: true,
-      team: Team.Black,
-      id: uuidv4(),
-      type: Type.Bishop,
-      chessNotationPosition: mapCoordinatesToChessNotation(5, 0),
-    });
-    pieces.push({
-      position: { x: 6, y: 0 },
-      alive: true,
-      team: Team.Black,
-      id: uuidv4(),
-      type: Type.Knight,
-      chessNotationPosition: mapCoordinatesToChessNotation(6, 0),
-    });
-    pieces.push({
-      position: { x: 7, y: 0 },
-      alive: true,
-      team: Team.Black,
-      id: uuidv4(),
-      type: Type.Rook,
-      chessNotationPosition: mapCoordinatesToChessNotation(7, 0),
-    });
-    for (let x = 0; x < 8; x++) {
-      pieces.push({
-        position: { x: x, y: 1 },
-        alive: true,
-        team: Team.Black,
-        id: uuidv4(),
-        type: Type.Pawn,
-        chessNotationPosition: mapCoordinatesToChessNotation(x, 1),
-      });
-    }
-
-    //white pieces
-    pieces.push({
-      position: { x: 0, y: 7 },
-      alive: true,
-      team: Team.White,
-      id: uuidv4(),
-      type: Type.Rook,
-      chessNotationPosition: mapCoordinatesToChessNotation(0, 7),
-    });
-    pieces.push({
-      position: { x: 1, y: 7 },
-      alive: true,
-      team: Team.White,
-      id: uuidv4(),
-      type: Type.Knight,
-      chessNotationPosition: mapCoordinatesToChessNotation(1, 7),
-    });
-    pieces.push({
-      position: { x: 2, y: 7 },
-      alive: true,
-      team: Team.White,
-      id: uuidv4(),
-      type: Type.Bishop,
-      chessNotationPosition: mapCoordinatesToChessNotation(2, 7),
-    });
-    pieces.push({
-      position: { x: 4, y: 7 },
-      alive: true,
-      team: Team.White,
-      id: uuidv4(),
-      type: Type.King,
-      chessNotationPosition: mapCoordinatesToChessNotation(4, 7),
-    });
-    pieces.push({
-      position: { x: 3, y: 7 },
-      alive: true,
-      team: Team.White,
-      id: uuidv4(),
-      type: Type.Queen,
-      chessNotationPosition: mapCoordinatesToChessNotation(3, 7),
-    });
-    pieces.push({
-      position: { x: 5, y: 7 },
-      alive: true,
-      team: Team.White,
-      id: uuidv4(),
-      type: Type.Bishop,
-      chessNotationPosition: mapCoordinatesToChessNotation(5, 7),
-    });
-    pieces.push({
-      position: { x: 6, y: 7 },
-      alive: true,
-      team: Team.White,
-      id: uuidv4(),
-      type: Type.Knight,
-      chessNotationPosition: mapCoordinatesToChessNotation(6, 7),
-    });
-    pieces.push({
-      position: { x: 7, y: 7 },
-      alive: true,
-      team: Team.White,
-      id: uuidv4(),
-      type: Type.Rook,
-      chessNotationPosition: mapCoordinatesToChessNotation(7, 7),
-    });
-    for (let x = 0; x < 8; x++) {
-      pieces.push({
-        position: { x: x, y: 6 },
-        alive: true,
-        team: Team.White,
-        id: uuidv4(),
-        type: Type.Pawn,
-        chessNotationPosition: mapCoordinatesToChessNotation(x, 6),
-      });
-    }
-    return pieces;
-  };
-
   useEffect(() => {
-    let allTiles: Position[] = [];
-    for (let y = 0; y < 8; y++) {
-      for (let x = 0; x < 8; x++) {
-        allTiles.push({
-          x: x,
-          y: y,
-        });
-      }
-    }
-
-    setAllTiles(allTiles);
-    let id = uuidv4();
-    setGameId(id);
-    dispatch(
-      createGameInstance({
-        gameId: id,
-        mode: Mode.TwoPlayer,
-        currentTeam: Team.White,
-        moveHistory: [],
-        teamStates: [
-          {
-            teamName: Team.White,
-            alive: true,
-            winner: false,
-            castlingStates: {
-              KingMoved: false,
-              KingRookMoved: false,
-              QueenRookMoved: false,
-              KingSide: false,
-              QueenSide: false,
-            },
-            enpassantStates: {
-              alliedEnpassantPawns: [],
-              enemyEnpassantPawns: [],
-            },
-          },
-          {
-            teamName: Team.Black,
-            alive: true,
-            winner: false,
-            castlingStates: {
-              KingMoved: false,
-              KingRookMoved: false,
-              QueenRookMoved: false,
-              KingSide: false,
-              QueenSide: false,
-            },
-            enpassantStates: {
-              alliedEnpassantPawns: [],
-              enemyEnpassantPawns: [],
-            },
-          },
-        ],
-        gameState: GameState.Stopped,
-        checkStatus: {
-          type: CheckType.None,
-          teamInCheck: Team.None,
-          checkingPieces: undefined,
-        },
-        availableTiles: initialize2PlayerBoardTiles(),
-        statesOfPieces: initialize2PlayerBoardPieces(),
-      })
-    );
-    console.log("testing A");
-  }, []);
-
-  useEffect(() => {
-    setGameId(reduxState?.gamesStates[0]?.gameId);
+    setGameId(reduxState?.gamesStates?.[0]?.gameId);
   }, [reduxState]);
 
   useEffect(() => {
     const deadPieces = reduxState?.gamesStates
-      .find((x) => x.gameId === gameId)
+      ?.find((x) => x.gameId === gameId)
       ?.statesOfPieces?.filter((x) => !x.alive)
       .sort((a, b) => b.timeCapturedTimestamp - a.timeCapturedTimestamp);
     setDeadPiecesState(deadPieces);
   }, [reduxState]);
 
-  let currentTeam = reduxState.gamesStates.find(
+  let currentTeam = reduxState?.gamesStates?.find(
     (x) => x.gameId === gameId
   )?.currentTeam;
 
@@ -376,15 +97,14 @@ const ChessBoard: FC<{
       <input type="text" onChange={handleIdChange} />
       <button
         onClick={() => {
-          if (!gameId) return;
           socket.connect();
           socket.emit(
             "join",
             { name: "Frank 2", gameID: inputId },
-            ({ color }) => {
+            ({ color, state }) => {
               setPlayerTeam(color);
               setGameId(inputId);
-              dispatch(updateGameId(inputId));
+              dispatch(updateGameInstance(state));
             }
           );
         }}
@@ -393,13 +113,13 @@ const ChessBoard: FC<{
       </button>
       <button
         onClick={() => {
-          if (!gameId) return;
           socket.connect();
           socket.emit(
             "create",
             { name: "Frank", gameID: gameId },
-            ({ color }) => {
+            ({ color, state }) => {
               setPlayerTeam(color);
+              dispatch(updateGameInstance(state));
             }
           );
         }}
@@ -409,6 +129,9 @@ const ChessBoard: FC<{
       <button
         onClick={() => {
           setPlayerTeam(undefined);
+          dispatch(
+            updateGameInstance({ currentMovesState: [], gamesStates: [] })
+          );
           socket.disconnect();
         }}
       >
@@ -446,70 +169,70 @@ const ChessBoard: FC<{
         </CapturedPiecesWrapper>
       </CapturedDivWrapper>
       <TilesWrapper>
-        {allTiles?.map((tile, index) => {
-          let pieces = reduxState.gamesStates.find(
-            (x) => x.gameId === gameId
-          )?.statesOfPieces;
-          let tiles = reduxState.gamesStates.find(
-            (x) => x.gameId === gameId
-          )?.availableTiles;
-          let matching = tiles?.find(
-            (x) => JSON.stringify(x.position) === JSON.stringify(tile)
-          );
-          let piece = pieces?.find(
-            (x) =>
-              JSON.stringify(x.position) === JSON.stringify(tile) &&
-              x.alive === true
-          );
-          let currentMoves = reduxState.currentMovesState.find(
-            (x) => x.gameId === gameId
-          );
-          let validMoves = currentMoves?.validMoves;
-          let attackPath = reduxState.gamesStates.find(
-            (x) => x.gameId === gameId
-          )?.checkStatus.attackPath;
+        {reduxState.gamesStates
+          .find((x) => x.gameId === gameId)
+          ?.availableTiles.map((tile, index) => {
+            let pieces = reduxState.gamesStates.find(
+              (x) => x.gameId === gameId
+            )?.statesOfPieces;
 
-          let checkingPieces = reduxState.gamesStates.find(
-            (x) => x.gameId === gameId
-          )?.checkStatus.checkingPieces;
-          let selectedPieceId = currentMoves?.selectedPieceId;
-          let selectedPiecePos = pieces?.find(
-            (x) => x.id === selectedPieceId
-          )?.position;
-          let selectedX = selectedPiecePos?.x;
-          let selectedY = selectedPiecePos?.y;
+            let piece = pieces?.find(
+              (x) =>
+                JSON.stringify(x.position) === JSON.stringify(tile.position) &&
+                x.alive === true
+            );
+            let currentMoves = reduxState.currentMovesState.find(
+              (x) => x.gameId === gameId
+            );
+            let validMoves = currentMoves?.validMoves;
+            let attackPath = reduxState.gamesStates.find(
+              (x) => x.gameId === gameId
+            )?.checkStatus.attackPath;
 
-          if (matching) {
+            let checkingPieces = reduxState.gamesStates.find(
+              (x) => x.gameId === gameId
+            )?.checkStatus.checkingPieces;
+            let selectedPieceId = currentMoves?.selectedPieceId;
+            let selectedPiecePos = pieces?.find(
+              (x) => x.id === selectedPieceId
+            )?.position;
+            let selectedX = selectedPiecePos?.x;
+            let selectedY = selectedPiecePos?.y;
+
             return (
               <Tile
                 key={index}
                 onMouseDown={() => {
-                  handleTileClick(tile, validMoves, selectedPieceId);
+                  handleTileClick(tile.position, validMoves, selectedPieceId);
                 }}
                 style={{
                   boxShadow: validMoves?.find(
-                    (x: Position) => x.x === tile.x && x.y === tile.y
+                    (x: Position) =>
+                      x.x === tile.position.x && x.y === tile.position.y
                   )
                     ? "inset 0 0 30px #eeff00"
-                    : tile.x === selectedX && tile.y === selectedY
+                    : tile.position.x === selectedX &&
+                      tile.position.y === selectedY
                     ? `inset 0 0 30px ${theme.colors.tertiary2}`
                     : attackPath?.find(
-                        (path) => path.x === tile.x && path.y === tile.y
+                        (path) =>
+                          path.x === tile.position.x &&
+                          path.y === tile.position.y
                       )
                     ? "inset 0 0 30px #ff0000"
                     : checkingPieces?.find(
                         (piece) =>
-                          piece.position.x === tile.x &&
-                          piece.position.y === tile.y
+                          piece.position.x === tile.position.x &&
+                          piece.position.y === tile.position.y
                       )
                     ? "inset 0 0 30px #ffd900"
                     : "",
                   background:
-                    matching.color === TileColor.Light
+                    tile.color === TileColor.Light
                       ? "#FFFFFF" + "55"
                       : "transparent",
                 }}
-                className={`x-${tile.x} y-${tile.y}`}
+                className={`x-${tile.position.x} y-${tile.position.y}`}
               >
                 {piece && piece.alive && (
                   <ChessPiece
@@ -520,6 +243,7 @@ const ChessBoard: FC<{
                     type={piece.type}
                     gameId={gameId}
                     playerTeam={playerTeam}
+                    online={true}
                   ></ChessPiece>
                 )}
                 <p
@@ -533,14 +257,11 @@ const ChessBoard: FC<{
                     zIndex: -1,
                   }}
                 >
-                  {matching.chessNotationPosition}
+                  {tile.chessNotationPosition}
                 </p>
               </Tile>
             );
-          } else {
-            return <Tile key={index}></Tile>;
-          }
-        })}
+          })}
       </TilesWrapper>
       <CapturedDivWrapper style={{ marginBottom: 0 }}>
         <CapturedPiecesWrapper
