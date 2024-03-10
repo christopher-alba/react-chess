@@ -367,6 +367,7 @@ const ChessBoard: FC = () => {
 
   return (
     <MainChessboardWrapper>
+      <h1>gameID: {gameId}</h1>
       <input type="text" onChange={handleIdChange} />
       <button
         onClick={() => {
