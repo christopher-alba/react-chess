@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   createGameInstance,
   makeMove,
+  updateGameId,
   updateGameInstance,
 } from "../../../redux/slices/gameStateSlice";
 import { v4 as uuidv4 } from "uuid";
@@ -379,6 +380,8 @@ const ChessBoard: FC = () => {
             { name: "Frank 2", gameID: inputId },
             ({ color }) => {
               setPlayerTeam(color);
+              setGameId(inputId);
+              dispatch(updateGameId(inputId));
             }
           );
         }}

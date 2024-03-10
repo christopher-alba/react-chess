@@ -51,6 +51,9 @@ export const gameStateSlice = createSlice({
       state.gamesStates = action.payload.gamesStates;
       console.log(state);
     },
+    updateGameId: (state, action: PayloadAction<string>) => {
+      state.gamesStates[0].gameId = action.payload;
+    },
     promotePawn: (
       state: AllGamesStates,
       action: PayloadAction<{
@@ -205,6 +208,7 @@ export const {
   selectPiece,
   promotePawn,
   updateGameInstance,
+  updateGameId,
 } = gameStateSlice.actions;
 
 export default gameStateSlice.reducer;
