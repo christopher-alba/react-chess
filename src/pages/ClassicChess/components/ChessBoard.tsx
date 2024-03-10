@@ -406,7 +406,14 @@ const ChessBoard: FC<{
       >
         Create Game
       </button>
-      <button onClick={() => socket.disconnect()}>Disconnect</button>
+      <button
+        onClick={() => {
+          setPlayerTeam(undefined);
+          socket.disconnect();
+        }}
+      >
+        Disconnect
+      </button>
       <CapturedDivWrapper style={{ marginTop: 0 }}>
         <CapturedPiecesWrapper
           style={{
