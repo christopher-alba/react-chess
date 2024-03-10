@@ -8,4 +8,4 @@ if (!isDev()) {
   console.log(port);
 }
 
-export const socket = io(port);
+export const socket = io(port, { transports: ["websocket"], upgrade: false });
