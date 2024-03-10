@@ -323,13 +323,13 @@ const OfflineChessBoard: FC = () => {
 
   useEffect(() => {
     const deadPieces = reduxState?.gamesStates
-      .find((x) => x.gameId === gameId)
+      ?.find((x) => x.gameId === gameId)
       ?.statesOfPieces?.filter((x) => !x.alive)
       .sort((a, b) => b.timeCapturedTimestamp - a.timeCapturedTimestamp);
     setDeadPiecesState(deadPieces);
   }, [reduxState]);
 
-  let currentTeam = reduxState.gamesStates.find(
+  let currentTeam = reduxState.gamesStates?.find(
     (x) => x.gameId === gameId
   )?.currentTeam;
 

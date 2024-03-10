@@ -55,6 +55,9 @@ const ChessBoard: FC<{
       socket.off("opponentJoin");
       socket.off("opponentMove");
       socket.off("message");
+      setPlayerTeam(undefined);
+      dispatch(updateGameInstance({ currentMovesState: [], gamesStates: [] }));
+      socket.disconnect();
     };
   }, []);
 
@@ -141,7 +144,7 @@ const ChessBoard: FC<{
       </CapturedDivWrapper>
       <TilesWrapper>
         {reduxState.gamesStates
-          .find((x) => x.gameId === gameId)
+          ?.find((x) => x.gameId === gameId)
           ?.availableTiles.map((tile, index) => {
             let pieces = reduxState.gamesStates.find(
               (x) => x.gameId === gameId
