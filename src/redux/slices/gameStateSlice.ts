@@ -118,6 +118,16 @@ export const gameStateSlice = createSlice({
         capturedPiece: undefined,
         chessNotationPositionCaptured: undefined,
       } as MoveDetailsForHistory);
+      socket.emit(
+        "move",
+        { allGamesStates: state, gameID: state.gamesStates[0].gameId } as {
+          allGamesStates: AllGamesStates;
+          gameID: string;
+        },
+        ({ color }) => {
+          console.log({ color });
+        }
+      );
     },
     makeMove: (
       state: AllGamesStates,

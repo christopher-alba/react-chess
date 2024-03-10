@@ -27,11 +27,14 @@ import { RootState } from "../../../redux/store";
 import { mapCoordinatesToChessNotation } from "../../../helpers/general";
 import { socket } from "../../../socket";
 
-const ChessBoard: FC = () => {
+const ChessBoard: FC<{
+  playerTeam: Team;
+  setPlayerTeam: React.Dispatch<React.SetStateAction<Team>>;
+}> = ({ playerTeam, setPlayerTeam }) => {
   const [allTiles, setAllTiles] = useState<Position[]>();
   const [gameId, setGameId] = useState<string>();
   const [inputId, setInputId] = useState<string>();
-  const [playerTeam, setPlayerTeam] = useState<Team>();
+
   const [deadPiecesState, setDeadPiecesState] = useState<StatesOfPieces>();
   const reduxState = useSelector((state: RootState) => state.gameStateReducer);
   const theme = useContext(ThemeContext);
