@@ -1,3 +1,9 @@
+export enum Visibility {
+  Public = "Public",
+  Auto = "Auto",
+  Private = "Private",
+}
+
 export enum Type {
   Pawn = "PAWN",
   King = "KING",

@@ -4,18 +4,20 @@ export const MainWrapper = styled("div")`
   background: ${({ theme }) => theme.colors.tertiary1};
   color: black;
   width: 100%;
+  height: 50%;
   border-radius: 10px;
   padding: 20px;
   box-sizing: border-box;
-  height: 100%;
+  flex-grow: 1;
   position: relative;
-  box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
   border: 2px solid white;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const InnerWrapper = styled("div")`
-  overflow-y: scroll;
-  height: 500px;
+  overflow-y: auto;
+  height: 100%;
   padding-right: 20px;
   box-sizing: border-box;
 `;
@@ -29,8 +31,9 @@ export const Title = styled("h1")`
 `;
 
 export const MoveWrapper = styled("div")`
-  background: #FFFFFF69;
+  background: #ffffff69;
   font-size: 0.7rem;
+  box-sizing: border-box;
   padding: 10px;
   margin-bottom: 5px;
 `;

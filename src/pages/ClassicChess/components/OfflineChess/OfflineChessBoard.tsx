@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   createGameInstance,
   makeMove,
-} from "../../../redux/slices/gameStateSlice";
+} from "../../../../redux/slices/gameStateSlice";
 import { v4 as uuidv4 } from "uuid";
 import {
   CheckType,
@@ -12,16 +12,21 @@ import {
   Team,
   TileColor,
   Type,
-} from "../../../types/enums";
+} from "../../../../types/enums";
+import { Position, StatesOfPieces, Tiles } from "../../../../types/gameTypes";
+import { ThemeContext } from "styled-components";
+import ChessPiece, { ChessPieceSmall } from "../ChessPiece";
+import { RootState } from "../../../../redux/store";
+import { mapCoordinatesToChessNotation } from "../../../../helpers/general";
 import {
-  Position,
-  StatesOfPieces,
-  Tiles,
-} from "../../../types/gameTypes";
-import styled, { ThemeContext } from "styled-components";
-import ChessPiece, { ChessPieceSmall } from "./ChessPiece";
-import { RootState } from "../../../redux/store";
-import { mapCoordinatesToChessNotation } from "../../../helpers/general";
+  MainChessboardWrapper,
+  CapturedDivWrapper,
+  CapturedPiecesWrapper,
+  CapturedPiecesWrapperOverlay,
+  PlayerName,
+  TilesWrapper,
+  Tile,
+} from "../chessBoardStyles";
 
 const OfflineChessBoard: FC = () => {
   const [allTiles, setAllTiles] = useState<Position[]>();
@@ -497,80 +502,5 @@ const OfflineChessBoard: FC = () => {
     </MainChessboardWrapper>
   );
 };
-
-const Tile = styled("div")`
-  height: 1/8;
-  width: 1/8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  position: relative;
-`;
-
-const TilesWrapper = styled("div")`
-  box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  border: 2px solid white;
-  overflow: hidden;
-  background: ${({ theme }) => theme.colors.tertiary1};
-  backdrop-filter: blur(8px);
-  padding: 20px;
-  border-radius: 10px;
-  box-sizing: border-box;
-  aspect-ratio: 1/1;
-`;
-
-const CapturedPiecesWrapper = styled("div")`
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  border-radius: 10px;
-  overflow: hidden;
-  height: 100%;
-  box-sizing: border-box;
-  width: 100%;
-  margin-left: auto;
-  border: 2px solid white;
-  box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
-  background: ${({ theme }) => theme.colors.tertiary1};
-`;
-
-const CapturedPiecesWrapperOverlay = styled("div")`
-  backdrop-filter: blur(18px);
-  height: 100%;
-  width: 100%;
-  height: 50px;
-  box-sizing: border-box;
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  padding-right: 20px;
-`;
-
-const CapturedDivWrapper = styled("div")`
-  margin-top: 10px;
-  margin-bottom: 10px;
-  display: flex;
-  height: 50px;
-  align-items: center;
-`;
-
-const PlayerName = styled("h3")`
-  margin: 0;
-  width: 200px;
-  transition: 500ms;
-  padding-left: 30px;
-  font-weight: 200;
-  letter-spacing: 3px;
-`;
-
-const MainChessboardWrapper = styled("div")`
-  max-width: 550px;
-  max-height: 550px;
-  aspect-ratio: 1/1;
-`;
 
 export default OfflineChessBoard;

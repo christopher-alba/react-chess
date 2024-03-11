@@ -8,6 +8,7 @@ import {
   Team,
   TileColor,
   Type,
+  Visibility,
 } from "./enums";
 
 export type Position = {
@@ -121,6 +122,7 @@ export type Game = {
   gameID: string;
   players: Player[];
   allGamesStates: AllGamesStates;
+  visibility?: Visibility;
 };
 
 export class Player {
@@ -140,4 +142,5 @@ export class Player {
 export type OnlineReturnState = {
   color: Team;
   state: AllGamesStates;
+  password: string;
 };

@@ -8,8 +8,8 @@ export const MainWrapper = styled("div")`
 
 export const SideInfoWrapper = styled("div")`
   width: 300px;
-  margin-left: 50px;
   height: 100%;
+  margin-left: 50px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -17,7 +17,6 @@ export const SideInfoWrapper = styled("div")`
 `;
 
 export const GameControls = styled("div")`
-  height: 200px;
   width: 100%;
   background: #383838;
   color: white;

@@ -3,36 +3,38 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   makeMove,
   updateGameInstance,
-} from "../../../redux/slices/gameStateSlice";
-import { Team, TileColor } from "../../../types/enums";
+} from "../../../../redux/slices/gameStateSlice";
+import { Team, TileColor } from "../../../../types/enums";
 import {
   AllGamesStates,
-  OnlineReturnState,
   Position,
   StatesOfPieces,
-} from "../../../types/gameTypes";
-import styled, { ThemeContext } from "styled-components";
-import ChessPiece, { ChessPieceSmall } from "./ChessPiece";
-import { RootState } from "../../../redux/store";
-import { socket } from "../../../socket";
-import { useLocation, useNavigate } from "react-router-dom";
+} from "../../../../types/gameTypes";
+import { ThemeContext } from "styled-components";
+import ChessPiece, { ChessPieceSmall } from "../ChessPiece";
+import { RootState } from "../../../../redux/store";
+import { socket } from "../../../../socket";
+import {
+  MainChessboardWrapper,
+  CapturedDivWrapper,
+  CapturedPiecesWrapper,
+  CapturedPiecesWrapperOverlay,
+  PlayerName,
+  TilesWrapper,
+  Tile,
+} from "../chessBoardStyles";
 
 const ChessBoard: FC<{
   playerTeam: Team;
   setPlayerTeam: React.Dispatch<React.SetStateAction<Team>>;
 }> = ({ playerTeam, setPlayerTeam }) => {
   const [gameId, setGameId] = useState<string>();
-  const location = useLocation();
-  const navigate = useNavigate();
   const [deadPiecesState, setDeadPiecesState] = useState<StatesOfPieces>();
   const reduxState = useSelector((state: RootState) => state.gameStateReducer);
   const theme = useContext(ThemeContext);
 
   const dispatch = useDispatch();
   useEffect(() => {
-    const state = location.state as OnlineReturnState;
-    setPlayerTeam(state.color);
-    dispatch(updateGameInstance(state.state));
     socket.connect();
     socket.on("welcome", ({ message, opponent }) => {
       console.log({ message, opponent });
@@ -97,20 +99,6 @@ const ChessBoard: FC<{
 
   return (
     <MainChessboardWrapper>
-      <h1>gameID: {gameId}</h1>
-      <p>Your Team: {playerTeam}</p>
-      <button
-        onClick={() => {
-          setPlayerTeam(undefined);
-          dispatch(
-            updateGameInstance({ currentMovesState: [], gamesStates: [] })
-          );
-          socket.disconnect();
-          navigate("/online");
-        }}
-      >
-        Disconnect
-      </button>
       <CapturedDivWrapper style={{ marginTop: 0 }}>
         <CapturedPiecesWrapper
           style={{
@@ -271,80 +259,5 @@ const ChessBoard: FC<{
     </MainChessboardWrapper>
   );
 };
-
-const Tile = styled("div")`
-  height: 1/8;
-  width: 1/8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  position: relative;
-`;
-
-const TilesWrapper = styled("div")`
-  box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  border: 2px solid white;
-  overflow: hidden;
-  background: ${({ theme }) => theme.colors.tertiary1};
-  backdrop-filter: blur(8px);
-  padding: 20px;
-  border-radius: 10px;
-  box-sizing: border-box;
-  aspect-ratio: 1/1;
-`;
-
-const CapturedPiecesWrapper = styled("div")`
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  border-radius: 10px;
-  overflow: hidden;
-  height: 100%;
-  box-sizing: border-box;
-  width: 100%;
-  margin-left: auto;
-  border: 2px solid white;
-  box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
-  background: ${({ theme }) => theme.colors.tertiary1};
-`;
-
-const CapturedPiecesWrapperOverlay = styled("div")`
-  backdrop-filter: blur(18px);
-  height: 100%;
-  width: 100%;
-  height: 50px;
-  box-sizing: border-box;
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  padding-right: 20px;
-`;
-
-const CapturedDivWrapper = styled("div")`
-  margin-top: 10px;
-  margin-bottom: 10px;
-  display: flex;
-  height: 50px;
-  align-items: center;
-`;
-
-const PlayerName = styled("h3")`
-  margin: 0;
-  width: 200px;
-  transition: 500ms;
-  padding-left: 30px;
-  font-weight: 200;
-  letter-spacing: 3px;
-`;
-
-const MainChessboardWrapper = styled("div")`
-  max-width: 550px;
-  max-height: 550px;
-  aspect-ratio: 1/1;
-`;
 
 export default ChessBoard;

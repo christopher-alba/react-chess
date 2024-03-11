@@ -8,8 +8,9 @@ export const GlobalStyles = createGlobalStyle`
     font-weight: 200;
   }
   body {
+    user-select: none;
     overflow-x:hidden;
-    background: ${({ theme }) => theme.colors.primary2};
+    background: ${({ theme }) => theme.colors.primary1};
     color: ${({ theme }) => theme.colors.secondary1} !important;
     font-family: "Inter", Helvetica, sans-serif;
     margin:0;

@@ -17,7 +17,6 @@ type IconProps = {
 const commonCss = css`
   width: 60%;
   height: 60%;
-  filter: drop-shadow(rgba(0, 0, 0, 0.5) 0px 4px 12px);
 `;
 const KingIcon = styled(King)<IconProps>`
   color: ${({ team }) => {
@@ -92,8 +91,8 @@ const BishopIcon = styled(Bishop)<IconProps>`
 `;
 
 const IconWrapper = styled("div")`
-  width: 100%;
-  height: 100%;
+  width: 80%;
+  height: 80%;
   background: transparent;
   display: flex;
   align-items: center;
@@ -104,6 +103,7 @@ const IconWrapperSmall = styled("div")`
   width: 50px;
   height: 50px;
   background: transparent;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
