@@ -81,16 +81,19 @@ const ChessBoard: FC<{
     }
   };
 
+  const handleDeadPieces = () => {
+    const deadPieces = reduxState?.gamesStates[0]?.statesOfPieces
+      ?.filter((x) => !x.alive)
+      .sort((a, b) => b.timeCapturedTimestamp - a.timeCapturedTimestamp);
+    setDeadPiecesState(deadPieces);
+  };
+
   useEffect(() => {
     setGameId(reduxState?.gamesStates?.[0]?.gameId);
   }, [reduxState]);
 
   useEffect(() => {
-    const deadPieces = reduxState?.gamesStates
-      ?.find((x) => x.gameId === gameId)
-      ?.statesOfPieces?.filter((x) => !x.alive)
-      .sort((a, b) => b.timeCapturedTimestamp - a.timeCapturedTimestamp);
-    setDeadPiecesState(deadPieces);
+    handleDeadPieces();
   }, [reduxState]);
 
   let currentTeam = reduxState?.gamesStates?.find(
