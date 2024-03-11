@@ -91,8 +91,8 @@ const BishopIcon = styled(Bishop)<IconProps>`
 `;
 
 const IconWrapper = styled("div")`
-  width: 80%;
-  height: 80%;
+  width: 100%;
+  height: 100%;
   background: transparent;
   display: flex;
   align-items: center;

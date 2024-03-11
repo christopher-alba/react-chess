@@ -1,10 +1,14 @@
 import { FC, useEffect, useState } from "react";
-import { Container } from "../../../../components/container";
 import MoveHistory from "../MoveHistory/MoveHistory";
 import ChessBoard from "./ChessBoard";
 import Messages from "./Messages/Messages";
 import PlayersAndSpectators from "./PlayersAndSpectators/PlayersAndSpectators";
-import { MainWrapper, SideInfoWrapper, GameControls } from "./styled";
+import {
+  MainWrapper,
+  SideInfoWrapper,
+  GameControls,
+  StyledContainer,
+} from "./styled";
 import { Team } from "../../../../types/enums";
 import Promotion from "../Promotion/Promotion";
 import { useLocation } from "react-router-dom";
@@ -31,15 +35,13 @@ const OnlineChess: FC = () => {
         />
         <div style={{ width: "100%" }}>
           <Messages />
-          <Container
-            style={{ display: "flex", position: "relative", height: "75vh" }}
-          >
+          <StyledContainer>
             <ChessBoard playerTeam={playerTeam} setPlayerTeam={setPlayerTeam} />
             <SideInfoWrapper>
               <GameControls>TIMER</GameControls>
               <MoveHistory />
             </SideInfoWrapper>
-          </Container>
+          </StyledContainer>
         </div>
       </MainWrapper>
     </>

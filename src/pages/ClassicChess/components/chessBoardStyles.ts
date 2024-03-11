@@ -15,7 +15,7 @@ export const TilesWrapper = styled("div")`
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   overflow: hidden;
-  background: ${({ theme }) => theme.colors.tertiary1};
+  background: #805e3e;
   backdrop-filter: blur(8px);
   padding: 20px;
   border-radius: 10px;
@@ -33,7 +33,7 @@ export const CapturedPiecesWrapper = styled("div")`
   box-sizing: border-box;
   width: 100%;
   margin-left: auto;
-  background: ${({ theme }) => theme.colors.tertiary1};
+  background: #805e3e;
 `;
 
 export const CapturedPiecesWrapperOverlay = styled("div")`

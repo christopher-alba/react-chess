@@ -11,6 +11,9 @@ export const MainWrapper = styled("div")`
   flex-direction: column;
   justify-content: space-between;
   color: white;
+  @media (max-width: 1300px){
+    display: none;
+  }
 `;
 
 export const SmallPrint = styled("p")`

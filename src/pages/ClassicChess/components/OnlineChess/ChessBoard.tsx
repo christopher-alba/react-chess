@@ -208,7 +208,7 @@ const ChessBoard: FC<{
                     online={true}
                   ></ChessPiece>
                 )}
-                <p
+                {/* <p
                   style={{
                     position: "absolute",
                     left: "5px",
@@ -220,7 +220,7 @@ const ChessBoard: FC<{
                   }}
                 >
                   {tile.chessNotationPosition}
-                </p>
+                </p> */}
               </Tile>
             );
           })}
