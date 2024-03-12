@@ -134,12 +134,18 @@ const ChessBoard: FC<{
                 color: "black",
               }}
             >
-              {(opponent?.color === Team.Black ||
-                opponent?.color === Team.BlackPromotion) &&
+              {you?.color !== Team.None &&
+                (opponent?.color === Team.Black ||
+                  opponent?.color === Team.BlackPromotion) &&
                 opponent?.name}
               {(you?.color === Team.Black ||
                 you?.color === Team.BlackPromotion) &&
                 `${you?.name} (you)`}
+              {you?.color === Team.None &&
+                game.players.find(
+                  (x) =>
+                    x.color === Team.Black || x.color === Team.BlackPromotion
+                )?.name}
             </PlayerName>
             {deadPiecesState
               ?.filter((piece) => piece.team === Team.White)
@@ -265,12 +271,18 @@ const ChessBoard: FC<{
                 color: "black",
               }}
             >
-              {(opponent?.color === Team.White ||
-                opponent?.color === Team.WhitePromotion) &&
+              {you?.color !== Team.None &&
+                (opponent?.color === Team.White ||
+                  opponent?.color === Team.WhitePromotion) &&
                 opponent?.name}
               {(you?.color === Team.White ||
                 you?.color === Team.WhitePromotion) &&
                 `${you?.name} (you)`}
+              {you?.color === Team.None &&
+                game.players.find(
+                  (x) =>
+                    x.color === Team.White || x.color === Team.WhitePromotion
+                )?.name}
             </PlayerName>
             {deadPiecesState
               ?.filter((piece) => piece.team === Team.Black)
