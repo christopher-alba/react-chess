@@ -1,10 +1,10 @@
 import { FC, useState } from "react";
-import { Game, OnlineReturnState } from "../../types/gameTypes";
+import { Game, OnlineReturnState, Player } from "../../types/gameTypes";
 import { socket } from "../../socket";
 import { useNavigate } from "react-router-dom";
 
 const Lobby: FC<{ lobby: Game }> = ({ lobby }) => {
-  const [password, setPassword] = useState(undefined);
+  const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
   const changePw = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
@@ -24,13 +24,20 @@ const Lobby: FC<{ lobby: Game }> = ({ lobby }) => {
           socket.emit(
             "join",
             { name: "Frank 2", gameID: lobby.gameID, password: password },
-            ({ error, color, state }) => {
+            ({
+              error,
+              player,
+              game,
+            }: {
+              error: string;
+              player: Player;
+              game: Game;
+            }) => {
               if (error) return;
               navigate("/online/classicChess", {
                 state: {
-                  color,
-                  state,
-                  password,
+                  player,
+                  game,
                 } as OnlineReturnState,
               });
             }
@@ -38,6 +45,35 @@ const Lobby: FC<{ lobby: Game }> = ({ lobby }) => {
         }}
       >
         Join
+      </button>
+      <button
+        onClick={() => {
+          socket.emit(
+            "joinAsSpectator",
+            { name: "Frank 2", gameID: lobby.gameID, password: password },
+            ({
+              error,
+              newSpectator,
+              game,
+            }: {
+              error: string;
+              newSpectator: Player;
+              game: Game;
+            }) => {
+              if (error) return;
+              console.log(game.spectators);
+
+              navigate("/online/classicChess", {
+                state: {
+                  player: newSpectator,
+                  game,
+                } as OnlineReturnState,
+              });
+            }
+          );
+        }}
+      >
+        Spectate
       </button>
     </div>
   );

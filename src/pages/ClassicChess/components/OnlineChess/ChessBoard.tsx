@@ -7,6 +7,8 @@ import {
 import { Team, TileColor } from "../../../../types/enums";
 import {
   AllGamesStates,
+  Game,
+  Player,
   Position,
   StatesOfPieces,
 } from "../../../../types/gameTypes";
@@ -26,9 +28,13 @@ import {
 
 const ChessBoard: FC<{
   playerTeam: Team;
-  setPlayerTeam: React.Dispatch<React.SetStateAction<Team>>;
-}> = ({ playerTeam, setPlayerTeam }) => {
+  setPlayerTeam: React.Dispatch<React.SetStateAction<Team | undefined>>;
+  game: Game;
+  you: Player;
+}> = ({ playerTeam, setPlayerTeam, game, you: youFromServer }) => {
   const [gameId, setGameId] = useState<string>();
+  const [opponent, setOpponent] = useState<Player>();
+  const [you, setYou] = useState<Player>();
   const [deadPiecesState, setDeadPiecesState] = useState<StatesOfPieces>();
   const reduxState = useSelector((state: RootState) => state.gameStateReducer);
   const theme = useContext(ThemeContext);
@@ -39,8 +45,12 @@ const ChessBoard: FC<{
     socket.on("welcome", ({ message, opponent }) => {
       console.log({ message, opponent });
     });
-    socket.on("opponentJoin", ({ message, opponent }) => {
-      console.log({ message, opponent });
+    socket.on("opponentJoin", ({ player }) => {
+      console.log("PLAYER OPPONENT");
+      console.log({ player });
+      if (youFromServer.playerID !== player.playerID) {
+        setOpponent(player);
+      }
     });
 
     socket.on("opponentMove", (props: { allGamesStates: AllGamesStates }) => {
@@ -63,6 +73,13 @@ const ChessBoard: FC<{
     };
   }, []);
 
+  useEffect(() => {
+    setYou(youFromServer);
+    setOpponent(
+      game.players.filter((x) => x.playerID !== youFromServer.playerID)[0]
+    );
+  }, [youFromServer]);
+
   const handleTileClick = (
     tile: Position,
     validMoves?: Position[],
@@ -82,9 +99,12 @@ const ChessBoard: FC<{
   };
 
   const handleDeadPieces = () => {
-    const deadPieces = reduxState?.gamesStates[0]?.statesOfPieces
+    const deadPieces = reduxState?.gamesStates?.[0]?.statesOfPieces
       ?.filter((x) => !x.alive)
-      .sort((a, b) => b.timeCapturedTimestamp - a.timeCapturedTimestamp);
+      .sort(
+        (a, b) =>
+          (b.timeCapturedTimestamp ?? 0) - (a.timeCapturedTimestamp ?? 0)
+      );
     setDeadPiecesState(deadPieces);
   };
 
@@ -114,7 +134,12 @@ const ChessBoard: FC<{
                 color: "black",
               }}
             >
-              Player 1
+              {(opponent?.color === Team.Black ||
+                opponent?.color === Team.BlackPromotion) &&
+                opponent?.name}
+              {(you?.color === Team.Black ||
+                you?.color === Team.BlackPromotion) &&
+                `${you?.name} (you)`}
             </PlayerName>
             {deadPiecesState
               ?.filter((piece) => piece.team === Team.White)
@@ -178,7 +203,7 @@ const ChessBoard: FC<{
                     ? "inset 0 0 30px #eeff00"
                     : tile.position.x === selectedX &&
                       tile.position.y === selectedY
-                    ? `inset 0 0 30px ${theme.colors.tertiary2}`
+                    ? `inset 0 0 30px ${theme?.colors.tertiary2}`
                     : attackPath?.find(
                         (path) =>
                           path.x === tile.position.x &&
@@ -240,7 +265,12 @@ const ChessBoard: FC<{
                 color: "black",
               }}
             >
-              Player 2
+              {(opponent?.color === Team.White ||
+                opponent?.color === Team.WhitePromotion) &&
+                opponent?.name}
+              {(you?.color === Team.White ||
+                you?.color === Team.WhitePromotion) &&
+                `${you?.name} (you)`}
             </PlayerName>
             {deadPiecesState
               ?.filter((piece) => piece.team === Team.Black)

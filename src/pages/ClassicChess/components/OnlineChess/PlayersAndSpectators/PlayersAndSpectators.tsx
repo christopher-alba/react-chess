@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { ButtonGroup } from "../../../../../components/buttonGroups";
 import { Visibility } from "../../../../../types/enums";
 
-const PlayersAndSpectators: FC<{ gameID: string; password: string }> = ({
+const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
   gameID,
   password,
 }) => {
@@ -44,7 +44,7 @@ const PlayersAndSpectators: FC<{ gameID: string; password: string }> = ({
     }, 3000);
   };
   const copyPassword = () => {
-    navigator.clipboard.writeText(password);
+    navigator.clipboard.writeText(password ?? "");
     setCopiedPassword(true);
     setTimeout(() => {
       setCopiedPassword(false);
@@ -56,7 +56,7 @@ const PlayersAndSpectators: FC<{ gameID: string; password: string }> = ({
         <GameIdHeader>
           <Header>GameID</Header>
           <Button
-            $background={theme.colors.tertiary2}
+            $background={theme?.colors.tertiary2}
             $fontSize="0.7rem"
             onClick={copyId}
             $width={"70px"}
@@ -72,7 +72,7 @@ const PlayersAndSpectators: FC<{ gameID: string; password: string }> = ({
         <GameIdHeader style={{ marginTop: "20px" }}>
           <Header>Password</Header>
           <Button
-            $background={theme.colors.tertiary2}
+            $background={theme?.colors.tertiary2}
             $fontSize="0.7rem"
             onClick={copyPassword}
             $width={"70px"}
@@ -93,8 +93,8 @@ const PlayersAndSpectators: FC<{ gameID: string; password: string }> = ({
             style={{ opacity: visiblity === Visibility.Public ? 1 : 0.5 }}
             $background={
               visiblity === Visibility.Public
-                ? theme.colors.tertiary2
-                : theme.colors.tertiary1
+                ? theme?.colors.tertiary2
+                : theme?.colors.tertiary1
             }
           >
             Visible
@@ -104,8 +104,8 @@ const PlayersAndSpectators: FC<{ gameID: string; password: string }> = ({
             $width="100%"
             $background={
               visiblity === Visibility.Auto
-                ? theme.colors.tertiary2
-                : theme.colors.tertiary1
+                ? theme?.colors.tertiary2
+                : theme?.colors.tertiary1
             }
             style={{ opacity: visiblity === Visibility.Auto ? 1 : 0.5 }}
           >
@@ -115,8 +115,8 @@ const PlayersAndSpectators: FC<{ gameID: string; password: string }> = ({
             onClick={() => setVisibility(Visibility.Private)}
             $background={
               visiblity === Visibility.Private
-                ? theme.colors.tertiary2
-                : theme.colors.tertiary1
+                ? theme?.colors.tertiary2
+                : theme?.colors.tertiary1
             }
             $width="100%"
             style={{ opacity: visiblity === Visibility.Private ? 1 : 0.5 }}
@@ -127,7 +127,7 @@ const PlayersAndSpectators: FC<{ gameID: string; password: string }> = ({
       </div>
       <Button
         onClick={disconnect}
-        $background={theme.colors.tertiary1}
+        $background={theme?.colors.tertiary1}
         $width="100%"
       >
         Disconnect

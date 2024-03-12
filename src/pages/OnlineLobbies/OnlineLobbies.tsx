@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { socket } from "../../socket";
-import { Game, OnlineReturnState } from "../../types/gameTypes";
+import { Game, OnlineReturnState, Player } from "../../types/gameTypes";
 import { useNavigate } from "react-router-dom";
 import { Mode, Visibility } from "../../types/enums";
 import { v4 as uuid } from "uuid";
@@ -44,13 +44,20 @@ const OnlineLobbies: FC = () => {
           socket.emit(
             "create",
             { name: "Frank", visibility: Visibility.Public },
-            ({ color, state, password }) => {
+            ({
+              player,
+              password,
+              game,
+            }: {
+              player: Player;
+              password: string;
+              game: Game;
+            }) => {
               console.log(password);
               navigate("/online/classicChess", {
                 state: {
-                  color,
-                  state,
-                  password,
+                  player,
+                  game,
                 } as OnlineReturnState,
               });
             }
@@ -65,13 +72,12 @@ const OnlineLobbies: FC = () => {
           socket.emit(
             "create",
             { name: "Frank", visibility: Visibility.Private, password: uuid() },
-            ({ color, state, password }) => {
-              console.log(password);
+            ({ player, game }: { player: Player; game: Game }) => {
+              console.log(game.password);
               navigate("/online/classicChess", {
                 state: {
-                  color,
-                  state,
-                  password,
+                  player,
+                  game,
                 } as OnlineReturnState,
               });
             }

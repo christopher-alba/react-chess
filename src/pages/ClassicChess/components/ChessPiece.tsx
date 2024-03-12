@@ -122,7 +122,7 @@ const ChessPiece: FC<{
   const handleMouseDown = () => {
     console.log(playerTeam);
 
-    if (!online) dispatch(selectPiece({ gameId: gameId, id: id }));
+    if (!online) dispatch(selectPiece({ gameId: gameId ?? "", id: id }));
 
     if (gameId && playerTeam === team) {
       dispatch(selectPiece({ gameId: gameId, id: id }));

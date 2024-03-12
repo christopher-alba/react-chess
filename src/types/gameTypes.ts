@@ -122,7 +122,9 @@ export type Game = {
   gameID: string;
   players: Player[];
   allGamesStates: AllGamesStates;
-  visibility?: Visibility;
+  visibility: Visibility;
+  spectators: Player[];
+  password?: string;
 };
 
 export class Player {
@@ -140,7 +142,6 @@ export class Player {
 }
 
 export type OnlineReturnState = {
-  color: Team;
-  state: AllGamesStates;
-  password: string;
+  player: Player;
+  game: Game;
 };
