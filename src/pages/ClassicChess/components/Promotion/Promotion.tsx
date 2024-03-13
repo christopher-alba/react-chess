@@ -39,7 +39,7 @@ const Promotion: FC<{ playerTeam?: Team; online: boolean }> = ({
   if (online) {
     shouldDisplay = reduxState.gamesStates?.[0]?.currentTeam
       .toLowerCase()
-      .includes(playerTeam?.toLowerCase());
+      .includes(playerTeam!?.toLowerCase());
   }
 
   return (

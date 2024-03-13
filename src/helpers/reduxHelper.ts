@@ -51,7 +51,7 @@ export const makeSingleMove = (
     (x) => x.gameId === action.payload.currentGameId
   );
   const selectedPiece = findPieceById(
-    gameToUpdate,
+    gameToUpdate!,
     action.payload.selectedPiece.id
   );
   const enemyPieces = gameToUpdate?.statesOfPieces.filter(
@@ -70,11 +70,11 @@ export const makeSingleMove = (
     (x) => x.id === copyOfSelectedPieceId
   );
   if (selectedPiece && copyOfGameState && copyOfCurrentMove) {
-    copyOfSelectedPiece.position.x = action.payload.tile.x;
-    copyOfSelectedPiece.position.y = action.payload.tile.y;
+    copyOfSelectedPiece!.position.x = action.payload.tile.x;
+    copyOfSelectedPiece!.position.y = action.payload.tile.y;
 
     // Check for discovered checks
-    let rookMoved: StatesOfPiece = undefined;
+    let rookMoved: StatesOfPiece = undefined!;
     if (
       checkForDiscoveredChecks(
         copyOfGameState,
@@ -86,31 +86,31 @@ export const makeSingleMove = (
       if (action.type === "VALIDATION") {
         return false;
       } else {
-        clearValidMoves(currentMoveState);
+        clearValidMoves(currentMoveState!);
         return false;
       }
     } else {
-      const currentTeam = gameToUpdate.teamStates.find(
-        (x) => x.teamName === gameToUpdate.currentTeam
+      const currentTeam = gameToUpdate!.teamStates.find(
+        (x) => x.teamName === gameToUpdate!.currentTeam
       );
 
       //clear enemyEnpassantStates
-      gameToUpdate.teamStates.forEach((team) => {
+      gameToUpdate!.teamStates.forEach((team) => {
         team.enpassantStates.enemyEnpassantPawns = [];
       });
       if (action.type === "VALIDATION") {
         return true;
       } else {
         rookMoved = handleCastling(
-          gameToUpdate,
+          gameToUpdate!,
           action,
-          currentTeam,
+          currentTeam!,
           rookMoved
         );
       }
     }
 
-    handleEnpassant(gameToUpdate, selectedPiece, action);
+    handleEnpassant(gameToUpdate!, selectedPiece, action);
 
     // Update selected piece position
     const copyOfOriginPosition: Position = JSON.parse(
@@ -125,8 +125,8 @@ export const makeSingleMove = (
 
     let enemyCaptured = false;
     // Capture enemy piece if exists
-    if (enemyPieces?.length > 0)
-      enemyPieces.forEach((x) => {
+    if (enemyPieces!?.length > 0)
+      enemyPieces!.forEach((x) => {
         if (x.alive) {
           x.alive = false;
           x.timeCapturedTimestamp = Date.now();
@@ -137,47 +137,47 @@ export const makeSingleMove = (
     // Recalculate valid moves and check for check
     if (rookMoved) {
       checkType = recalculateValidMovesAndCheck(
-        gameToUpdate,
-        currentMoveState,
+        gameToUpdate!,
+        currentMoveState!,
         rookMoved
       );
     } else {
       checkType = recalculateValidMovesAndCheck(
-        gameToUpdate,
-        currentMoveState,
+        gameToUpdate!,
+        currentMoveState!,
         selectedPiece
       );
     }
     let originPiece: StatesOfPiece = JSON.parse(JSON.stringify(selectedPiece));
     //reset checking states
-    gameToUpdate.promotionPiece = selectedPiece;
-    currentMoveState.allEnemyMoves = [];
-    currentMoveState.validMoves = [];
+    gameToUpdate!.promotionPiece = selectedPiece;
+    currentMoveState!.allEnemyMoves = [];
+    currentMoveState!.validMoves = [];
     if (
       selectedPiece.position.y === 0 &&
       selectedPiece.team === Team.White &&
       selectedPiece.type === Type.Pawn
     ) {
-      gameToUpdate.currentTeam = Team.WhitePromotion;
+      gameToUpdate!.currentTeam = Team.WhitePromotion;
     } else if (
       selectedPiece.position.y === 7 &&
       selectedPiece.team === Team.Black &&
       selectedPiece.type === Type.Pawn
     ) {
-      gameToUpdate.currentTeam = Team.BlackPromotion;
+      gameToUpdate!.currentTeam = Team.BlackPromotion;
     } else {
-      switchTeamsAndReset(gameToUpdate, currentMoveState);
+      switchTeamsAndReset(gameToUpdate!, currentMoveState!);
     }
 
     // Update game state and current move state
-    let cmState = calculateCheckmateState(gameToUpdate, currentMoveState);
-    let finalConsequence: MoveConsequence = undefined;
-    let finalCaptured: StatesOfPiece = undefined;
-    let finalCapturedChessPos: string = undefined;
+    let cmState = calculateCheckmateState(gameToUpdate!, currentMoveState!);
+    let finalConsequence: MoveConsequence = undefined!;
+    let finalCaptured: StatesOfPiece = undefined!;
+    let finalCapturedChessPos: string = undefined!;
 
     if (enemyCaptured) {
-      finalCaptured = enemyPieces[0];
-      finalCapturedChessPos = enemyPieces[0].chessNotationPosition;
+      finalCaptured = enemyPieces![0];
+      finalCapturedChessPos = enemyPieces![0].chessNotationPosition;
     }
 
     if (cmState === GameState.WinnerDecided) {
@@ -204,7 +204,7 @@ export const makeSingleMove = (
       finalConsequence = MoveConsequence.Default;
     }
 
-    gameToUpdate.moveHistory.push({
+    gameToUpdate!.moveHistory.push({
       x: action.payload.tile.x,
       y: action.payload.tile.y,
       moveConsequence: finalConsequence,
@@ -228,14 +228,18 @@ export const findPieceById = (
   gameState: AllGameStates,
   pieceId: string
 ): StatesOfPiece => {
-  return gameState?.statesOfPieces.find((piece) => piece.id === pieceId);
+  return gameState?.statesOfPieces.find((piece) => piece.id === pieceId)!;
 };
 
-export const cloneGameState = (gameState): AllGameStates => {
+export const cloneGameState = (
+  gameState: AllGameStates | undefined
+): AllGameStates => {
   return JSON.parse(JSON.stringify(gameState));
 };
 
-export const cloneCurrentMoveState = (currentMoveState): CurrentMoveState => {
+export const cloneCurrentMoveState = (
+  currentMoveState: CurrentMoveState | undefined
+): CurrentMoveState => {
   return JSON.parse(JSON.stringify(currentMoveState));
 };
 
@@ -329,9 +333,9 @@ export const handleCastling = (
     let kingSideRook = gameToUpdate.statesOfPieces.find(
       (piece) => piece.position.x === 7 && piece.position.y === 7
     );
-    kingSideRook.position.x = 5;
-    kingSideRook.chessNotationPosition = mapCoordinatesToChessNotation(5, 7);
-    rookMoved = kingSideRook;
+    kingSideRook!.position.x = 5;
+    kingSideRook!.chessNotationPosition = mapCoordinatesToChessNotation(5, 7);
+    rookMoved = kingSideRook!;
   }
   //detect white queen side castling
   if (
@@ -343,9 +347,9 @@ export const handleCastling = (
     let queenSideRook = gameToUpdate.statesOfPieces.find(
       (piece) => piece.position.x === 0 && piece.position.y === 7
     );
-    queenSideRook.position.x = 3;
-    queenSideRook.chessNotationPosition = mapCoordinatesToChessNotation(3, 7);
-    rookMoved = queenSideRook;
+    queenSideRook!.position.x = 3;
+    queenSideRook!.chessNotationPosition = mapCoordinatesToChessNotation(3, 7);
+    rookMoved = queenSideRook!;
   }
 
   //detect black king side castling
@@ -358,9 +362,9 @@ export const handleCastling = (
     let kingSideRook = gameToUpdate.statesOfPieces.find(
       (piece) => piece.position.x === 7 && piece.position.y === 0
     );
-    kingSideRook.position.x = 5;
-    kingSideRook.chessNotationPosition = mapCoordinatesToChessNotation(5, 0);
-    rookMoved = kingSideRook;
+    kingSideRook!.position.x = 5;
+    kingSideRook!.chessNotationPosition = mapCoordinatesToChessNotation(5, 0);
+    rookMoved = kingSideRook!;
   }
   //detect black queen side castling
   if (
@@ -372,9 +376,9 @@ export const handleCastling = (
     let queenSideRook = gameToUpdate.statesOfPieces.find(
       (piece) => piece.position.x === 0 && piece.position.y === 0
     );
-    queenSideRook.position.x = 3;
-    queenSideRook.chessNotationPosition = mapCoordinatesToChessNotation(3, 0);
-    rookMoved = queenSideRook;
+    queenSideRook!.position.x = 3;
+    queenSideRook!.chessNotationPosition = mapCoordinatesToChessNotation(3, 0);
+    rookMoved = queenSideRook!;
   }
 
   //If black king's first time moving, disable the ability to castle
@@ -386,7 +390,7 @@ export const handleCastling = (
   ) {
     let blackCastlingStates = gameToUpdate.teamStates.find(
       (team) => team.teamName === Team.Black
-    ).castlingStates;
+    )!.castlingStates;
     blackCastlingStates.KingMoved = true;
     blackCastlingStates.KingSide = true;
     blackCastlingStates.QueenSide = true;
@@ -399,7 +403,7 @@ export const handleCastling = (
   ) {
     let whiteCastlingStates = gameToUpdate.teamStates.find(
       (team) => team.teamName === Team.White
-    ).castlingStates;
+    )!.castlingStates;
     whiteCastlingStates.KingMoved = true;
     whiteCastlingStates.KingSide = true;
     whiteCastlingStates.QueenSide = true;
@@ -414,7 +418,7 @@ export const handleCastling = (
   ) {
     let whiteCastlingStates = gameToUpdate.teamStates.find(
       (team) => team.teamName === Team.White
-    ).castlingStates;
+    )!.castlingStates;
     whiteCastlingStates.KingSide = true;
     whiteCastlingStates.KingRookMoved = true;
   }
@@ -428,7 +432,7 @@ export const handleCastling = (
   ) {
     let whiteCastlingStates = gameToUpdate.teamStates.find(
       (team) => team.teamName === Team.White
-    ).castlingStates;
+    )!.castlingStates;
     whiteCastlingStates.QueenSide = true;
     whiteCastlingStates.QueenRookMoved = true;
   }
@@ -442,7 +446,7 @@ export const handleCastling = (
   ) {
     let blackCastlingStates = gameToUpdate.teamStates.find(
       (team) => team.teamName === Team.Black
-    ).castlingStates;
+    )!.castlingStates;
     blackCastlingStates.KingSide = true;
     blackCastlingStates.KingRookMoved = true;
   }
@@ -456,7 +460,7 @@ export const handleCastling = (
   ) {
     let blackCastlingStates = gameToUpdate.teamStates.find(
       (team) => team.teamName === Team.Black
-    ).castlingStates;
+    )!.castlingStates;
     blackCastlingStates.QueenSide = true;
     blackCastlingStates.QueenRookMoved = true;
   }
@@ -477,7 +481,7 @@ export const handleEnpassant = (
     //check for attacking pieces
     const enpassantStates = gameToUpdate.teamStates.find(
       (team) => team.teamName === Team.Black
-    ).enpassantStates;
+    )!.enpassantStates;
     if (
       selectedPiece.team === Team.Black &&
       selectedPiece.type === Type.Pawn &&
@@ -494,7 +498,7 @@ export const handleEnpassant = (
     //check for pieces to be captured
     const enemyEnpassantStates = gameToUpdate.teamStates.find(
       (team) => team.teamName === Team.White
-    ).enpassantStates;
+    )!.enpassantStates;
     //if current team's pawn moves forward 2 spaces, add it to teh enemy team's enpassantStates in enemyEnpassantPawns
     if (
       selectedPiece.team === Team.Black &&
@@ -507,7 +511,7 @@ export const handleEnpassant = (
   if (gameToUpdate.currentTeam === Team.White) {
     const enpassantStates = gameToUpdate.teamStates.find(
       (team) => team.teamName === Team.White
-    ).enpassantStates;
+    )!.enpassantStates;
     if (
       selectedPiece.team === Team.White &&
       selectedPiece.type === Type.Pawn &&
@@ -524,7 +528,7 @@ export const handleEnpassant = (
     //check for pieces to be captured
     const enemyEnpassantStates = gameToUpdate.teamStates.find(
       (team) => team.teamName === Team.Black
-    ).enpassantStates;
+    )!.enpassantStates;
     //if current team's pawn moves forward 2 spaces, add it to teh enemy team's enpassantStates in enemyEnpassantPawns
     if (
       selectedPiece.team === Team.White &&
@@ -580,8 +584,8 @@ export const handleEnpassant = (
 
 export const checkForDiscoveredChecks = (
   gameState: AllGameStates,
-  currentMoveState,
-  selectedPiece,
+  currentMoveState: CurrentMoveState,
+  selectedPiece: StatesOfPiece,
   tile: Position
 ) => {
   // Logic to check for discovered checks
@@ -598,18 +602,18 @@ export const checkForDiscoveredChecks = (
   //get checking piece
   let checkingPieces = gameState.checkStatus.checkingPieces;
   //if checkingPiece is about to be killed by the move, set it to alive = false and remove the attack path
-  for (let i = 0; i < checkingPieces?.length; i++) {
+  for (let i = 0; i < checkingPieces!?.length; i++) {
     if (
       checkingPieces &&
       checkingPieces[i].position.x === tile.x &&
       checkingPieces[i].position.y === tile.y
     ) {
       gameState.statesOfPieces.find(
-        (piece) => piece.id === checkingPieces[i].id
-      ).alive = false;
+        (piece) => piece.id === checkingPieces![i].id
+      )!.alive = false;
       gameState.statesOfPieces.find(
-        (piece) => piece.id === checkingPieces[i].id
-      ).timeCapturedTimestamp = Date.now();
+        (piece) => piece.id === checkingPieces![i].id
+      )!.timeCapturedTimestamp = Date.now();
       gameState.checkStatus.attackPath = [];
       checkingPieces = undefined;
     }
@@ -622,7 +626,7 @@ export const checkForDiscoveredChecks = (
     enemyAboutToGetRekt.alive = false;
     enemyAboutToGetRekt.timeCapturedTimestamp = Date.now();
     enemyTeamPieces = enemyTeamPieces.filter(
-      (x) => x.id !== enemyAboutToGetRekt.id
+      (x) => x.id !== enemyAboutToGetRekt!.id
     );
   }
 
@@ -681,7 +685,7 @@ export const recalculateValidMovesAndCheck = (
       gameState.checkStatus.checkingPieces = intersectingMoves.map(
         (move) => move.originPiece
       );
-      let attackPath = [];
+      let attackPath = []!;
       gameState.checkStatus.attackPath = [];
       for (let i = 0; i < intersectingMoves.length; i++) {
         let temp = currentMoveState?.validMoves.filter(
@@ -689,7 +693,7 @@ export const recalculateValidMovesAndCheck = (
             move.moveDirection === intersectingMoves[i].moveDirection &&
             intersectingMoves[i].moveDirection !== MoveDirection.OneOff &&
             move.originPiece === intersectingMoves[i].originPiece
-        );
+        ) as any;
         attackPath = attackPath.concat(temp);
       }
       gameState.checkStatus.attackPath = attackPath;
@@ -758,6 +762,6 @@ export const calculateCheckmateState = (
   }
 };
 
-export const clearValidMoves = (currentMoveState) => {
+export const clearValidMoves = (currentMoveState: CurrentMoveState) => {
   if (currentMoveState?.validMoves) currentMoveState.validMoves = [];
 };

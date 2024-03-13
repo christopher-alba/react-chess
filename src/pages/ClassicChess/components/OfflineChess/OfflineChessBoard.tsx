@@ -330,7 +330,7 @@ const OfflineChessBoard: FC = () => {
     const deadPieces = reduxState?.gamesStates
       ?.find((x) => x.gameId === gameId)
       ?.statesOfPieces?.filter((x) => !x.alive)
-      .sort((a, b) => b.timeCapturedTimestamp - a.timeCapturedTimestamp);
+      .sort((a, b) => b.timeCapturedTimestamp! - a.timeCapturedTimestamp!);
     setDeadPiecesState(deadPieces);
   }, [reduxState]);
 
@@ -418,7 +418,7 @@ const OfflineChessBoard: FC = () => {
                   )
                     ? "inset 0 0 30px #eeff00"
                     : tile.x === selectedX && tile.y === selectedY
-                    ? `inset 0 0 30px ${theme.colors.tertiary2}`
+                    ? `inset 0 0 30px ${theme!.colors.tertiary2}`
                     : attackPath?.find(
                         (path) => path.x === tile.x && path.y === tile.y
                       )

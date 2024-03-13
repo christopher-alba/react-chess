@@ -100,7 +100,7 @@ const filterMovesForCheckState = (
   movesToFilter: MoveDetails[],
   checkStatus: CheckStatus
 ) => {
-  if (checkStatus.checkingPieces?.length >= 2) return [];
+  if ((checkStatus.checkingPieces?.length ?? -1) >= 2) return [];
   if (
     checkStatus.attackPath &&
     checkStatus.checkingPieces &&
@@ -109,7 +109,7 @@ const filterMovesForCheckState = (
     return movesToFilter.filter((obj) =>
       isMatch(
         checkStatus.attackPath as MoveDetails[],
-        checkStatus.checkingPieces[0] as StatesOfPiece,
+        checkStatus.checkingPieces![0] as StatesOfPiece,
         obj
       )
     );
@@ -825,7 +825,7 @@ const hasKingRookMoved = (currentGame: AllGameStates) => {
 
   let hasRookMoved = currentGame.teamStates.find(
     (team) => team.teamName === currentTeam
-  ).castlingStates.KingRookMoved;
+  )!.castlingStates.KingRookMoved;
 
   return hasRookMoved;
 };
@@ -835,7 +835,7 @@ const hasQueenRookMoved = (currentGame: AllGameStates) => {
 
   let hasRookMoved = currentGame.teamStates.find(
     (team) => team.teamName === currentTeam
-  ).castlingStates.QueenRookMoved;
+  )!.castlingStates.QueenRookMoved;
 
   return hasRookMoved;
 };
@@ -964,10 +964,10 @@ const calculatePawnMoves = (
     (team) => team.teamName === currentGame.currentTeam
   );
   const enpassantStates = currentTeam?.enpassantStates;
-  for (let i = 0; i < enpassantStates?.alliedEnpassantPawns.length; i++) {
-    const alliedEnpassantPawn = enpassantStates.alliedEnpassantPawns[i];
-    for (let j = 0; j < enpassantStates.enemyEnpassantPawns.length; j++) {
-      const enemyEnpassantPawn = enpassantStates.enemyEnpassantPawns[j];
+  for (let i = 0; i < enpassantStates?.alliedEnpassantPawns.length!; i++) {
+    const alliedEnpassantPawn = enpassantStates!.alliedEnpassantPawns[i];
+    for (let j = 0; j < enpassantStates!.enemyEnpassantPawns.length; j++) {
+      const enemyEnpassantPawn = enpassantStates!.enemyEnpassantPawns[j];
       if (
         Math.abs(
           alliedEnpassantPawn.position.x - enemyEnpassantPawn.position.x
@@ -975,7 +975,7 @@ const calculatePawnMoves = (
         alliedEnpassantPawn.position.x === selectedPiece.position.x &&
         alliedEnpassantPawn.position.y === selectedPiece.position.y
       ) {
-        if (currentTeam.teamName === Team.Black) {
+        if (currentTeam!.teamName === Team.Black) {
           validateTileStatic(
             {
               x: enemyEnpassantPawn.position.x,
@@ -985,7 +985,7 @@ const calculatePawnMoves = (
             selectedPiece,
             pawnMoves
           );
-        } else if (currentTeam.teamName === Team.White) {
+        } else if (currentTeam!.teamName === Team.White) {
           validateTileStatic(
             {
               x: enemyEnpassantPawn.position.x,
@@ -1318,16 +1318,16 @@ const validateKingTileStatic = (
     }
     let possibleAttackPaths: MoveDetails[];
     //if the tile is in the attack path of a checking piece
-    for (let i = 0; i < checkingPieces?.length; i++) {
+    for (let i = 0; i < checkingPieces?.length!; i++) {
       //calculate attack path of checking piece using all enemy moves
       possibleAttackPaths = allEnemyMoves.filter(
         (move) =>
-          JSON.stringify(move.originPiece) === JSON.stringify(checkingPieces[i])
+          JSON.stringify(move.originPiece) === JSON.stringify(checkingPieces![i])
       );
     }
     //filter down all possible attack paths using selected piece to find king tile, then use it to get the direction of attack
     let kingLocation = selectedPiece.position;
-    let attackDestinations = possibleAttackPaths?.filter(
+    let attackDestinations = possibleAttackPaths!?.filter(
       (path) => path.x === kingLocation.x && path.y === kingLocation.y
     );
     let attackDirectionsAndOrigins = attackDestinations?.map(
@@ -1338,7 +1338,7 @@ const validateKingTileStatic = (
         } as DirectionAndOrigin)
     );
 
-    let attackPaths = possibleAttackPaths?.filter((path) =>
+    let attackPaths = possibleAttackPaths!?.filter((path) =>
       attackDirectionsAndOrigins.find(
         (atk) =>
           atk.direction === path.moveDirection &&

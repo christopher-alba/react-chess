@@ -2,6 +2,7 @@ import { PayloadAction, createSlice, current } from "@reduxjs/toolkit";
 import {
   AllGameStates,
   AllGamesStates,
+  CurrentMoveState,
   MoveDetails,
   MoveDetailsForHistory,
   Position,
@@ -61,13 +62,13 @@ export const gameStateSlice = createSlice({
     ) => {
       const currentGame = state.gamesStates.find(
         (x) => x.gameId === action.payload.currentGameId
-      );
+      ) as AllGameStates;
       const currentMoveState = state.currentMovesState.find(
         (x) => x.gameId === action.payload.currentGameId
-      );
+      ) as CurrentMoveState;
       const pawnToPromote = currentGame.statesOfPieces.find(
         (x) => x.id === action.payload.pawnToPromote.id
-      );
+      ) as StatesOfPiece;
       pawnToPromote.type = action.payload.targetPieceType;
 
       let checkType = recalculateValidMovesAndCheck(
@@ -83,7 +84,7 @@ export const gameStateSlice = createSlice({
       }
       currentMoveState.selectedPieceId = undefined;
 
-      let finalConsequence: MoveConsequence = undefined;
+      let finalConsequence: MoveConsequence;
 
       //check for checkmate
       let cmState = calculateCheckmateState(currentGame, currentMoveState);
@@ -121,7 +122,7 @@ export const gameStateSlice = createSlice({
           allGamesStates: AllGamesStates;
           gameID: string;
         },
-        ({ color }) => {
+        ({ color }:{color: Team}) => {
           console.log({ color });
         }
       );
@@ -141,7 +142,7 @@ export const gameStateSlice = createSlice({
           allGamesStates: AllGamesStates;
           gameID: string;
         },
-        ({ color }) => {
+        ({ color }:{color: Team}) => {
           console.log({ color });
         }
       );
@@ -157,12 +158,12 @@ export const gameStateSlice = createSlice({
       let matchingPiece = currentGame?.statesOfPieces.find(
         (x) => x.id === action.payload.id
       );
-      if (matchingPiece.team !== currentGame.currentTeam) return;
+      if (matchingPiece?.team !== currentGame?.currentTeam) return;
 
       let currentMoveState = state.currentMovesState.find(
         (x) => x.gameId === action.payload.gameId
       );
-      if (currentMoveState) {
+      if (currentMoveState && currentGame) {
         currentMoveState.gameId = currentGame?.gameId;
         currentMoveState.selectedPieceId = action.payload.id;
         currentMoveState.allEnemyMoves = calculateEnemyMoves(currentGame);
