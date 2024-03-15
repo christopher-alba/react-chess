@@ -2,6 +2,7 @@ import { FC, useState } from "react";
 import { Game, OnlineReturnState, Player } from "../../types/gameTypes";
 import { socket } from "../../socket";
 import { useNavigate } from "react-router-dom";
+import generate from "boring-name-generator";
 
 const Lobby: FC<{ lobby: Game }> = ({ lobby }) => {
   const [password, setPassword] = useState<string>("");
@@ -23,7 +24,11 @@ const Lobby: FC<{ lobby: Game }> = ({ lobby }) => {
         onClick={() => {
           socket.emit(
             "join",
-            { name: "Frank 2", gameID: lobby.gameID, password: password },
+            {
+              name: generate({ number: true }).spaced,
+              gameID: lobby.gameID,
+              password: password,
+            },
             ({
               error,
               player,
@@ -50,7 +55,11 @@ const Lobby: FC<{ lobby: Game }> = ({ lobby }) => {
         onClick={() => {
           socket.emit(
             "joinAsSpectator",
-            { name: "Frank 2", gameID: lobby.gameID, password: password },
+            {
+              name: generate({ number: true }).spaced,
+              gameID: lobby.gameID,
+              password: password,
+            },
             ({
               error,
               newSpectator,

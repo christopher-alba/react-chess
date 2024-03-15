@@ -46,3 +46,17 @@ export const StyledContainer = styled(Container)`
   position: relative;
   height: 75vh;
 `;
+
+export const SpectatorsWrapper = styled("div")`
+  background: ${({ theme }) => theme.colors.primary3};
+  height: 100%;
+  padding: 20px;
+  border-radius: 10px;
+`;
+
+export const Spectator = styled("div")`
+  background: ${({ theme }) => theme.colors.primary1};
+  color: ${({ theme }) => theme.colors.secondary1};
+  text-align: center;
+  padding: 10px;
+`;

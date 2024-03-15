@@ -62,6 +62,7 @@ export const PlayerName = styled("h3")`
   padding-left: 30px;
   font-weight: 200;
   letter-spacing: 3px;
+  font-size: 0.7rem;
   text-overflow: ellipsis;
 `;
 

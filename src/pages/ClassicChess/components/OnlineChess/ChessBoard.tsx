@@ -33,6 +33,7 @@ const ChessBoard: FC<{
   you: Player;
 }> = ({ playerTeam, setPlayerTeam, game, you: youFromServer }) => {
   const [gameId, setGameId] = useState<string>();
+  const [gameState, setGameState] = useState<Game>(game);
   const [opponent, setOpponent] = useState<Player>();
   const [you, setYou] = useState<Player>();
   const [deadPiecesState, setDeadPiecesState] = useState<StatesOfPieces>();
@@ -45,12 +46,23 @@ const ChessBoard: FC<{
     socket.on("welcome", ({ message, opponent }) => {
       console.log({ message, opponent });
     });
+    socket.on("playerLeft", ({ remainingPlayer: player }) => {
+      console.log({ player });
+      setOpponent(undefined);
+      setGameState((prev) => {
+        return { ...prev, players: [player] };
+      });
+    });
+
     socket.on("opponentJoin", ({ player }) => {
       console.log("PLAYER OPPONENT");
       console.log({ player });
       if (youFromServer.playerID !== player.playerID) {
         setOpponent(player);
       }
+      setGameState((prev) => {
+        return { ...prev, players: [...prev.players, player] };
+      });
     });
 
     socket.on("opponentMove", (props: { allGamesStates: AllGamesStates }) => {
@@ -142,7 +154,7 @@ const ChessBoard: FC<{
                 you?.color === Team.BlackPromotion) &&
                 `${you?.name} (you)`}
               {you?.color === Team.None &&
-                game.players.find(
+                gameState.players.find(
                   (x) =>
                     x.color === Team.Black || x.color === Team.BlackPromotion
                 )?.name}
@@ -279,7 +291,7 @@ const ChessBoard: FC<{
                 you?.color === Team.WhitePromotion) &&
                 `${you?.name} (you)`}
               {you?.color === Team.None &&
-                game.players.find(
+                gameState.players.find(
                   (x) =>
                     x.color === Team.White || x.color === Team.WhitePromotion
                 )?.name}

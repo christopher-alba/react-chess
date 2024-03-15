@@ -8,6 +8,8 @@ import {
   SideInfoWrapper,
   GameControls,
   StyledContainer,
+  SpectatorsWrapper,
+  Spectator,
 } from "./styled";
 import { Team } from "../../../../types/enums";
 import Promotion from "../Promotion/Promotion";
@@ -16,6 +18,7 @@ import { OnlineReturnState, Player } from "../../../../types/gameTypes";
 import { updateGameInstance } from "../../../../redux/slices/gameStateSlice";
 import { useDispatch } from "react-redux";
 import { socket } from "../../../../socket";
+import { Title } from "../MoveHistory/styled";
 
 const OnlineChess: FC = () => {
   const [playerTeam, setPlayerTeam] = useState<Team>();
@@ -42,7 +45,16 @@ const OnlineChess: FC = () => {
         console.log(spectators);
       }
     });
-
+    socket.on("spectatorLeft", ({ spectators }: { spectators: Player[] }) => {
+      console.log("Spectator Left");
+      setSpectators((prev) =>
+        prev.filter((x) => {
+          return spectators.some(
+            (spectator) => spectator.playerID === x.playerID
+          );
+        })
+      );
+    });
     return () => {
       console.log("UNMOUNTING");
     };
@@ -69,7 +81,17 @@ const OnlineChess: FC = () => {
               <MoveHistory />
             </SideInfoWrapper>
             <SideInfoWrapper>
-              {spectators?.map((x) => JSON.stringify(x))}
+              <SpectatorsWrapper>
+                <Title>Spectators</Title>
+                {spectators?.map((x) => {
+                  return (
+                    <Spectator>
+                      {x.name}{" "}
+                      {x.playerID !== state.player.playerID ? "" : "(you)"}
+                    </Spectator>
+                  );
+                })}
+              </SpectatorsWrapper>
             </SideInfoWrapper>
           </StyledContainer>
         </div>

@@ -1,8 +1,8 @@
 import styled from "styled-components";
 
 export const MainWrapper = styled("div")`
-  background: ${({ theme }) => theme.colors.tertiary1};
-  color: black;
+  background: ${({ theme }) => theme.colors.primary3};
+  color: ${({ theme }) => theme.colors.primary4};
   width: 100%;
   height: 50%;
   border-radius: 10px;
@@ -10,7 +10,6 @@ export const MainWrapper = styled("div")`
   box-sizing: border-box;
   flex-grow: 1;
   position: relative;
-  border: 2px solid white;
   display: flex;
   flex-direction: column;
 `;
@@ -25,13 +24,14 @@ export const InnerWrapper = styled("div")`
 export const Title = styled("h1")`
   font-size: 1.3rem;
   margin: 0;
-  border-bottom: 4px solid white;
+  color: ${({ theme }) => theme.colors.secondary1};
   padding-bottom: 10px;
   margin-bottom: 10px;
 `;
 
 export const MoveWrapper = styled("div")`
   background: #ffffff69;
+  color: ${({ theme }) => theme.colors.secondary1};
   font-size: 0.7rem;
   box-sizing: border-box;
   padding: 10px;

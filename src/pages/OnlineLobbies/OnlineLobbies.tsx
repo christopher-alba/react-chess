@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Mode, Visibility } from "../../types/enums";
 import { v4 as uuid } from "uuid";
 import Lobby from "./Lobby";
+import generate from "boring-name-generator";
 
 const OnlineLobbies: FC = () => {
   const [lobbies, setLobbies] = useState<Game[]>([]);
@@ -43,7 +44,10 @@ const OnlineLobbies: FC = () => {
           socket.connect();
           socket.emit(
             "create",
-            { name: "Frank", visibility: Visibility.Public },
+            {
+              name: generate({ number: true }).spaced,
+              visibility: Visibility.Public,
+            },
             ({
               player,
               password,
@@ -71,7 +75,11 @@ const OnlineLobbies: FC = () => {
           socket.connect();
           socket.emit(
             "create",
-            { name: "Frank", visibility: Visibility.Private, password: uuid() },
+            {
+              name: generate({ number: true }).spaced,
+              visibility: Visibility.Private,
+              password: uuid(),
+            },
             ({ player, game }: { player: Player; game: Game }) => {
               console.log(game.password);
               navigate("/online/classicChess", {
