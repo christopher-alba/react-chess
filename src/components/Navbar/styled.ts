@@ -5,5 +5,5 @@ export const MainWrapper = styled("div")`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${({ theme }) => theme.colors.primary1};
+  background: ${({ theme }) => theme.colors.primary2};
 `;
