@@ -10,10 +10,16 @@ export const Tile = styled("div")`
   position: relative;
 `;
 
-export const TilesWrapper = styled("div")`
+export const TilesWrapper = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(
+    8,
+    calc(100% / 8)
+  ); /* Adjust the width as needed */
+  grid-template-rows: repeat(
+    8,
+    calc(100% / 8)
+  ); /* Adjust the height as needed */
   overflow: hidden;
   background: #805e3e;
   backdrop-filter: blur(8px);

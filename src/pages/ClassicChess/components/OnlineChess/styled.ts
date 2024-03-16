@@ -9,7 +9,8 @@ export const MainWrapper = styled("div")`
 
 export const SideInfoWrapper = styled("div")`
   width: 300px;
-  height: 100%;
+  min-height: 75vh;
+  max-height: 100vh;
   @media (max-width: 1300px) {
     height: 500px;
     width: 100%;
@@ -44,7 +45,7 @@ export const StyledContainer = styled(Container)`
   }
   display: flex;
   position: relative;
-  height: 75vh;
+  min-height: 75vh;
 `;
 
 export const SpectatorsWrapper = styled("div")`
