@@ -1,7 +1,14 @@
 import { FC, useContext } from "react";
-import { MainWrapper } from "./styled";
+import {
+  Brand,
+  MainWrapper,
+  NavCompartment,
+  StyledLink,
+  TertiarySpan,
+} from "./styled";
 import { DefaultTheme, ThemeContext } from "styled-components";
 import themes from "../../themes/schema.json";
+import { Button } from "../buttons";
 import { Link } from "react-router-dom";
 
 const Navbar: FC<{ setTheme: (theme: DefaultTheme) => void }> = ({
@@ -19,10 +26,26 @@ const Navbar: FC<{ setTheme: (theme: DefaultTheme) => void }> = ({
   };
   return (
     <MainWrapper>
-      <h1>Navbar</h1>
-      <button onClick={toggleTheme}>Toggle</button>
-      <Link to="online">Online</Link>
-      <Link to="offline">Offline</Link>
+      <NavCompartment>
+        <Link to="" style={{ textDecoration: "none" }}>
+          <Brand>
+            Chessmaster<TertiarySpan>.io</TertiarySpan>
+          </Brand>
+        </Link>
+        <StyledLink to="online">Online</StyledLink>
+        <StyledLink to="offline">Offline</StyledLink>
+        <StyledLink to="scenarios">Scenarios</StyledLink>
+        <StyledLink to="puzzles">Puzzles</StyledLink>
+      </NavCompartment>
+      <NavCompartment>
+        <Button
+          $background={theme?.colors.secondary1}
+          $textColor={theme?.colors.primary1}
+          onClick={toggleTheme}
+        >
+          Toggle Theme
+        </Button>
+      </NavCompartment>
     </MainWrapper>
   );
 };
