@@ -9,10 +9,10 @@
       "secondary1": "#000000",
       "secondary2": "#242424",
       "secondary3": "#353535",
-      "tertiary1": "#DFDFDF",
+      "tertiary1": "#bd9564",
       "tertiary1Hover": "#AB2A47",
-      "tertiary2": "#C5BBFF",
-      "tertiaryMain": "#7000FF",
+      "tertiary2": "#bd9564",
+      "tertiaryMain": "#bd9564",
       "tertiaryMainOffset": "#FFFFFF"
     }
   },
@@ -26,10 +26,10 @@
       "secondary1": "#FFFFFF",
       "secondary2": "#D9D9D9",
       "secondary3": "#cbcbcb",
-      "tertiary1": "#DFDFDF",
+      "tertiary1": "#bd9564",
       "tertiary1Hover": "#AB2A47",
-      "tertiary2": "#C5BBFF",
-      "tertiaryMain": "#7000FF",
+      "tertiary2": "#bd9564",
+      "tertiaryMain": "#bd9564",
       "tertiaryMainOffset": "#FFFFFF"
     }
   }

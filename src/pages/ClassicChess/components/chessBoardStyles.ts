@@ -21,7 +21,7 @@ export const TilesWrapper = styled.div`
     calc(100% / 8)
   ); /* Adjust the height as needed */
   overflow: hidden;
-  background: #805e3e;
+  background: ${({theme}) => theme.colors.tertiary1};
   backdrop-filter: blur(8px);
   padding: 20px;
   border-radius: 10px;
@@ -39,7 +39,7 @@ export const CapturedPiecesWrapper = styled("div")`
   box-sizing: border-box;
   width: 100%;
   margin-left: auto;
-  background: #805e3e;
+  background: ${({theme}) => theme.colors.tertiary1};
 `;
 
 export const CapturedPiecesWrapperOverlay = styled("div")`
@@ -66,9 +66,8 @@ export const PlayerName = styled("h3")`
   width: 200px;
   transition: 500ms;
   padding-left: 30px;
-  font-weight: 200;
-  letter-spacing: 3px;
-  font-size: 0.7rem;
+  font-weight: 900;
+  font-size: 0.9rem;
   text-overflow: ellipsis;
 `;
 

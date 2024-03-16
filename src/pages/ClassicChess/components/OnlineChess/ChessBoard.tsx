@@ -137,7 +137,10 @@ const ChessBoard: FC<{
       <CapturedDivWrapper style={{ marginTop: 0 }}>
         <CapturedPiecesWrapper
           style={{
-            opacity: currentTeam === Team.Black ? 1 : 0.3,
+            background:
+              currentTeam === Team.Black
+                ? theme?.colors.tertiary1
+                : theme?.colors.tertiary1 + "55",
           }}
         >
           <CapturedPiecesWrapperOverlay>
@@ -274,7 +277,10 @@ const ChessBoard: FC<{
       <CapturedDivWrapper style={{ marginBottom: 0 }}>
         <CapturedPiecesWrapper
           style={{
-            opacity: currentTeam === Team.White ? 1 : 0.3,
+            background:
+              currentTeam === Team.White
+                ? theme?.colors.tertiary1
+                : theme?.colors.tertiary1 + "55",
           }}
         >
           <CapturedPiecesWrapperOverlay>

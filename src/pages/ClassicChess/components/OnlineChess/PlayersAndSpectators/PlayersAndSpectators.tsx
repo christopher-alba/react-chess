@@ -94,8 +94,9 @@ const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
             $background={
               visiblity === Visibility.Public
                 ? theme?.colors.tertiary2
-                : theme?.colors.tertiary1
+                : theme?.colors.primary1
             }
+            $textColor={theme?.colors.secondary1}
           >
             Visible
           </Button>{" "}
@@ -105,9 +106,10 @@ const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
             $background={
               visiblity === Visibility.Auto
                 ? theme?.colors.tertiary2
-                : theme?.colors.tertiary1
+                : theme?.colors.primary1
             }
             style={{ opacity: visiblity === Visibility.Auto ? 1 : 0.5 }}
+            $textColor={theme?.colors.secondary1}
           >
             Auto
           </Button>{" "}
@@ -116,9 +118,10 @@ const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
             $background={
               visiblity === Visibility.Private
                 ? theme?.colors.tertiary2
-                : theme?.colors.tertiary1
+                : theme?.colors.primary1
             }
             $width="100%"
+            $textColor={theme?.colors.secondary1}
             style={{ opacity: visiblity === Visibility.Private ? 1 : 0.5 }}
           >
             Private
@@ -127,7 +130,8 @@ const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
       </div>
       <Button
         onClick={disconnect}
-        $background={theme?.colors.tertiary1}
+        $background={theme?.colors.primary1}
+        $textColor={theme?.colors.secondary1}
         $width="100%"
       >
         Disconnect
