@@ -47,6 +47,7 @@ export const PromoteButton = styled("button")`
   &:hover {
     background: ${({ theme }) => theme.colors.primary1 + "30"};
   }
+  z-index: 10001;
 `;
 
 const commonCss = css`

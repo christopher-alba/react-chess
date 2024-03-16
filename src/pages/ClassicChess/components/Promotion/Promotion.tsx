@@ -50,28 +50,28 @@ const Promotion: FC<{ playerTeam?: Team; online: boolean }> = ({
         <Draggable bounds="parent">
           <ModalBody>
             <PromoteButton
-              onClick={() => {
+              onTouchStart={() => {
                 handlePromotionClick(Type.Queen);
               }}
             >
               <QueenIcon team={reduxState.gamesStates[0].currentTeam} />
             </PromoteButton>
             <PromoteButton
-              onClick={() => {
+              onTouchStart={() => {
                 handlePromotionClick(Type.Bishop);
               }}
             >
               <BishopIcon team={reduxState.gamesStates[0].currentTeam} />
             </PromoteButton>
             <PromoteButton
-              onClick={() => {
+              onTouchStart={() => {
                 handlePromotionClick(Type.Rook);
               }}
             >
               <RookIcon team={reduxState.gamesStates[0].currentTeam} />
             </PromoteButton>
             <PromoteButton
-              onClick={() => {
+              onTouchStart={() => {
                 handlePromotionClick(Type.Knight);
               }}
             >
