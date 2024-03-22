@@ -145,3 +145,12 @@ export type OnlineReturnState = {
   player: Player;
   game: Game;
 };
+
+export type MongoDBMatch = {
+  gameId: string;
+  auth0UserId: string;
+  gameStatesJson: string;
+  modifiedOn: string;
+};
+
+export type MongoDBMatches = MongoDBMatch[];

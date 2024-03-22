@@ -10,10 +10,12 @@ import { DefaultTheme, ThemeContext } from "styled-components";
 import themes from "../../themes/schema.json";
 import { Button } from "../buttons";
 import { Link } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const Navbar: FC<{ setTheme: (theme: DefaultTheme) => void }> = ({
   setTheme,
 }) => {
+  const { loginWithRedirect } = useAuth0();
   const theme = useContext(ThemeContext);
   const toggleTheme = () => {
     if (theme?.name === "light") {
@@ -44,6 +46,13 @@ const Navbar: FC<{ setTheme: (theme: DefaultTheme) => void }> = ({
           onClick={toggleTheme}
         >
           Toggle Theme
+        </Button>
+        <Button
+          $background={theme?.colors.tertiary1}
+          $textColor={theme?.colors.primary1}
+          onClick={() => loginWithRedirect()}
+        >
+          Login
         </Button>
       </NavCompartment>
     </MainWrapper>

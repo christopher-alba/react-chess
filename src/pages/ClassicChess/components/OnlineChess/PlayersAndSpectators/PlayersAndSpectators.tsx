@@ -8,13 +8,16 @@ import {
   TickCircleIcon,
 } from "./styled";
 import { socket } from "../../../../../socket";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateGameInstance } from "../../../../../redux/slices/gameStateSlice";
 import { Button } from "../../../../../components/buttons";
 import { ThemeContext } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { ButtonGroup } from "../../../../../components/buttonGroups";
 import { Visibility } from "../../../../../types/enums";
+import { RootState } from "../../../../../redux/store";
+import { createOrUpdateSavedGame } from "../../../../../api/savedGames";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
   gameID,
@@ -23,9 +26,26 @@ const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
   const [copiedId, setCopiedId] = useState(false);
   const [copiedPassword, setCopiedPassword] = useState(false);
   const [visiblity, setVisibility] = useState<Visibility>(Visibility.Auto);
+  const reduxState = useSelector((state: RootState) => state.gameStateReducer);
+  const { getIdTokenClaims, getAccessTokenSilently } = useAuth0();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const theme = useContext(ThemeContext);
+
+  const saveGame = async () => {
+    const token = await getAccessTokenSilently();
+    const tokenClaims = await getIdTokenClaims();
+    await createOrUpdateSavedGame(
+      {
+        auth0UserId: tokenClaims?.sub,
+        gameId: reduxState.gamesStates[0].gameId,
+        gameStatesJson: JSON.stringify(reduxState),
+        modifiedOn: "",
+      },
+      token
+    );
+  };
+
   const disconnect = () => {
     socket.disconnect();
     dispatch(
@@ -128,14 +148,27 @@ const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
           </Button>
         </ButtonGroup>
       </div>
-      <Button
-        onClick={disconnect}
-        $background={theme?.colors.primary1}
-        $textColor={theme?.colors.secondary1}
-        $width="100%"
-      >
-        Disconnect
-      </Button>
+      <div>
+        <Button
+          onClick={saveGame}
+          $background={theme?.colors.tertiary1}
+          $textColor={theme?.colors.secondary1}
+          $width="100%"
+          style={{
+            marginBottom: "10px",
+          }}
+        >
+          Save Game
+        </Button>
+        <Button
+          onClick={disconnect}
+          $background={theme?.colors.primary1}
+          $textColor={theme?.colors.secondary1}
+          $width="100%"
+        >
+          Disconnect
+        </Button>
+      </div>
     </MainWrapper>
   );
 };

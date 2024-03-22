@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   createGameInstance,
   makeMove,
+  updateGameInstance,
 } from "../../../../redux/slices/gameStateSlice";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -13,7 +14,12 @@ import {
   TileColor,
   Type,
 } from "../../../../types/enums";
-import { Position, StatesOfPieces, Tiles } from "../../../../types/gameTypes";
+import {
+  AllGamesStates,
+  Position,
+  StatesOfPieces,
+  Tiles,
+} from "../../../../types/gameTypes";
 import { ThemeContext } from "styled-components";
 import ChessPiece, { ChessPieceSmall } from "../ChessPiece";
 import { RootState } from "../../../../redux/store";
@@ -28,7 +34,9 @@ import {
   Tile,
 } from "../chessBoardStyles";
 
-const OfflineChessBoard: FC = () => {
+const OfflineChessBoard: FC<{ presetStates?: AllGamesStates }> = ({
+  presetStates,
+}) => {
   const [allTiles, setAllTiles] = useState<Position[]>();
   const [gameId, setGameId] = useState<string>();
 
@@ -269,57 +277,61 @@ const OfflineChessBoard: FC = () => {
     setAllTiles(allTiles);
     let id = uuidv4();
     setGameId(id);
-    dispatch(
-      createGameInstance({
-        gameId: id,
-        mode: Mode.TwoPlayer,
-        currentTeam: Team.White,
-        moveHistory: [],
-        teamStates: [
-          {
-            teamName: Team.White,
-            alive: true,
-            winner: false,
-            castlingStates: {
-              KingMoved: false,
-              KingRookMoved: false,
-              QueenRookMoved: false,
-              KingSide: false,
-              QueenSide: false,
+    if (presetStates) {
+      dispatch(createGameInstance(presetStates.gamesStates[0]));
+      dispatch(updateGameInstance(presetStates));
+    } else {
+      dispatch(
+        createGameInstance({
+          gameId: id,
+          mode: Mode.TwoPlayer,
+          currentTeam: Team.White,
+          moveHistory: [],
+          teamStates: [
+            {
+              teamName: Team.White,
+              alive: true,
+              winner: false,
+              castlingStates: {
+                KingMoved: false,
+                KingRookMoved: false,
+                QueenRookMoved: false,
+                KingSide: false,
+                QueenSide: false,
+              },
+              enpassantStates: {
+                alliedEnpassantPawns: [],
+                enemyEnpassantPawns: [],
+              },
             },
-            enpassantStates: {
-              alliedEnpassantPawns: [],
-              enemyEnpassantPawns: [],
+            {
+              teamName: Team.Black,
+              alive: true,
+              winner: false,
+              castlingStates: {
+                KingMoved: false,
+                KingRookMoved: false,
+                QueenRookMoved: false,
+                KingSide: false,
+                QueenSide: false,
+              },
+              enpassantStates: {
+                alliedEnpassantPawns: [],
+                enemyEnpassantPawns: [],
+              },
             },
+          ],
+          gameState: GameState.Stopped,
+          checkStatus: {
+            type: CheckType.None,
+            teamInCheck: Team.None,
+            checkingPieces: undefined,
           },
-          {
-            teamName: Team.Black,
-            alive: true,
-            winner: false,
-            castlingStates: {
-              KingMoved: false,
-              KingRookMoved: false,
-              QueenRookMoved: false,
-              KingSide: false,
-              QueenSide: false,
-            },
-            enpassantStates: {
-              alliedEnpassantPawns: [],
-              enemyEnpassantPawns: [],
-            },
-          },
-        ],
-        gameState: GameState.Stopped,
-        checkStatus: {
-          type: CheckType.None,
-          teamInCheck: Team.None,
-          checkingPieces: undefined,
-        },
-        availableTiles: initialize2PlayerBoardTiles(),
-        statesOfPieces: initialize2PlayerBoardPieces(),
-      })
-    );
-    console.log("testing A");
+          availableTiles: initialize2PlayerBoardTiles(),
+          statesOfPieces: initialize2PlayerBoardPieces(),
+        })
+      );
+    }
   }, []);
 
   useEffect(() => {
@@ -327,12 +339,15 @@ const OfflineChessBoard: FC = () => {
   }, [reduxState]);
 
   useEffect(() => {
-    const deadPieces = reduxState?.gamesStates
-      ?.find((x) => x.gameId === gameId)
-      ?.statesOfPieces?.filter((x) => !x.alive)
+    setDeadPieces();
+  }, [reduxState.gamesStates, reduxState.currentMovesState]);
+
+  const setDeadPieces = () => {
+    const deadPieces = reduxState?.gamesStates[0]?.statesOfPieces
+      ?.filter((x) => !x.alive)
       .sort((a, b) => b.timeCapturedTimestamp! - a.timeCapturedTimestamp!);
     setDeadPiecesState(deadPieces);
-  }, [reduxState]);
+  };
 
   let currentTeam = reduxState.gamesStates?.find(
     (x) => x.gameId === gameId

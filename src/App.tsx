@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar/Navbar";
 import "./socket";
 import { Route, Routes } from "react-router-dom";
 import OnlineLobbies from "./pages/OnlineLobbies/OnlineLobbies";
+import MySaves from "./pages/MySaves/MySaves";
 function App() {
   const [theme, setTheme] = useState(
     localStorage.getItem("theme")?.length ?? -1 > 0
@@ -30,6 +31,7 @@ function App() {
           path="online/classicChess"
           element={<ClassicChess onlineMode={true} />}
         />
+        <Route path="mySaves" element={<MySaves />} />
       </Routes>
     </ThemeProvider>
   );
