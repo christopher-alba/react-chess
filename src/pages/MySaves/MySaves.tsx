@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { AllGamesStates, MongoDBMatches } from "../../types/gameTypes";
+import { MongoDBMatches } from "../../types/gameTypes";
 import { getSavedGames } from "../../api/savedGames";
 import { useAuth0 } from "@auth0/auth0-react";
 import moment from "moment";
