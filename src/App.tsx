@@ -8,6 +8,7 @@ import "./socket";
 import { Route, Routes } from "react-router-dom";
 import OnlineLobbies from "./pages/OnlineLobbies/OnlineLobbies";
 import MySaves from "./pages/MySaves/MySaves";
+import Notifications from "./components/Notifications/Notifications";
 function App() {
   const [theme, setTheme] = useState(
     localStorage.getItem("theme")?.length ?? -1 > 0
@@ -33,6 +34,7 @@ function App() {
         />
         <Route path="mySaves" element={<MySaves />} />
       </Routes>
+      <Notifications />
     </ThemeProvider>
   );
 }

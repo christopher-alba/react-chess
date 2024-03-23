@@ -1,8 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import gameStateReducer from "./slices/gameStateSlice";
+import notificationReducer from "./slices/notificationSlice";
+
 export const store = configureStore({
   reducer: {
     gameStateReducer,
+    notificationReducer,
   },
 });
 

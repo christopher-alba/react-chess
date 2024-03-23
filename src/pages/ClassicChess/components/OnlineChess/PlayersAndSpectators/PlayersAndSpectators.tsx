@@ -14,10 +14,12 @@ import { Button } from "../../../../../components/buttons";
 import { ThemeContext } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { ButtonGroup } from "../../../../../components/buttonGroups";
-import { Visibility } from "../../../../../types/enums";
+import { NotificationType, Visibility } from "../../../../../types/enums";
 import { RootState } from "../../../../../redux/store";
 import { createOrUpdateSavedGame } from "../../../../../api/savedGames";
 import { useAuth0 } from "@auth0/auth0-react";
+import { addNotification } from "../../../../../redux/slices/notificationSlice";
+import { v4 } from "uuid";
 
 const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
   gameID,
@@ -26,6 +28,7 @@ const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
   const [copiedId, setCopiedId] = useState(false);
   const [copiedPassword, setCopiedPassword] = useState(false);
   const [visiblity, setVisibility] = useState<Visibility>(Visibility.Auto);
+  const [saving, setSaving] = useState(false);
   const reduxState = useSelector((state: RootState) => state.gameStateReducer);
   const { getIdTokenClaims, getAccessTokenSilently } = useAuth0();
   const dispatch = useDispatch();
@@ -33,6 +36,14 @@ const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
   const theme = useContext(ThemeContext);
 
   const saveGame = async () => {
+    setSaving(true);
+    dispatch(
+      addNotification({
+        id: v4(),
+        type: NotificationType.INFO,
+        message: `Saving game`,
+      })
+    );
     const token = await getAccessTokenSilently();
     const tokenClaims = await getIdTokenClaims();
     await createOrUpdateSavedGame(
@@ -43,6 +54,15 @@ const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
         modifiedOn: "",
       },
       token
+    );
+
+    setSaving(false);
+    dispatch(
+      addNotification({
+        id: v4(),
+        type: NotificationType.SUCCESS,
+        message: `Saved game`,
+      })
     );
   };
 
@@ -76,7 +96,7 @@ const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
         <GameIdHeader>
           <Header>GameID</Header>
           <Button
-            $background={theme?.colors.tertiary2}
+            $background={theme?.colors.tertiary1}
             $fontSize="0.7rem"
             onClick={copyId}
             $width={"70px"}
@@ -92,7 +112,7 @@ const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
         <GameIdHeader style={{ marginTop: "20px" }}>
           <Header>Password</Header>
           <Button
-            $background={theme?.colors.tertiary2}
+            $background={theme?.colors.tertiary1}
             $fontSize="0.7rem"
             onClick={copyPassword}
             $width={"70px"}
@@ -113,7 +133,7 @@ const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
             style={{ opacity: visiblity === Visibility.Public ? 1 : 0.5 }}
             $background={
               visiblity === Visibility.Public
-                ? theme?.colors.tertiary2
+                ? theme?.colors.tertiary1
                 : theme?.colors.primary1
             }
             $textColor={theme?.colors.secondary1}
@@ -125,7 +145,7 @@ const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
             $width="100%"
             $background={
               visiblity === Visibility.Auto
-                ? theme?.colors.tertiary2
+                ? theme?.colors.tertiary1
                 : theme?.colors.primary1
             }
             style={{ opacity: visiblity === Visibility.Auto ? 1 : 0.5 }}
@@ -137,7 +157,7 @@ const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
             onClick={() => setVisibility(Visibility.Private)}
             $background={
               visiblity === Visibility.Private
-                ? theme?.colors.tertiary2
+                ? theme?.colors.tertiary1
                 : theme?.colors.primary1
             }
             $width="100%"
@@ -150,15 +170,18 @@ const PlayersAndSpectators: FC<{ gameID: string; password?: string }> = ({
       </div>
       <div>
         <Button
+          disabled={saving}
           onClick={saveGame}
-          $background={theme?.colors.tertiary1}
+          $background={
+            saving ? theme?.colors.tertiary1 + "55" : theme?.colors.tertiary1
+          }
           $textColor={theme?.colors.secondary1}
           $width="100%"
           style={{
             marginBottom: "10px",
           }}
         >
-          Save Game
+          {saving ? "Saving..." : "Save Game"}
         </Button>
         <Button
           onClick={disconnect}

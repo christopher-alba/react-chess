@@ -4,7 +4,7 @@ import {
   makeMove,
   updateGameInstance,
 } from "../../../../redux/slices/gameStateSlice";
-import { Team, TileColor } from "../../../../types/enums";
+import { NotificationType, Team, TileColor } from "../../../../types/enums";
 import {
   AllGamesStates,
   Game,
@@ -25,6 +25,8 @@ import {
   TilesWrapper,
   Tile,
 } from "../chessBoardStyles";
+import { addNotification } from "../../../../redux/slices/notificationSlice";
+import { v4 } from "uuid";
 
 const ChessBoard: FC<{
   playerTeam: Team;
@@ -50,7 +52,17 @@ const ChessBoard: FC<{
       console.log({ player });
       setOpponent(undefined);
       setGameState((prev) => {
-        return { ...prev, players: [player] };
+        const playerWhoLeft = prev.players.find(
+          (x) => x.playerID !== player.playerID
+        );
+        dispatch(
+          addNotification({
+            id: v4(),
+            message: `Player ${playerWhoLeft?.name} has left.`,
+            type: NotificationType.INFO,
+          })
+        );
+        return { ...prev, players: player ? [player] : [] };
       });
     });
 
@@ -63,6 +75,13 @@ const ChessBoard: FC<{
       setGameState((prev) => {
         return { ...prev, players: [...prev.players, player] };
       });
+      dispatch(
+        addNotification({
+          id: v4(),
+          message: `Player ${player.name} has joined.`,
+          type: NotificationType.INFO,
+        })
+      );
     });
 
     socket.on("opponentMove", (props: { allGamesStates: AllGamesStates }) => {

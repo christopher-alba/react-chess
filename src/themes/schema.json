@@ -11,7 +11,7 @@
       "secondary3": "#353535",
       "tertiary1": "#bd9564",
       "tertiary1Hover": "#AB2A47",
-      "tertiary2": "#bd9564",
+      "tertiary2": "lightgreen",
       "tertiaryMain": "#bd9564",
       "tertiaryMainOffset": "#FFFFFF"
     }
@@ -28,7 +28,7 @@
       "secondary3": "#cbcbcb",
       "tertiary1": "#bd9564",
       "tertiary1Hover": "#AB2A47",
-      "tertiary2": "#bd9564",
+      "tertiary2": "lightgreen",
       "tertiaryMain": "#bd9564",
       "tertiaryMainOffset": "#FFFFFF"
     }

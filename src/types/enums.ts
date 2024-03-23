@@ -80,3 +80,10 @@ export enum ValidationType {
   Default,
   Enemy,
 }
+
+export enum NotificationType {
+  INFO,
+  WARNING,
+  ERROR,
+  SUCCESS,
+}
