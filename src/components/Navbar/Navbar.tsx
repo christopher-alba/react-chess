@@ -15,7 +15,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 const Navbar: FC<{ setTheme: (theme: DefaultTheme) => void }> = ({
   setTheme,
 }) => {
-  const { loginWithRedirect } = useAuth0();
+  const { loginWithRedirect, logout, user } = useAuth0();
   const theme = useContext(ThemeContext);
   const toggleTheme = () => {
     if (theme?.name === "light") {
@@ -47,13 +47,24 @@ const Navbar: FC<{ setTheme: (theme: DefaultTheme) => void }> = ({
         >
           Toggle Theme
         </Button>
-        <Button
-          $background={theme?.colors.tertiary1}
-          $textColor={theme?.colors.primary1}
-          onClick={() => loginWithRedirect()}
-        >
-          Login
-        </Button>
+        {!user ? (
+          <Button
+            $background={theme?.colors.tertiary1}
+            $textColor={theme?.colors.primary1}
+            onClick={() => loginWithRedirect()}
+          >
+            Login
+          </Button>
+        ) : (
+          <Button
+            style={{ textTransform: "none" }}
+            $background={theme?.colors.tertiary1}
+            $textColor={theme?.colors.primary1}
+            onClick={() => logout()}
+          >
+            Logged in as {user?.email}
+          </Button>
+        )}
       </NavCompartment>
     </MainWrapper>
   );

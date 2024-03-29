@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { socket } from "../../socket";
 import { Game, OnlineReturnState, Player } from "../../types/gameTypes";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +6,11 @@ import { Mode, Visibility } from "../../types/enums";
 import { v4 as uuid } from "uuid";
 import Lobby from "./Lobby";
 import generate from "boring-name-generator";
-import styled, { keyframes } from "styled-components";
+import styled, { ThemeContext, keyframes } from "styled-components";
+import { Container } from "../../components/container";
+import { Button } from "../../components/buttons";
+import { ButtonGroup } from "../../components/buttonGroups";
+import { useAuth0 } from "@auth0/auth0-react";
 
 // Define keyframes
 const ldsDualRingAnimation = keyframes`
@@ -48,6 +52,8 @@ const OnlineLobbies: FC = () => {
   const [lobbies, setLobbies] = useState<Game[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
+  const { user } = useAuth0();
+  const theme = useContext(ThemeContext);
   useEffect(() => {
     console.log("FETCHING");
     socket.connect();
@@ -86,66 +92,76 @@ const OnlineLobbies: FC = () => {
     );
 
   return (
-    <div>
-      <button
-        onClick={() => {
-          socket.connect();
-          socket.emit(
-            "create",
-            {
-              name: generate({ number: true }).spaced,
-              visibility: Visibility.Public,
-            },
-            ({
-              player,
-              password,
-              game,
-            }: {
-              player: Player;
-              password: string;
-              game: Game;
-            }) => {
-              console.log(password);
-              navigate("/online/classicChess", {
-                state: {
-                  player,
-                  game,
-                } as OnlineReturnState,
-              });
-            }
-          );
-        }}
-      >
-        Create Public Game
-      </button>
-      <button
-        onClick={() => {
-          socket.connect();
-          socket.emit(
-            "create",
-            {
-              name: generate({ number: true }).spaced,
-              visibility: Visibility.Private,
-              password: uuid(),
-            },
-            ({ player, game }: { player: Player; game: Game }) => {
-              console.log(game.password);
-              navigate("/online/classicChess", {
-                state: {
-                  player,
-                  game,
-                } as OnlineReturnState,
-              });
-            }
-          );
-        }}
-      >
-        Create Private Game
-      </button>
-      {lobbies.map((lobby) => (
-        <Lobby lobby={lobby} />
-      ))}
-    </div>
+    <Container
+      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+    >
+      <ButtonGroup style={{ width: "50%" }}>
+        <Button
+          $background={theme?.colors.tertiary1}
+          $textColor={theme?.colors.primary1}
+          onClick={() => {
+            socket.connect();
+            socket.emit(
+              "create",
+              {
+                name: user?.email ?? generate({ number: true }).spaced,
+                visibility: Visibility.Public,
+              },
+              ({
+                player,
+                password,
+                game,
+              }: {
+                player: Player;
+                password: string;
+                game: Game;
+              }) => {
+                console.log(password);
+                navigate("/online/classicChess", {
+                  state: {
+                    player,
+                    game,
+                  } as OnlineReturnState,
+                });
+              }
+            );
+          }}
+        >
+          Create Public Game
+        </Button>
+        <Button
+          $background={theme?.colors.secondary1}
+          $textColor={theme?.colors.primary1}
+          onClick={() => {
+            socket.connect();
+            socket.emit(
+              "create",
+              {
+                name: user?.email ?? generate({ number: true }).spaced,
+                visibility: Visibility.Private,
+                password: uuid(),
+              },
+              ({ player, game }: { player: Player; game: Game }) => {
+                console.log(game.password);
+                navigate("/online/classicChess", {
+                  state: {
+                    player,
+                    game,
+                  } as OnlineReturnState,
+                });
+              }
+            );
+          }}
+        >
+          Create Private Game
+        </Button>
+      </ButtonGroup>
+      <div style={{ marginTop: "100px", width: "70%" }}>
+        {lobbies.map((lobby) => (
+          <Lobby lobby={lobby} />
+        ))}
+      </div>
+    </Container>
   );
 };
 

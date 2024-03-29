@@ -9,6 +9,7 @@ import { Route, Routes } from "react-router-dom";
 import OnlineLobbies from "./pages/OnlineLobbies/OnlineLobbies";
 import MySaves from "./pages/MySaves/MySaves";
 import Notifications from "./components/Notifications/Notifications";
+import Home from "./pages/Home/Home";
 function App() {
   const [theme, setTheme] = useState(
     localStorage.getItem("theme")?.length ?? -1 > 0
@@ -26,6 +27,7 @@ function App() {
       <GlobalStyles />
       <Navbar setTheme={setTheme} />
       <Routes>
+        <Route path="" element={<Home />} />
         <Route path="offline" element={<ClassicChess onlineMode={false} />} />
         <Route path="online" element={<OnlineLobbies />} />
         <Route
