@@ -60,7 +60,9 @@ const Navbar: FC<{ setTheme: (theme: DefaultTheme) => void }> = ({
             style={{ textTransform: "none" }}
             $background={theme?.colors.tertiary1}
             $textColor={theme?.colors.primary1}
-            onClick={() => logout()}
+            onClick={() =>
+              logout({ logoutParams: { returnTo: window.location.origin } })
+            }
           >
             Logged in as {user?.email}
           </Button>
