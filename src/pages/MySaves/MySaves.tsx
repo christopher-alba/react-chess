@@ -1,17 +1,19 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { MongoDBMatches } from "../../types/gameTypes";
-import { getSavedGames } from "../../api/savedGames";
+import { deleteSavedGame, getSavedGames } from "../../api/savedGames";
 import { useAuth0 } from "@auth0/auth0-react";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
-import OfflineChessBoard from "../ClassicChess/components/OfflineChess/OfflineChessBoard";
 import SpectatorBoard from "../ClassicChess/components/OfflineChess/SpectatorBoard";
 import { Container } from "../../components/container";
 import { SaveWrapper } from "./styled";
+import { Button } from "../../components/buttons";
+import { ThemeContext } from "styled-components";
 
 const MySaves: FC = () => {
   const [savedGames, setSavedGames] = useState<MongoDBMatches>();
   const { getIdTokenClaims, getAccessTokenSilently } = useAuth0();
+  const theme = useContext(ThemeContext);
   const navigate = useNavigate();
   const getGames = async () => {
     const token = await getAccessTokenSilently();
@@ -21,24 +23,48 @@ const MySaves: FC = () => {
       setSavedGames(savedGames.data);
     }
   };
+
+  const deleteSave = async (matchId: string) => {
+    const tokenClaims = await getIdTokenClaims();
+    const token = await getAccessTokenSilently();
+    await deleteSavedGame(matchId, token, tokenClaims?.sub);
+    await getGames();
+  };
+
   useEffect(() => {
     getGames();
   }, []);
   return (
     <Container style={{ display: "flex", flexWrap: "wrap" }}>
       {savedGames?.map((x, index) => (
-        <SaveWrapper
-          onClick={() => {
-            navigate("/offline", {
-              state: {
-                presetStates: JSON.parse(x.gameStatesJson),
-              },
-            });
-          }}
-        >
-          <div>{moment(x.modifiedOn).local().format("LLL")}</div>
+        <SaveWrapper>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            {moment(x.modifiedOn).local().format("LLL")}{" "}
+            <Button
+              $background={theme?.colors.secondary1}
+              $textColor={theme?.colors.primary1}
+              onClick={async () => await deleteSave(x.gameId)}
+            >
+              Delete
+            </Button>
+          </div>
           <hr />
-          <div>
+          <div
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              navigate("/offline", {
+                state: {
+                  presetStates: JSON.parse(x.gameStatesJson),
+                },
+              });
+            }}
+          >
             <SpectatorBoard
               key={index}
               presetStates={JSON.parse(x.gameStatesJson)}

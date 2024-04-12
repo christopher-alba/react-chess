@@ -27,3 +27,17 @@ export const createOrUpdateSavedGame = async (
     })
     .catch((err) => console.log(err));
 };
+
+export const deleteSavedGame = async (
+  matchId: string,
+  accessToken: string,
+  auth0UserId: string
+) => {
+  await axiosInstance
+    .delete(`/matches/${auth0UserId}/${matchId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .catch((err) => console.log(err));
+};

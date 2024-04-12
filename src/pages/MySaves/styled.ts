@@ -6,5 +6,4 @@ export const SaveWrapper = styled("div")`
   margin: 10px;
   box-shadow: ${({ theme }) => theme.colors.secondary1 + "22"} 0px 1px 3px 0px,
     ${({ theme }) => theme.colors.secondary1 + "22"} 0px 0px 0px 1px;
-  cursor: pointer;
 `;
