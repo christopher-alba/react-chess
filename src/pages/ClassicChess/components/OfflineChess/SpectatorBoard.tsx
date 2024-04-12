@@ -22,8 +22,8 @@ import {
   Tiles,
 } from "../../../../types/gameTypes";
 import { ThemeContext } from "styled-components";
-import ChessPiece, { ChessPieceSmall } from "../ChessPiece";
-import { RootState } from "../../../../redux/store";
+import { ChessPieceSmall } from "../ChessPiece";
+
 import { mapCoordinatesToChessNotation } from "../../../../helpers/general";
 import {
   MainChessboardWrapper,
@@ -35,35 +35,15 @@ import {
   Tile,
 } from "../chessBoardStyles";
 
-const OfflineChessBoard: FC<{ presetStates?: AllGamesStates }> = ({
+const SpectatorBoard: FC<{ presetStates?: AllGamesStates }> = ({
   presetStates,
 }) => {
   const [allTiles, setAllTiles] = useState<Position[]>();
-  const [gameId, setGameId] = useState<string>();
 
   const [deadPiecesState, setDeadPiecesState] = useState<StatesOfPieces>();
-  const reduxState = useSelector((state: RootState) => state.gameStateReducer);
   const theme = useContext(ThemeContext);
 
   const dispatch = useDispatch();
-
-  const handleTileClick = (
-    tile: Position,
-    validMoves?: Position[],
-    selectedPieceId?: string
-  ) => {
-    if (validMoves?.find((move) => move.x === tile.x && move.y === tile.y)) {
-      //move selected piece
-      let currentGame = reduxState.gamesStates.find((x) => x.gameId === gameId);
-      const currentGameId = currentGame?.gameId;
-      let selectedPiece = currentGame?.statesOfPieces.find(
-        (x) => x.id === selectedPieceId
-      );
-      if (currentGame && selectedPiece && currentGameId && tile)
-        dispatch(makeMove({ selectedPiece, currentGameId, tile }));
-      //change turns
-    }
-  };
 
   const initialize2PlayerBoardTiles = (): Tiles => {
     let tilesArray: Tiles = [];
@@ -277,7 +257,7 @@ const OfflineChessBoard: FC<{ presetStates?: AllGamesStates }> = ({
 
     setAllTiles(allTiles);
     let id = uuidv4();
-    setGameId(id);
+
     if (presetStates) {
       dispatch(createGameInstance(presetStates.gamesStates[0]));
       dispatch(updateGameInstance(presetStates));
@@ -336,34 +316,20 @@ const OfflineChessBoard: FC<{ presetStates?: AllGamesStates }> = ({
   }, []);
 
   useEffect(() => {
-    console.log(gameId);
-    return () => {
-      console.log("unmounting");
-      dispatch(deleteGameInstance(gameId ?? ""));
-    };
-  }, [gameId]);
-
-  useEffect(() => {
-    setGameId(reduxState?.gamesStates[0]?.gameId);
-  }, [reduxState]);
-
-  useEffect(() => {
     setDeadPieces();
-  }, [reduxState.gamesStates, reduxState.currentMovesState]);
+  }, []);
 
   const setDeadPieces = () => {
-    const deadPieces = reduxState?.gamesStates[0]?.statesOfPieces
+    const deadPieces = presetStates?.gamesStates[0]?.statesOfPieces
       ?.filter((x) => !x.alive)
       .sort((a, b) => b.timeCapturedTimestamp! - a.timeCapturedTimestamp!);
     setDeadPiecesState(deadPieces);
   };
 
-  let currentTeam = reduxState.gamesStates?.find(
-    (x) => x.gameId === gameId
-  )?.currentTeam;
+  let currentTeam = presetStates?.gamesStates[0].currentTeam;
 
   return (
-    <MainChessboardWrapper>
+    <MainChessboardWrapper style={{ width: "350px" }}>
       <CapturedDivWrapper style={{ marginTop: 0 }}>
         <CapturedPiecesWrapper
           style={{
@@ -395,12 +361,8 @@ const OfflineChessBoard: FC<{ presetStates?: AllGamesStates }> = ({
       </CapturedDivWrapper>
       <TilesWrapper>
         {allTiles?.map((tile, index) => {
-          let pieces = reduxState.gamesStates.find(
-            (x) => x.gameId === gameId
-          )?.statesOfPieces;
-          let tiles = reduxState.gamesStates.find(
-            (x) => x.gameId === gameId
-          )?.availableTiles;
+          let pieces = presetStates?.gamesStates[0].statesOfPieces;
+          let tiles = presetStates?.gamesStates[0].availableTiles;
           let matching = tiles?.find(
             (x) => JSON.stringify(x.position) === JSON.stringify(tile)
           );
@@ -409,17 +371,12 @@ const OfflineChessBoard: FC<{ presetStates?: AllGamesStates }> = ({
               JSON.stringify(x.position) === JSON.stringify(tile) &&
               x.alive === true
           );
-          let currentMoves = reduxState.currentMovesState.find(
-            (x) => x.gameId === gameId
-          );
+          let currentMoves = presetStates?.currentMovesState[0];
           let validMoves = currentMoves?.validMoves;
-          let attackPath = reduxState.gamesStates.find(
-            (x) => x.gameId === gameId
-          )?.checkStatus.attackPath;
+          let attackPath = presetStates?.gamesStates[0].checkStatus.attackPath;
 
-          let checkingPieces = reduxState.gamesStates.find(
-            (x) => x.gameId === gameId
-          )?.checkStatus.checkingPieces;
+          let checkingPieces =
+            presetStates?.gamesStates[0].checkStatus.checkingPieces;
           let selectedPieceId = currentMoves?.selectedPieceId;
           let selectedPiecePos = pieces?.find(
             (x) => x.id === selectedPieceId
@@ -431,9 +388,6 @@ const OfflineChessBoard: FC<{ presetStates?: AllGamesStates }> = ({
             return (
               <Tile
                 key={index}
-                onMouseDown={() => {
-                  handleTileClick(tile, validMoves, selectedPieceId);
-                }}
                 style={{
                   boxShadow: validMoves?.find(
                     (x: Position) => x.x === tile.x && x.y === tile.y
@@ -460,29 +414,13 @@ const OfflineChessBoard: FC<{ presetStates?: AllGamesStates }> = ({
                 className={`x-${tile.x} y-${tile.y}`}
               >
                 {piece && piece.alive && (
-                  <ChessPiece
+                  <ChessPieceSmall
                     key={index}
                     position={piece.position}
-                    id={piece.id}
                     team={piece.team}
                     type={piece.type}
-                    gameId={gameId}
-                    online={false}
-                  ></ChessPiece>
+                  ></ChessPieceSmall>
                 )}
-                <p
-                  style={{
-                    position: "absolute",
-                    left: "5px",
-                    bottom: "5px",
-                    margin: 0,
-                    opacity: 0.7,
-                    color: "#000000",
-                    zIndex: -1,
-                  }}
-                >
-                  {matching.chessNotationPosition}
-                </p>
               </Tile>
             );
           } else {
@@ -523,4 +461,4 @@ const OfflineChessBoard: FC<{ presetStates?: AllGamesStates }> = ({
   );
 };
 
-export default OfflineChessBoard;
+export default SpectatorBoard;

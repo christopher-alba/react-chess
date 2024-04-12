@@ -4,6 +4,10 @@ import { getSavedGames } from "../../api/savedGames";
 import { useAuth0 } from "@auth0/auth0-react";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import OfflineChessBoard from "../ClassicChess/components/OfflineChess/OfflineChessBoard";
+import SpectatorBoard from "../ClassicChess/components/OfflineChess/SpectatorBoard";
+import { Container } from "../../components/container";
+import { SaveWrapper } from "./styled";
 
 const MySaves: FC = () => {
   const [savedGames, setSavedGames] = useState<MongoDBMatches>();
@@ -21,9 +25,9 @@ const MySaves: FC = () => {
     getGames();
   }, []);
   return (
-    <div>
-      {savedGames?.map((x) => (
-        <div
+    <Container style={{ display: "flex", flexWrap: "wrap" }}>
+      {savedGames?.map((x, index) => (
+        <SaveWrapper
           onClick={() => {
             navigate("/offline", {
               state: {
@@ -32,10 +36,17 @@ const MySaves: FC = () => {
             });
           }}
         >
-          {moment(x.modifiedOn).local().format("LLL")}, {x.gameId}
-        </div>
+          <div>{moment(x.modifiedOn).local().format("LLL")}</div>
+          <hr />
+          <div>
+            <SpectatorBoard
+              key={index}
+              presetStates={JSON.parse(x.gameStatesJson)}
+            />
+          </div>
+        </SaveWrapper>
       ))}
-    </div>
+    </Container>
   );
 };
 

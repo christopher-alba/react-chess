@@ -190,8 +190,6 @@ export const ChessPieceSmall: FC<{
   position: Position;
   type: Type;
   team: Team;
-  id: string;
-  gameId?: string;
 }> = ({ position, type, team }) => {
   switch (type) {
     case Type.King:

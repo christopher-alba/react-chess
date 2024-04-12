@@ -188,10 +188,8 @@ const ChessBoard: FC<{
                   <ChessPieceSmall
                     key={index}
                     position={piece.position}
-                    id={piece.id}
                     team={piece.team}
                     type={piece.type}
-                    gameId={gameId}
                   ></ChessPieceSmall>
                 );
               })}
@@ -328,10 +326,8 @@ const ChessBoard: FC<{
                   <ChessPieceSmall
                     key={index}
                     position={piece.position}
-                    id={piece.id}
                     team={piece.team}
                     type={piece.type}
-                    gameId={gameId}
                   ></ChessPieceSmall>
                 );
               })}

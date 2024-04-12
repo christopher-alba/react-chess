@@ -36,8 +36,7 @@ const Navbar: FC<{ setTheme: (theme: DefaultTheme) => void }> = ({
         </Link>
         <StyledLink to="online">Online</StyledLink>
         <StyledLink to="offline">Offline</StyledLink>
-        <StyledLink to="scenarios">Scenarios</StyledLink>
-        <StyledLink to="puzzles">Puzzles</StyledLink>
+        {user && <StyledLink to="mySaves">Saves</StyledLink>}
       </NavCompartment>
       <NavCompartment>
         <Button
