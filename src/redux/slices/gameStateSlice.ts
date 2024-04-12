@@ -42,9 +42,11 @@ export const gameStateSlice = createSlice({
     createGameInstance: (state, action: PayloadAction<AllGameStates>) => {
       state.gamesStates.push(action.payload);
     },
-    deleteGameInstance: (state, action: PayloadAction<AllGameStates>) => {
+    deleteGameInstance: (state, action: PayloadAction<string>) => {
+      console.log(action.payload);
+
       state.gamesStates = state.gamesStates.filter(
-        (x) => x.gameId !== action.payload.gameId
+        (x) => x.gameId !== action.payload
       );
     },
     updateGameInstance: (state, action: PayloadAction<AllGamesStates>) => {
@@ -122,7 +124,7 @@ export const gameStateSlice = createSlice({
           allGamesStates: AllGamesStates;
           gameID: string;
         },
-        ({ color }:{color: Team}) => {
+        ({ color }: { color: Team }) => {
           console.log({ color });
         }
       );
@@ -142,7 +144,7 @@ export const gameStateSlice = createSlice({
           allGamesStates: AllGamesStates;
           gameID: string;
         },
-        ({ color }:{color: Team}) => {
+        ({ color }: { color: Team }) => {
           console.log({ color });
         }
       );
@@ -212,6 +214,7 @@ export const gameStateSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const {
   createGameInstance,
+  deleteGameInstance,
   makeMove,
   selectPiece,
   promotePawn,

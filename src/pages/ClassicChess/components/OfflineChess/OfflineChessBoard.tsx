@@ -2,6 +2,7 @@ import { FC, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createGameInstance,
+  deleteGameInstance,
   makeMove,
   updateGameInstance,
 } from "../../../../redux/slices/gameStateSlice";
@@ -275,8 +276,12 @@ const OfflineChessBoard: FC<{ presetStates?: AllGamesStates }> = ({
     }
 
     setAllTiles(allTiles);
-    let id = uuidv4();
+    const id = uuidv4();
+    console.log(id);
+
     setGameId(id);
+    console.log(gameId);
+
     if (presetStates) {
       dispatch(createGameInstance(presetStates.gamesStates[0]));
       dispatch(updateGameInstance(presetStates));
@@ -335,8 +340,12 @@ const OfflineChessBoard: FC<{ presetStates?: AllGamesStates }> = ({
   }, []);
 
   useEffect(() => {
-    setGameId(reduxState?.gamesStates[0]?.gameId);
-  }, [reduxState]);
+    console.log(gameId);
+    return () => {
+      console.log("unmounting");
+      dispatch(deleteGameInstance(gameId ?? ""));
+    };
+  }, [gameId]);
 
   useEffect(() => {
     setDeadPieces();
