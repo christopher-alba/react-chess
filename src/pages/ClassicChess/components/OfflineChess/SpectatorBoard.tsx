@@ -1,9 +1,7 @@
 import { FC, useContext, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   createGameInstance,
-  deleteGameInstance,
-  makeMove,
   updateGameInstance,
 } from "../../../../redux/slices/gameStateSlice";
 import { v4 as uuidv4 } from "uuid";
