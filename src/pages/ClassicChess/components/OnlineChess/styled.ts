@@ -1,6 +1,21 @@
 import styled from "styled-components";
 import { Container } from "../../../../components/container";
 
+export const MoreButton = styled("button")`
+  margin: 20px;
+  background: ${({theme}) => theme.colors.secondary1};
+  border: none;
+  padding: 20px 20px;
+  border-radius: 10px;
+  font-size: 2rem;
+  @media (max-width: 600px){
+    margin-left: 0;
+    margin-right: 0;
+  }
+  cursor: pointer;
+  color: ${({theme}) => theme.colors.primary1};
+`;
+
 export const MainWrapper = styled("div")`
   display: flex;
   flex-wrap: nowrap;

@@ -6,10 +6,10 @@ import PlayersAndSpectators from "./PlayersAndSpectators/PlayersAndSpectators";
 import {
   MainWrapper,
   SideInfoWrapper,
-  GameControls,
   StyledContainer,
   SpectatorsWrapper,
   Spectator,
+  MoreButton,
 } from "./styled";
 import { NotificationType, Team } from "../../../../types/enums";
 import Promotion from "../Promotion/Promotion";
@@ -23,6 +23,7 @@ import { addNotification } from "../../../../redux/slices/notificationSlice";
 import { v4 } from "uuid";
 
 const OnlineChess: FC = () => {
+  const [displayMore, setDisplayMore] = useState(false);
   const [playerTeam, setPlayerTeam] = useState<Team>();
   const [spectators, setSpectators] = useState<Player[]>([]);
   const location = useLocation();
@@ -89,23 +90,33 @@ const OnlineChess: FC = () => {
               game={state.game}
               you={state.player}
             />
-            <SideInfoWrapper>
-              <GameControls>TIMER</GameControls>
-              <MoveHistory />
-            </SideInfoWrapper>
-            <SideInfoWrapper>
-              <SpectatorsWrapper>
-                <Title>Spectators</Title>
-                {spectators?.map((x) => {
-                  return (
-                    <Spectator>
-                      {x.name}{" "}
-                      {x.playerID !== state.player.playerID ? "" : "(you)"}
-                    </Spectator>
-                  );
-                })}
-              </SpectatorsWrapper>
-            </SideInfoWrapper>
+            <MoreButton
+              onClick={() => {
+                setDisplayMore(!displayMore);
+              }}
+            >
+              {displayMore ? '-' : '+'}
+            </MoreButton>
+            {displayMore && (
+              <>
+                <SideInfoWrapper>
+                  <MoveHistory />
+                </SideInfoWrapper>
+                <SideInfoWrapper>
+                  <SpectatorsWrapper>
+                    <Title>Spectators</Title>
+                    {spectators?.map((x) => {
+                      return (
+                        <Spectator>
+                          {x.name}{" "}
+                          {x.playerID !== state.player.playerID ? "" : "(you)"}
+                        </Spectator>
+                      );
+                    })}
+                  </SpectatorsWrapper>
+                </SideInfoWrapper>
+              </>
+            )}
           </StyledContainer>
         </div>
       </MainWrapper>
